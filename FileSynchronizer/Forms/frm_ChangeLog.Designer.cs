@@ -40,7 +40,7 @@ namespace FileSynchronizer
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(704, 441);
+            this.richTextBox1.Size = new System.Drawing.Size(882, 553);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
@@ -48,7 +48,7 @@ namespace FileSynchronizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(704, 441);
+            this.ClientSize = new System.Drawing.Size(882, 553);
             this.Controls.Add(this.richTextBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;

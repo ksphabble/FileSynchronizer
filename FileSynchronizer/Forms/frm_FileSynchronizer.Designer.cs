@@ -61,6 +61,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnTest = new System.Windows.Forms.Button();
             this.btnOpenPairLog = new System.Windows.Forms.Button();
+            this.项目Github主页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPageMain.SuspendLayout();
             this.NotifyMenu.SuspendLayout();
@@ -247,7 +248,8 @@
             // 
             this.MenuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.更新日志ToolStripMenuItem,
-            this.关于ToolStripMenuItem1});
+            this.关于ToolStripMenuItem1,
+            this.项目Github主页ToolStripMenuItem});
             this.MenuItemHelp.Name = "MenuItemHelp";
             this.MenuItemHelp.Size = new System.Drawing.Size(53, 24);
             this.MenuItemHelp.Text = "帮助";
@@ -255,14 +257,14 @@
             // 更新日志ToolStripMenuItem
             // 
             this.更新日志ToolStripMenuItem.Name = "更新日志ToolStripMenuItem";
-            this.更新日志ToolStripMenuItem.Size = new System.Drawing.Size(152, 26);
+            this.更新日志ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.更新日志ToolStripMenuItem.Text = "更新日志";
             this.更新日志ToolStripMenuItem.Click += new System.EventHandler(this.更新日志ToolStripMenuItem_Click);
             // 
             // 关于ToolStripMenuItem1
             // 
             this.关于ToolStripMenuItem1.Name = "关于ToolStripMenuItem1";
-            this.关于ToolStripMenuItem1.Size = new System.Drawing.Size(152, 26);
+            this.关于ToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.关于ToolStripMenuItem1.Text = "关于";
             this.关于ToolStripMenuItem1.Click += new System.EventHandler(this.关于ToolStripMenuItem1_Click);
             // 
@@ -373,6 +375,13 @@
             this.btnOpenPairLog.UseVisualStyleBackColor = true;
             this.btnOpenPairLog.Click += new System.EventHandler(this.btnOpenPairLog_Click);
             // 
+            // 项目Github主页ToolStripMenuItem
+            // 
+            this.项目Github主页ToolStripMenuItem.Name = "项目Github主页ToolStripMenuItem";
+            this.项目Github主页ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.项目Github主页ToolStripMenuItem.Text = "项目Github主页";
+            this.项目Github主页ToolStripMenuItem.Click += new System.EventHandler(this.项目Github主页ToolStripMenuItem_Click);
+            // 
             // frm_FileSynchronizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -442,6 +451,7 @@
         private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.Button btnOpenPairLog;
         private System.Windows.Forms.ToolStripMenuItem MenuItemSync;
+        private System.Windows.Forms.ToolStripMenuItem 项目Github主页ToolStripMenuItem;
     }
 }
 

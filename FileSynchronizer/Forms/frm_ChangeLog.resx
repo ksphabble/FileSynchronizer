@@ -118,7 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="richTextBox1.Text" xml:space="preserve">
-    <value>By Habble, 联系邮箱：ksphabble@hotmail.com
+    <value>By Habble, 此工具是我从2022年开始利用业余时间写出来的，主要是因为其他第三方同步工具都需要付费，而我自己刚好有同步需求，所以有了这个工具，图个方便，非盈利性质，如果想要实际支持一下，可以联系我的微信号：ksphabble
+如果使用过程中出现BUG或者有好的建议，请在GITHUB上反馈或者联系邮箱：ksphabble@hotmail.com
+------------------- （以下是更新日志，我就直接把从2022年开始所有的都贴上来吧） -------------------
+版本：2.0.3.3
+日期：2024-3-20
+改动：
+1.	项目正式上线GITHUB了！现在可以从项目GITHUB主页找到源码和发布包
 
 版本：2.0.3.2
 日期：2024-3-17

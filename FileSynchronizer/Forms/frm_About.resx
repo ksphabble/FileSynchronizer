@@ -118,7 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="richTextBox1.Text" xml:space="preserve">
-    <value>FileSynchronizer是一个Windows环境下的同步工具，理论上只要能在Windows的资源管理器里面打开的目录和文件都支持，如果想同步移动设备，建议打开FTP或者SMB之后在PC端连接使用。
+    <value>By Habble, 此工具是我从2022年开始利用业余时间写出来的，主要是因为其他第三方同步工具都需要付费，而我自己刚好有同步需求，所以有了这个工具，图个方便，非盈利性质，如果想要实际支持一下，可以联系我的微信号：ksphabble
+如果使用过程中出现BUG或者有好的建议，请在GITHUB上反馈或者联系邮箱：ksphabble@hotmail.com
+
+FileSynchronizer是一个Windows环境下的同步工具，理论上只要能在Windows的资源管理器里面打开的目录和文件都支持，如果想同步移动设备，建议打开FTP或者SMB之后在PC端连接使用。
 这个工具的主要逻辑是利用目录/文件的创建时间/修改时间/文件大小/MD5等信息比较配对目录下面的所有子目录/文件，如果不一样，就会有相对应的程序逻辑。
 1. 利用数据库保存目录和文件信息，获取两边目录之间的差异
 2. 同步方向：

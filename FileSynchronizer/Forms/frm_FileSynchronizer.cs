@@ -2801,6 +2801,11 @@ namespace FileSynchronizer
         {
             new frm_ChangeLog().ShowDialog();
         }
+
+        private void 项目Github主页ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://github.com/ksphabble/FileSynchronizer");
+        }
         #endregion
     }
 }
