@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>FileSynchronizer是一个Windows环境下的同步工具，理论上只要能在Windows的资源管理器里面打开的目录和文件都支持，如果想同步移动设备，建议打开FTP或者SMB之后在PC端连接使用。
+这个工具的主要逻辑是利用目录/文件的创建时间/修改时间/文件大小/MD5等信息比较配对目录下面的所有子目录/文件，如果不一样，就会有相对应的程序逻辑。
+1. 利用数据库保存目录和文件信息，获取两边目录之间的差异
+2. 同步方向：
+    2.1 双向同步并删除 --- 两边目录完全一致，任何一边发生改动（增加/改动/删除）都会反映到另一边
+    2.2 双向同步不删除 --- 两边目录任何一边发生改动（增加/改动）都会反映到另外一边，但是删除不会反映到另一边
+    2.3 单向同步并删除 --- 单向一边同步，其中一边的改动（增加/改动/删除）会反映到另一边
+    2.4 单向同步不删除 --- 单向一边同步，其中一边的改动（增加/改动）会反映到另一边
+3. 同步逻辑还带有排除选项，可以设置带有某些关键字的目录/文件不触发同步
+4. 每个目录配对都可以设置一个自动同步间隔，以分钟为单位，设置为0则不触发自动同步
+5. 全局设置中可以设置删除文件是直接删除还是移动到对应的_FSBackup目录，如果长时间使用后觉得磁盘空间不够，可以从_FSBackup中删除一些旧的版本
+6. 文件同步失败时候支持重试，在全局设置中可以设置重试等待时长（默认5分钟）和最大重试次数（默认3次）
+7. 全局设置中可以设置本地临时目录，此功能打开后当配对的一方目录不是本地磁盘的时候，同步过程中发现的新文件会先复制到临时目录，再计算MD5，后面的同步也会使用这个临时目录里的临时文件，这样能够有效提高同步速度，针对网络驱动器上的大文件同步尤其有效
+8. 数据库可选SQLITE和ACCESS，在全局设置中打开调试模式之后可以互相切换
+	ACCESS和SQLITE数据库对比：
+	ACCESS：使用方便，有OFFICE365套件就能随时打开，背后是巨人撑腰，但是缺点是数据库文件庞大，同样数据量下的数据库文件是SQLITE的10倍，而且并发性能差，如果配对目录下有大量子目录和文件，会有可能导致数据库卡死的
+	SQLITE：第三方的轻量化数据库，文件较小，并发性能也高，应付十万八万条数据不是问题，只是数据的查看需要第三方应用例如SQLiteStudio</value>
+  </data>
+</root>

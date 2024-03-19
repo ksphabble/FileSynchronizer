@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>By Habble, 联系邮箱：ksphabble@hotmail.com
+
+版本：2.0.3.2
+日期：2024-3-17
+改动：
+1.	引入一个通用组件Common.Components.dll并从底层优化全局设置代码和文件/目录处理代码
+2.	解决几个BUG，例如暂停/恢复自动同步动作无法使界面刷新的问题
+3.	新增功能：最大保留备份数量，可以有效降低长时间使用本工具后的备份空间过大的问题，在全局设置中设置
+
+版本：2.0.3.1
+日期：2023-12-20
+改动：
+1.	完善同步逻辑，现在同步被修改过的文件的时候也会备份，受全局设置中的“删除文件到"_FSBackup"目录 (隐藏目录)”选项控制
+2.	解决了同步过程中如果远程目录断开连接会导致程序崩溃或者数据库中相关项目丢失的问题
+3.	新增功能：在主界面的配对总览中双击配对的目录名称打开资源管理器
+
+版本：2.0.2.1
+日期：2023-6-29
+改动：
+1.	修复一个界面显示错误的问题
+2.	修复程序窗口从最小化恢复之后被选中配对错误的问题
+3.	修复程序界面最小化时依然能在ALT+TAB列表中看到的问题
+4.	修复一个网络路径导致获取MD5失败而无法写入数据库的问题
+5.	提示“配对相关的目录和文件数量较多，分析差异需时较长，请耐心等待”的阈值调整至SQLITE是100000，ACCESS是40000
+6.	新增功能：每日自动清除界面日志，开启后在每日第一次刷新的时候会把所有界面日志清除
+7.	新增功能：程序启动时自动最小化窗口
+8.	新增功能：打开日志
+9.	新增功能：程序托盘的右键菜单增加单独同步某个配对
+10.	优化配对列表绑定的逻辑，减少对系统的压力
+11.	分析配对时如果对象的绝对路径超过系统限制（260个字符），现在会抛出一个日志记录后跳过
+
+版本：2.0.1.1
+日期：2023-2-15
+改动：
+1.	程序正式进入2.0版本！这个版本开始数据库增加支持SQLITE！原本的ACCESS数据库可以通过在全局设置中打开调试模式之后切换，也可以反过来从SQLITE转成ACCESS
+ACCESS和SQLITE数据库对比：
+	ACCESS：使用方便，有OFFICE365套件就能随时打开，背后是巨人撑腰，但是缺点是数据库文件庞大，同样数据量下的数据库文件是SQLITE的10倍，而且并发性能差，如果配对目录下有大量子目录和文件，会有可能导致数据库卡死的
+	SQLITE：第三方的轻量化数据库，文件较小，并发性能也高，应付十万八万条数据不是问题，只是数据的查看需要第三方应用例如SQLiteStudio
+2.	初次使用需要创建数据库现在是优先创建SQLITE数据库
+3.	全局设置界面调整
+4.	全局设置新增数据库备份功能，需要打开调试模式
+5.	数据库备份文件现在会以备份时间的时间戳作为结尾，以防止因为同名文件而备份失败
+6.	修复了一些BUG
+
+版本：1.2.2.2
+日期：2023-2-10
+改动：
+1.	修复新功能“本地临时目录”的严重BUG，该BUG会导致文件同步变成单向移动非复制
+2.	界面逻辑优化
+3.	代码优化，现在同步效率会再提升一点点
+
+版本：1.2.2.1
+日期：2023-2-9
+改动：
+1.	新增本地临时目录功能，此功能打开后当配对的一方目录不是本地磁盘的时候，同步过程中发现的新文件会先复制到临时目录，再计算MD5，后面的同步也会使用这个临时目录里的临时文件，这样能够有效提高同步速度，针对网络驱动器上的大文件同步尤其有效，在全局设置中设置
+2.	代码优化和BUG修复
+
+版本：1.2.1.4
+日期：2023-2-3
+改动：
+1.	现在同步删除并移到“_FSBackup”文件夹下面的对象会多一层目录，目录名为当次的同步时间
+2.	分析配对功能下降为调试模式下的功能，现在非调试模式该按钮会被隐藏
+3.	修复分析配对的时候底部信息栏把当前文件显示为目录的错误
+4.	界面UI的交互优化
+
+版本：1.2.1.3
+日期：2022-12-21
+改动：
+1.	代码优化，修复了部分崩溃BUG
+
+版本：1.2.1.2
+日期：2022-10-3
+改动：
+1.	主界面调整，增加一个配对总览列表，可以通过点击列表中的配对行与下面的日志项目联动
+2.	日志消息栏的自动清空长度调整为150000
+3.	修复了一个目录或文件路径存在单引号的时候该项目会无法同步的BUG
+4.	修复开机启动程序无法找到数据库的BUG
+5.	一些代码优化
+
+版本：1.2.1.1
+日期：2022-9-28
+改动：
+1.	从这个版本开始，版本号将会改成“主要.次要.内部.修订“的形式，日期将不再出现
+2.	主界面调整，现在所有配对的信息（同步时间、分析/同步进度、正在进行的操作）、日志消息、日志文件都会分开记录和展示
+3.	日志消息的调整和细化
+4.	配对管理中现在可以从浏览对话框中选择两个目录的路径
+5.	配对管理中现在可以独立查看配对日志文件大小并且清除
+6.	修复了一处错误，该错误会导致关闭配对管理窗口之后重复添加配对页面的问题
+7.	日志消息框现在显示的字符数超过60000个的时候会自动清除
+8.	代码优化
+
+版本：1.1.220708_b1
+日期：2022-7-8
+改动：
+1.	7月4日的版本对同步状态的改动导致了不可预见的问题，这个版本回滚了那个改动（b1）
+
+版本：1.1.220707_b1
+日期：2022-7-7
+改动：
+1.	增加了同步过程发生异常的时候把异常文件信息写到日志文件（b1）
+
+版本：1.1.220704_b1
+日期：2022-7-4
+改动：
+1.	修复和优化一些问题（b1）
+2.	现在只会在同步前才重置配对的同步状态而不是在分析前，结果是在分析的时候出错了也不会导致同步状态变成否（b1）
+
+版本：1.1.220703_b1
+日期：2022-7-3
+改动：
+1.	改进了对差异数据的处理，现在冲突项目不会再算在同步数里面（b1）
+
+版本：1.1.220702_b1
+日期：2022-7-2
+改动：
+1.	重新设计了分析阶段最后的获取差异算法，大幅提升获取差异所需的时间（以40000个对象为例，以前版本需时超过5分钟，现在只需要10秒左右），这样也顺便解决了因对象过多引起的数据库问题（碰到的是蓝屏）（b1）
+2.	增加了配对暂停自动同步功能，在主界面开关（b1）
+3.	增加了对多开的限制，现在程序不能多开（b1）
+
+版本：1.0.220327_b1
+日期：2022-3-27
+改动：
+修复一些问题（b1）
+
+版本：1.0.220301_b1
+日期：2022-3-1
+改动：
+1.	日志记录功能优化，现在日志记录等级1~2不会马上写入日志文件，而是在点击“清除日志”按钮或者关闭窗口的时候才会写入，对于日志记录等级3~5还是会马上写入日志文件（b1）
+
+版本：1.0.220220_b1
+日期：2022-2-20
+改动：
+1.	同步过程中如果把源文件删除了，现在不会再等待重试，而是提示后跳过（b1）
+2.	代码优化（b1）
+
+版本：1.0.220218_b1
+日期：2022-2-18
+改动：
+1.	修复一个后台刷新数据的崩溃bug（b1）
+2.	现在分析结果没有差异的提示放到第2级消息（b1）
+
+版本：1.0.220215_b1
+日期：2022-2-15
+改动：
+1.	增加了数据库备份功能，现在升级数据库会自动备份数据库文件到“FileSynchronizer_DB_Backup”目录内（b1）
+2.	主界面底部增加了一个指示器，同步的时候会显示正在同步的内容（b1）
+
+版本：1.0.220212_b1
+日期：2022-2-12
+改动：
+1.	修正同步删除空文件夹无法反映至另一边的问题（b1）
+
+版本：1.0.220211_b2
+日期：2022-2-11
+改动：
+1.	紧急修复同步文件夹会失败重试的情况（b2）
+2.	修正一个分析过程如果出现目录丢失会导致异常的问题，该问题可能会导致文件意外被删除（b2）
+
+版本：1.0.220211_b1
+日期：2022-2-11
+改动：
+1.	修正非调试模式下同步完成后无法显示/记录同步过程中出现问题的情况（b1）
+2.	修复如果是文件修改过之后同步会出现的数据库重复记录问题，该问题可能会导致文件损坏（b1）
+3.	增加文件同步失败时候的重试功能，在全局设置中可以设置重试等待时长（默认5分钟）和最大重试次数（默认3次）（b1）
+4.	“同步所有配对”独立成按钮（b1）
+5.	全局设置和配对管理窗口现在可以用ESC键退出（b1）
+6.	一些代码优化（b1）
+
+版本：1.0.220206_b1
+日期：2022-2-6
+改动：
+1.	修复一个计算备份目录空间时候因为目录不存在（特别是针对网路的目录）而崩溃的BUG（b1）
+2.	现在同步时候如果发生某个目录/文件的同步错误，将不会再终止整个同步过程，而是会跳过那个文件并且在日志消息中提醒（b1）
+3.	修复一个清除备份空间出现的错误（b1）
+
+版本：1.0.220123_b1
+日期：2022-1-23
+改动：
+1.	修复一个自动启动崩溃的BUG（b1）
+2.	调整了一些消息等级，减少一些正常使用时的冗余消息（b1）
+
+版本：1.0.220121_b1
+日期：2022-1-21
+改动：
+1.	针对有设置自动同步间隔的配对，主界面选择该配对的时候增加了显示下次同步时间（b1）
+2.	配对管理窗口增加显示配对备份文件夹的占用空间和一个清理空间按钮，现在可以在这里清除所有备份占用的空间（b1）
+3.	配对管理窗口增加对新增配对的检查，现在不能添加已经存在的目录配对（名称不同，但是目录1和目录2的配对已经存在）或者已经存在的配对名（即使目录1和目录2的配对不同）（b1）
+
+版本：1.0.220120_b1
+日期：2022-1-20
+改动：
+1.	加入了当前配对的任务检查，现在点击分析或者同步的时候会检查配对当前的状态并提醒（b1）
+2.	增加一个短暂停顿，修复在点击停止所有操作之后不能及时刷新进度的问题（b1）
+
+版本：1.0.220119_b2
+日期：2022-1-19
+改动：
+1.	彻底解决了从一开始就有问题的导致分析时间过长的傻X设计，现在分析速度飞快而且不会再出现数据库错误（b2）
+2.	配对管理的列表现在只会显示配对名称，目录和最后同步状态（b2）
+
+版本：1.0.220119_b1
+日期：2022-1-19
+改动：
+1.	解决了文件过多的时候分析会有写入数据库错误的问题，现在后台会尝试循环等待200毫秒之后重试，详细会记录在日志文件中（b1）
+2.	提高了分析时候的数据库查询效率（b1）
+3.	稍微加快了分析速度（b1）
+
+版本：1.0.220118_b2
+日期：2022-1-18
+改动：
+1.	为日志文件写入增加了缓存来防止日志文件出现的死锁问题（b2）
+2.	提高了数据库查询的效率（b2）
+3.	修复了文件数量很多的时候可能会出现的数据库错误（b2）
+4.	修改了大量消息日志的等级，现在所有的程序级别错误都会记录到日志文件中，而是否在主界面中显示继续参照日志等级5（b2）
+5.	进度信息现在是改为全局，也就是说现在会叠加所有正在进行中的配对的数量并且计算全局进度（b2）
+6.	重新开放了同步所有功能（b2）
+7.	修复了配对管理中如果没有配对会出现的崩溃问题（b2）
+8.	全局设置中增加了显示日志文件大小和重置日志文件功能（b2）
+
+版本：1.0.220118_b1
+日期：2022-1-18
+改动：
+1.	增加了停止所有操作功能，现在点击后会停止所有正在执行过程中的所有分析/同步操作（b1）
+2.	后台刷新自动同步的时间间隔从1分钟调整到30秒（b1）
+3.	现在点击打开配对管理的时候如果有正在执行中的所有分析/同步操作，会先暂停，等待关闭配对管理之后恢复执行，但是如果涉及到配对改动或者删除，那么被暂停的分析/同步操作将会强制结束，请重新点击操作，添加配对则不受影响（b1）
+4.	已知问题：如果分析或者同步已经结束后再点回那个配对的话，进度信息还是不会更新，预计在下个版本修复）（b1）
+
+版本：1.0.220117_b1
+日期：2022-1-17
+改动：
+1.	程序更改为x64程序（b1）
+2.	增加了一些线程停顿，减少同步过程中程序失去响应的频率（b1）
+3.	优化数据库查询配对差异的速度，现在对应大量文件的时候查询速度会快很多（b1）
+4.	增加大量调试信息，日志等级2可以看到大部分分析和同步的过程日志，日志等级3可以看到更多分析和同步的过程中发生的事件日志，日志等级5可以看到全部包括程序级别的日志（b1）
+5.	已知问题：如果分析或者同步已经结束后再点回那个配对的话，进度信息还是不会更新，预计在下个版本修复）（b1）
+
+版本：1.0.220115_b1
+日期：2022-1-15
+改动：
+1.	修复在多配对环境下的进度信息显示错误问题（不过目前还有发现如果分析或者同步已经结束后再点回那个配对的话，进度信息还是不会更新，预计在下个版本修复）（b1）
+2.	修复备份目录"_FSBackup"不是隐藏反而是里面的备份目录隐藏了的问题（b1）
+3.	配对管理的列表列头信息改成中文而不再是数据库的列名（b1）
+4.	配对管理的更新配对现在会检查目录，如果目录有改动，则提示无法修改配对的目录（b1）
+
+版本：1.0.220113_b3
+日期：2022-1-13
+改动：
+1.	加入进入系统自动启动程序功能（b3）
+2.	修复一个从配对管理返回时主窗体会获取到错误信息的问题（b3）
+3.	关于内容更新（b3）
+4.	主界面一些信息内容的位置调整，配对信息栏添加一个边框，并且增加显示所选配对的最后同步时间（b3）
+
+版本：1.0.220113_b2
+日期：2022-1-13
+改动：
+1.	加入删除文件到"_FSBackup"目录功能（b2）
+2.	加入更新日志窗口，内容目前是版本更新日志（b2）
+3.	关于窗口的内容变化为介绍信息（b2）
+4.	增加首次分析同步需时较长的提醒（b2）
+
+版本：1.0.220113_b1
+日期：2022-1-13
+改动：
+1.	加入配对的同步方向功能（b1）
+2.	大量修复同步过程中发生的问题（b1）
+3.	加入关于窗口，内容目前是版本更新日志（b1）
+4.	主窗口大小调整，现在默认更宽，尽量使每一行日志不换行（b1）
+
+版本：1.0.220111_b1
+日期：2022-1-11
+改动：
+1.	加入日志消息等级功能，根据日志等级和当前设定的消息等级决定是否显示出来或者写到日志文件，一共分为1~5级，在全局设置中设置（b1）
+
+版本：1.0.220110_b1
+日期：2022-1-10
+改动：
+1.	首个正式版本（b1）
+2.	修复大量BUG（b1）
+3.	全局设置加到数据库中（b1）
+4.	加入定时同步配对功能，具体设置在管理目录配对窗口中（b1）
+5.	增加全局设置窗口，将调试模式和保存日志到文件移到全局设置（b1）
+6.	调试模式下可以使用“修复文件夹配对”按钮，自动修复所有文件夹配对的同步状态和最后同步时间（b1）
+7.	优化分析配对的逻辑，现在分析的速度应该会快一些（b1）
+8.	管理目录配对窗口中的“同步方向”功能还没启用，目前只是占位符（b1）
+
+版本：0.0.1.1 (BETA)
+日期：2022-1-3
+改动：
+1.	首个测试版本</value>
+  </data>
+</root>
