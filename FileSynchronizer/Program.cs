@@ -19,9 +19,17 @@ namespace FileSynchronizer
                 Environment.Exit(1);
             }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frm_FileSynchronizer());
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new frm_FileSynchronizer());
+            }
+            catch (Exception ex)
+            {
+                cls_LogProgramFile.LogMessage(ex.Message);
+                Environment.Exit(1);
+            }
         }
     }
 }

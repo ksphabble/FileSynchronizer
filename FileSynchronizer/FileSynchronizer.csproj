@@ -105,10 +105,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\cls_Common_Constants.cs" />
+    <Compile Include="Classes\cls_Dir_Pair_Helper.cs" />
     <Compile Include="Classes\cls_Files_InfoDB_SQLITE.cs" />
     <Compile Include="Classes\cls_Files_InfoDB_ACCESS.cs" />
     <Compile Include="Classes\cls_Files_InfoDB.cs" />
-    <Compile Include="Classes\cls_Global_Settings_Old.cs" />
     <Compile Include="Classes\cls_Global_Settings.cs" />
     <Compile Include="Classes\cls_LogPairFile.cs" />
     <Compile Include="Classes\cls_SQLBuilder.cs" />
