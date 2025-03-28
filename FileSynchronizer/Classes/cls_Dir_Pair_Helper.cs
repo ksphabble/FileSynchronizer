@@ -1804,7 +1804,7 @@ namespace FileSynchronizer
                     int i_CurrentIdx = i + 1;
                     if (i_CurrentIdx > cls_Global_Settings.MaxKeepBackup)
                     {
-                        FileHelper.DeleteDirectoryOrFile(str_RootDirPath, true);
+                        FileHelper.DeleteDirectoryOrFile(directories[i].FullName, true);
                     }
                 }
             }
