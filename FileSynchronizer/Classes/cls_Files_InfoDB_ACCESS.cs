@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
+using System.Data.SQLite;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Management;
 using System.Threading;
@@ -190,6 +192,7 @@ namespace FileSynchronizer
             string sql_upd = _SQLBuilder.SQL_CheckDBUpgradeUpd(str_TargetVersion);
             //string sql_dbupgradeV10220111_b1 = @"";
             //string sql_dbupgradeV11220702_b1 = @"Alter TABLE DIRPAIR ADD COLUMN IsPaused BIT";
+            string sql_dbupgradeV2101_b1 = _SQLBuilder.SQL_BuildSyncDetailTableCre();
             CloseConnection();
             OpenConnection();
             
@@ -212,6 +215,13 @@ namespace FileSynchronizer
                             //更新数据库至版本1.2.1.1
                             //OleDbCommand cmd_updDB_302202111 = new OleDbCommand(sql_dbupgradeV30220211_b1, dbconn);
                             //cmd_updDB_302202111.ExecuteNonQuery();
+                        }
+
+                        if (int_CurrentVer < 2101)
+                        {
+                            //更新数据库至版本2.0.4.1
+                            OleDbCommand cmd_dbupgradeV2101_b1 = new OleDbCommand(sql_dbupgradeV2101_b1, dbconn_ACCESS);
+                            cmd_dbupgradeV2101_b1.ExecuteNonQuery();
                         }
 
                         //更新数据库版本至最新
@@ -257,6 +267,89 @@ namespace FileSynchronizer
             else
             {
                 return DBlocation_x86;
+            }
+        }
+
+        /// <summary>
+        /// 查询所有数据表名
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetAllTableName()
+        {
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_enq = _SQLBuilder.SQL_GetAllTableName();
+
+            List<string> list_Output = new List<string> { };
+
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(sql_enq, dbconn_ACCESS);
+                cmd.CommandTimeout = 600;
+                OleDbDataReader dr = cmd.ExecuteReader();
+                bool bl_HasNextRecord = true;
+
+                while (bl_HasNextRecord)
+                {
+                    bl_HasNextRecord = dr.Read();
+                    if (bl_HasNextRecord)
+                    {
+                        list_Output.Add(dr[0].ToString());
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            return list_Output.ToArray();
+        }
+
+        /// <summary>
+        /// 执行一条查询SQL语句
+        /// </summary>
+        /// <param name="str_SQL"></param>
+        /// <param name="SQLError"></param>
+        /// <returns></returns>
+        public static DataTable SQLEnquiry(string str_SQL, out string SQLError)
+        {
+            SQLError = String.Empty;
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(str_SQL, dbconn_ACCESS);
+                cmd.CommandTimeout = 600;
+                OleDbDataAdapter dataAdapter = new OleDbDataAdapter(cmd);
+                DataTable dt = new DataTable("NewEnq");
+                dataAdapter.Fill(dt);
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                SQLError = ex.Message;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 执行一条非查询SQL语句
+        /// </summary>
+        /// <param name="str_SQL"></param>
+        /// <param name="SQLError"></param>
+        /// <returns></returns>
+        public static int SQLExecutor(string str_SQL, out string SQLError)
+        {
+            SQLError = String.Empty;
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(str_SQL, dbconn_ACCESS);
+                int row = cmd.ExecuteNonQuery();
+                return row;
+            }
+            catch (Exception ex)
+            {
+                SQLError = ex.Message;
+                return -1;
             }
         }
         #endregion
@@ -832,6 +925,97 @@ namespace FileSynchronizer
             }
 
             return bl_Result;
+        }
+
+        public static bool AddSyncDetail(string str_PairName, string str_FromFile, string str_ToFile, int int_FileDiffType, bool bl_SyncStatus, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (String.IsNullOrEmpty(str_PairName) || String.IsNullOrEmpty(str_FromFile) || String.IsNullOrEmpty(str_ToFile))
+            {
+                return false;
+            }
+
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.ACCESS);
+            string sql_ins = _SQLBuilder.SQL_AddSyncDetailIns(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus);
+
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(sql_ins, dbconn_ACCESS);
+                int row = cmd.ExecuteNonQuery();
+                return row > 0;
+            }
+            catch (Exception ex)
+            {
+                str_OutMsg = ex.Message;
+                return false;
+            }
+        }
+
+        public static bool UpdSyncDetail(string str_PairName, string str_FromFile, string str_ToFile, int int_FileDiffType, bool bl_SyncStatus, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (String.IsNullOrEmpty(str_PairName) || String.IsNullOrEmpty(str_FromFile) || String.IsNullOrEmpty(str_ToFile))
+            {
+                return false;
+            }
+
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.ACCESS);
+            string sql_upd = _SQLBuilder.SQL_UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus);
+
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(sql_upd, dbconn_ACCESS);
+                int row = cmd.ExecuteNonQuery();
+                return row > 0;
+            }
+            catch (Exception ex)
+            {
+                str_OutMsg = ex.Message;
+                return false;
+            }
+        }
+
+        public static bool CleanSyncDetailRecord(string str_PairName, bool bl_SyncStatus, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.ACCESS);
+            string sql_upd = _SQLBuilder.SQL_CleanSyncDetailRecord(str_PairName, bl_SyncStatus);
+
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(sql_upd, dbconn_ACCESS);
+                int row = cmd.ExecuteNonQuery();
+                return row > 0;
+            }
+            catch (Exception ex)
+            {
+                str_OutMsg = ex.Message;
+                return false;
+            }
+        }
+
+        public static DataTable GetUnfinishedSyncDetail(string str_PairName, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.ACCESS);
+            string sql_enq = _SQLBuilder.SQL_GetUnfinishedSyncDetail(str_PairName);
+
+            try
+            {
+                OleDbCommand cmd = new OleDbCommand(sql_enq, dbconn_ACCESS);
+                cmd.CommandTimeout = 600;
+                OleDbDataAdapter dataAdapter = new OleDbDataAdapter(cmd);
+                DataTable dt = new DataTable("SyncDetail");
+                dataAdapter.Fill(dt);
+                cmd.Dispose();
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                str_OutMsg = ex.Message;
+                return null;
+            }
         }
         #endregion
     }

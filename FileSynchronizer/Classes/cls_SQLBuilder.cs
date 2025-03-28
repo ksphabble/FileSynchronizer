@@ -104,6 +104,35 @@ namespace FileSynchronizer
             string sql_out = @"update Global_Settings set Setting_Value = '" + str_TargetVersion + @"' where Setting_Name='DBVersion'";
             return sql_out;
         }
+
+        public string SQL_BuildSyncDetailTableCre()
+        {
+            string sql_out = @"Create table SyncDetail (PK_SyncDetail ";
+            if (m_DBType.Equals(DATABASE_TYPE.ACCESS))
+            {
+                sql_out += @"AUTOINCREMENT PRIMARY KEY";
+            }
+            else if (m_DBType.Equals(DATABASE_TYPE.SQLITE))
+            {
+                sql_out += @"INTEGER PRIMARY KEY";
+            }
+            sql_out += @",PAIRNAME TEXT(50) NOT NULL,FromFile TEXT(255),ToFile TEXT(255),FileDiffType INTEGER,SyncStatus BIT)";
+            return sql_out;
+        }
+
+        public string SQL_GetAllTableName()
+        {
+            string sql_out = String.Empty;
+            if (m_DBType.Equals(DATABASE_TYPE.ACCESS))
+            {
+                sql_out = @"Select name FROM MSysObjects WHERE type=1 and flags=0 ORDER BY name;";
+            }
+            else if (m_DBType.Equals(DATABASE_TYPE.SQLITE))
+            {
+                sql_out = @"Select name FROM sqlite_master WHERE type='table' ORDER BY name";
+            }
+            return sql_out;
+        }
         #endregion
 
         #region Global_Settings Methods
@@ -328,6 +357,38 @@ namespace FileSynchronizer
         public string SQL_CheckFileInDB(string str_TableName, string str_FileName, string str_FilePath, string str_FileSize, string str_FileLastModDate)
         {
             string sql_out = @"select * from " + str_TableName + @" where FileName='" + str_FileName + @"' and FilePath='" + str_FilePath + @"' and FileLastModDate=cdate('" + str_FileLastModDate + @"') and FileSize = " + str_FileSize;
+            return sql_out;
+        }
+
+        public string SQL_AddSyncDetailIns(string str_PairName, string str_FromFile, string str_ToFile, int int_FileDiffType, bool bl_SyncStatus)
+        {
+            string sql_out = @"Insert Into SyncDetail (PAIRNAME,FromFile,ToFile,FileDiffType,SyncStatus) values('" + str_PairName + "','" + str_FromFile + "','" + str_ToFile + "'," + int_FileDiffType.ToString() + "," + bl_SyncStatus.ToString() + ")";
+            return sql_out;
+        }
+
+        public string SQL_UpdSyncDetail(string str_PairName, string str_FromFile, string str_ToFile, int int_FileDiffType, bool bl_SyncStatus)
+        {
+            string sql_out = @"Update SyncDetail set SyncStatus=" + bl_SyncStatus.ToString() + @" where PAIRNAME='" + str_PairName + "' and FromFile='" + str_FromFile + "' and ToFile='" + str_ToFile + "' and FileDiffType=" + int_FileDiffType.ToString();
+            return sql_out;
+        }
+
+        public string SQL_CleanSyncDetailRecord(string str_PairName, bool bl_SyncStatus)
+        {
+            string sql_out = @"Delete from SyncDetail where SyncStatus=" + bl_SyncStatus.ToString();
+            if (!String.IsNullOrEmpty(str_PairName))
+            {
+                sql_out += @" and PAIRNAME='" + str_PairName + "'";
+            }
+            return sql_out;
+        }
+
+        public string SQL_GetUnfinishedSyncDetail(string str_PairName)
+        {
+            string sql_out = @"Select * from SyncDetail where SyncStatus=false";
+            if (!String.IsNullOrEmpty(str_PairName))
+            {
+                sql_out += @" and PAIRNAME='" + str_PairName + "'";
+            }
             return sql_out;
         }
         #endregion

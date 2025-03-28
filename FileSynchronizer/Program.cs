@@ -12,6 +12,7 @@ namespace FileSynchronizer
         [STAThread]
         static void Main()
         {
+            AppContext.SetSwitch("Switch.System.IO.UseLegacyPathHandling", false);
             bool bl_AppRunning = false;
             Mutex _mutex = new Mutex(true, System.Diagnostics.Process.GetCurrentProcess().ProcessName, out bl_AppRunning);
             if (!bl_AppRunning)

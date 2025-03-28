@@ -1,4 +1,5 @@
 ﻿using Common.Components;
+using FileSynchronizer.Forms;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -257,6 +258,13 @@ namespace FileSynchronizer
                     _directoryInfo.Attributes = FileAttributes.Hidden;
                 }
             }
+        }
+
+        private void btnSQLRunner_Click(object sender, EventArgs e)
+        {
+            new frm_SQLRunner().ShowDialog();
+            cls_Global_Settings.Init_Settings();
+            Fill_Setting();
         }
     }
 }

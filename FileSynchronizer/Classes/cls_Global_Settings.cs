@@ -26,7 +26,7 @@ namespace FileSynchronizer
         @"UseLocalTemp|bool|false",
         @"LocalTempFolder|string|.\_FSTemp",
         @"AutoClearLog|bool|false",
-        @"MinWhenStart|bool|true",
+        @"MinWhenStart|bool|false",
         @"MaxKeepBackup|int|5",
         };
 

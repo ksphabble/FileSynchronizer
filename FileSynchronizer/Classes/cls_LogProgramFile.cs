@@ -118,6 +118,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.ToString(), "Error when logging to file");
                 return;
             }
         }

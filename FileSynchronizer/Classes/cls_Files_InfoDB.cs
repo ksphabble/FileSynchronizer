@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -329,6 +330,72 @@ namespace FileSynchronizer
                 return false;
             }
         }
+
+        /// <summary>
+        /// 查询所有数据表名
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetAllTableName()
+        {
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.GetAllTableName();
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.GetAllTableName();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 执行一条查询SQL语句
+        /// </summary>
+        /// <param name="str_SQL"></param>
+        /// <param name="SQLError"></param>
+        /// <returns></returns>
+        public static DataTable SQLEnquiry(string str_SQL, out string SQLError)
+        {
+            SQLError = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.SQLEnquiry(str_SQL, out SQLError);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.SQLEnquiry(str_SQL, out SQLError);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 执行一条非查询SQL语句
+        /// </summary>
+        /// <param name="str_SQL"></param>
+        /// <param name="SQLError"></param>
+        /// <returns></returns>
+        public static int SQLExecutor(string str_SQL, out string SQLError)
+        {
+            SQLError = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.SQLExecutor(str_SQL, out SQLError);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.SQLExecutor(str_SQL, out SQLError);
+            }
+            else
+            {
+                return -1;
+            }
+        }
         #endregion
 
         #region Global_Settings Methods
@@ -655,6 +722,150 @@ namespace FileSynchronizer
             {
                 return false;
             }
+        }
+
+        public static bool AddSyncDetail(string str_PairName, string str_FromFile, string str_ToFile, int int_FileDiffType, bool bl_SyncStatus, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus, out str_OutMsg);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus, out str_OutMsg);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool UpdSyncDetail(string str_PairName, string str_FromFile, string str_ToFile, int int_FileDiffType, bool bl_SyncStatus, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus, out str_OutMsg);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus, out str_OutMsg);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool CleanSyncDetailRecord(string str_PairName, bool bl_SyncStatus, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.CleanSyncDetailRecord(str_PairName, bl_SyncStatus, out str_OutMsg);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.CleanSyncDetailRecord(str_PairName, bl_SyncStatus, out str_OutMsg);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static DataTable GetUnfinishedSyncDetail(string str_PairName, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.GetUnfinishedSyncDetail(str_PairName, out str_OutMsg);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.GetUnfinishedSyncDetail(str_PairName, out str_OutMsg);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static bool RevertUnfinishedSyncDetail(string str_PairName, bool bl_IsDebugMode, out string str_OutMsg)
+        { 
+            str_OutMsg = "正在清理未完成的同步任务\n";
+            string str_OutMsg2 = String.Empty;
+            int i_RevertedCount = 0;
+            if (!String.IsNullOrEmpty(str_PairName))
+            {
+                str_OutMsg = str_OutMsg + " - " + str_PairName;
+            }
+            DataTable dt_UnfinishedSyncDetail = GetUnfinishedSyncDetail(str_PairName, out str_OutMsg2);
+            str_OutMsg += str_OutMsg2;
+            if (dt_UnfinishedSyncDetail == null) { return false; }
+
+            foreach (DataRow dataRow in dt_UnfinishedSyncDetail.Rows)
+            {
+                string str_CurrentPairName = dataRow.ItemArray[1].ToString();
+                string str_FromFile = dataRow.ItemArray[2].ToString();
+                string str_ToFile = dataRow.ItemArray[3].ToString();
+                int int_FileDiffType = int.Parse(dataRow.ItemArray[4].ToString());
+                string str_ToFileDir = Path.GetDirectoryName(str_ToFile);
+                string str_Direction = String.Empty;
+
+                switch (int_FileDiffType)
+                {
+                    case 1:
+                    case 2:
+                        str_Direction = " -A-> "; break;
+                    case 3:
+                    case 4:
+                        str_Direction = " -U-> "; break; //更新的同步会出问题！
+                    default:
+                        break;
+                }
+
+                //仅针对DIFFTYPE=1~2（同步增加）失败的记录作处理
+                if (int_FileDiffType >= 1 && int_FileDiffType <= 2)
+                {
+                    str_OutMsg = str_OutMsg + "配对" + str_CurrentPairName + "存在未完成的同步任务：" + str_FromFile + str_Direction + str_ToFile + "\n";
+                    //需要处理的目标文件夹不存在，需打印出来人手跟进
+                    if (!Directory.Exists(str_ToFileDir))
+                    {
+                        str_OutMsg = str_OutMsg + "目录" + str_ToFileDir + "不存在，请检查\n";
+                        continue;
+                    }
+                    //需要处理的目标文件夹和目标对象相同，即目标为文件夹，无需处理，跳过
+                    if (str_ToFileDir.Equals(str_ToFile))
+                    {
+                        continue;
+                    }
+
+                    if (File.Exists(str_ToFile) && !bl_IsDebugMode)
+                    {
+                        str_OutMsg = str_OutMsg + "删除未完成任务的目标文件：" + str_ToFile + "\n";
+                        File.Delete(str_ToFile);
+                        i_RevertedCount++;
+                    }
+                }
+
+                //仅针对DIFFTYPE=3~4（同步更改）失败的记录作处理，无法自动处理，需要手动处理
+                if (int_FileDiffType >= 3 && int_FileDiffType <= 4)
+                {
+                    str_OutMsg = str_OutMsg + "配对" + str_CurrentPairName + "存在未完成的同步任务：" + str_FromFile + str_Direction + str_ToFile + "，需手动处理\n";
+                    i_RevertedCount++;
+                }
+            }
+
+            if (!bl_IsDebugMode)
+            {
+                CleanSyncDetailRecord(str_PairName, false, out str_OutMsg2);
+                str_OutMsg += str_OutMsg2;
+            }
+
+            str_OutMsg = str_OutMsg + "清理完成" + (i_RevertedCount > 0 ? "，请按需手动处理上述未完成的同步任务" : String.Empty);
+            return i_RevertedCount > 0;
         }
         #endregion
     }

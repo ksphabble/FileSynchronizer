@@ -212,12 +212,13 @@ namespace FileSynchronizer
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
             string str_PairDir1BK = Path.Combine(str_PairDir1, str_FSBackup);
+            FileHelper.DeleteDirectoryOrFile(str_PairDir1BK, true);
 
-            DirectoryInfo directoryInfo1 = new DirectoryInfo(str_PairDir1BK);
-            if (directoryInfo1.Exists)
-            {
-                directoryInfo1.Delete(true);
-            }
+            //DirectoryInfo directoryInfo1 = new DirectoryInfo(str_PairDir1BK);
+            //if (directoryInfo1.Exists)
+            //{
+            //    directoryInfo1.Delete(true);
+            //}
 
             CalcBKSpace(str_PairDir1, str_PairDir2);
         }
@@ -231,12 +232,13 @@ namespace FileSynchronizer
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
             string str_PairDir2BK = Path.Combine(str_PairDir2, str_FSBackup);
+            FileHelper.DeleteDirectoryOrFile(str_PairDir2BK, true);
 
-            DirectoryInfo directoryInfo2 = new DirectoryInfo(str_PairDir2BK);
-            if (directoryInfo2.Exists)
-            {
-                directoryInfo2.Delete(true);
-            }
+            //DirectoryInfo directoryInfo2 = new DirectoryInfo(str_PairDir2BK);
+            //if (directoryInfo2.Exists)
+            //{
+            //    directoryInfo2.Delete(true);
+            //}
 
             CalcBKSpace(str_PairDir1, str_PairDir2);
         }

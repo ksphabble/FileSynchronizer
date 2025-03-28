@@ -35,6 +35,7 @@ namespace FileSynchronizer
             this.Text = String.Join("_Ver.", "FileSynchronizer", str_MainProgramVersion);
             cls_LogProgramFile.LogToCache = false;
             Control.CheckForIllegalCrossThreadCalls = false;
+            string str_ErrorMsg = String.Empty;
 
             //检查程序启动时是否自动最小化窗口
             if (cls_Global_Settings.MinWhenStart)
@@ -45,8 +46,14 @@ namespace FileSynchronizer
             btnAnalysis.Visible = cls_Global_Settings.DebugMode;
             btnTest.Visible = cls_Global_Settings.DebugMode;
 
+            cls_Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, cls_Global_Settings.DebugMode, out str_ErrorMsg);
+            if (!String.IsNullOrEmpty(str_ErrorMsg))
+            {
+                LogProgramMessage(str_ErrorMsg, true, true, 1);
+            }
+
             timer1_Tick(sender, e);
-            dataGridView1_CellClick(sender, new DataGridViewCellEventArgs(0, 0));
+            //dataGridView1_CellClick(sender, new DataGridViewCellEventArgs(0, 0));
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -89,9 +96,15 @@ namespace FileSynchronizer
 
         private void FileSynchronizer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cls_LogProgramFile.LogMsgFromCacheToFile();
+            string str_ErrorMsg = String.Empty;
+            cls_Files_InfoDB.CleanSyncDetailRecord(String.Empty, true, out str_ErrorMsg);
             cls_Files_InfoDB.FixDirPairStatus(false);
             cls_Files_InfoDB.CloseConnection();
+            if (!String.IsNullOrEmpty(str_ErrorMsg))
+            {
+                LogProgramMessage(str_ErrorMsg, true, true, 0);
+            }
+            cls_LogProgramFile.LogMsgFromCacheToFile();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -278,7 +291,7 @@ namespace FileSynchronizer
                 Parallel.ForEach(arr_PairInfor, (item) =>
                 {
                     string str_PairName = item.Split('|')[1];
-                    LogProgramMessage("开始自动同步配对（" + str_PairName + "）", true, true, 3);
+                    LogProgramMessage("开始自动同步配对（" + str_PairName + "）", true, true, 1);
                     DoDirPairOperation(str_PairName, false);
                 });
             }

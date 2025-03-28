@@ -104,7 +104,7 @@ namespace FileSynchronizer
         }
         #endregion
 
-        #region 公有方法
+        #region 私有方法
         /// <summary>
         /// 设置控件的最后同步时间和同步间隔
         /// </summary>
@@ -227,14 +227,6 @@ namespace FileSynchronizer
         }
 
         /// <summary>
-        /// 清空控件中的配对日志消息
-        /// </summary>
-        public void ClearPairLogs()
-        {
-            TxtPairLog.Clear();
-        }
-
-        /// <summary>
         /// 计算百分比并显示（分析数+同步数）
         /// </summary>
         private void CalPercentage()
@@ -255,18 +247,6 @@ namespace FileSynchronizer
             lblFileCountSync.Text = int_TotalFileSyncFound.ToString();
             lblAnalysisProgress.Text = string.Format("{0:p}", db_progrsss_Analysis);
             lblSyncProgress.Text = string.Format("{0:p}", db_progrsss_Sync);
-        }
-
-        /// <summary>
-        /// 进行分析、同步文件夹配对操作
-        /// </summary>
-        /// <param name="IsAnalysisOnly">是否仅进行分析操作，true表示仅分析，false表示分析+同步操作</param>
-        public void DoAnalysisSyncDirPair(bool IsAnalysisOnly)
-        {
-            threadOperation = new Thread(new ParameterizedThreadStart(AnalysisSyncDirPair));
-            threadOperation.Name = (IsAnalysisOnly ? "Click_Analysis" : "Click_Sync") + cls_Common_Constants.str_ThreadPrefix + PairName;
-            threadOperation.IsBackground = true;
-            threadOperation.Start(IsAnalysisOnly);
         }
 
         /// <summary>
@@ -334,6 +314,28 @@ namespace FileSynchronizer
                     ResetSyncLabels();
                 }
             }
+        }
+        #endregion
+
+        #region 公有方法
+        /// <summary>
+        /// 清空控件中的配对日志消息
+        /// </summary>
+        public void ClearPairLogs()
+        {
+            TxtPairLog.Clear();
+        }
+
+        /// <summary>
+        /// 进行分析、同步文件夹配对操作
+        /// </summary>
+        /// <param name="IsAnalysisOnly">是否仅进行分析操作，true表示仅分析，false表示分析+同步操作</param>
+        public void DoAnalysisSyncDirPair(bool IsAnalysisOnly)
+        {
+            threadOperation = new Thread(new ParameterizedThreadStart(AnalysisSyncDirPair));
+            threadOperation.Name = (IsAnalysisOnly ? "Click_Analysis" : "Click_Sync") + cls_Common_Constants.C_StrThreadPrefix + PairName;
+            threadOperation.IsBackground = true;
+            threadOperation.Start(IsAnalysisOnly);
         }
 
         public bool IsPairBusy(out PairStatus PairStatus)
@@ -410,7 +412,7 @@ namespace FileSynchronizer
         }
         #endregion
 
-        #region 控件的操作完成事件
+        #region 控件的操作事件
         public delegate void OperationDoneHandler(object sender);
         public event OperationDoneHandler OperationDone;
         public delegate void OperationStartedHandler(object sender);

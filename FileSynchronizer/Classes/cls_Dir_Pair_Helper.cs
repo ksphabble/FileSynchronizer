@@ -117,7 +117,7 @@ namespace FileSynchronizer
                 {
                     str_OutLogMsg = String.Empty;
                     str_FileFullName = directoryInfo.FullName;
-                    str_FileName = str_DirNameChar;
+                    str_FileName = C_StrDirNameChar;
                     str_FilePath = directoryInfo.FullName;
                     str_FileSize = "0";
                     str_FileMD5 = String.Empty;
@@ -125,7 +125,7 @@ namespace FileSynchronizer
                     bool bl_hitFilterRule = false;
 
                     //检查文件是否处于_FSBackup目录，如果存在则跳过
-                    if (str_FileFullName.Contains(str_FSBackup))
+                    if (str_FileFullName.Contains(C_StrFSBackup))
                     {
                         bl_hitFilterRule = true;
                     }
@@ -171,7 +171,7 @@ namespace FileSynchronizer
                     }
 
                     //绝对路径总长度超过260，系统无法处理，抛出信息后跳过
-                    if (str_FileFullName.Length > 260)
+                    if (str_FileFullName.Length > C_IMaxDirLengthWIN32)
                     {
                         string str_LogMsgC = "PAIR-ANALYSIS: " + str_PairName + " DIR1-Path length exceeds limit-Skip DIR: " + str_FileFullName;
                         string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
@@ -228,7 +228,7 @@ namespace FileSynchronizer
                     bool bl_hitFilterRule = false;
 
                     //检查文件是否处于_FSBackup目录，如果存在则跳过
-                    if (str_FileFullName.Contains(str_FSBackup))
+                    if (str_FileFullName.Contains(C_StrFSBackup))
                     {
                         bl_hitFilterRule = true;
                     }
@@ -274,7 +274,7 @@ namespace FileSynchronizer
                     }
 
                     //绝对路径总长度超过260，系统无法处理，抛出信息后跳过
-                    if (str_FileFullName.Length > 260)
+                    if (str_FileFullName.Length > C_IMaxDirLengthWIN32)
                     {
                         string str_LogMsgC = "PAIR-ANALYSIS: " + str_PairName + " DIR1-Path length exceeds limit-Skip File: " + str_FileFullName;
                         string str_LogMsgC_CN = "写入文件信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
@@ -359,7 +359,7 @@ namespace FileSynchronizer
                 }
 
                 //检查文件是否处于_FSBackup目录，如果存在则跳过
-                if (str_FileFullName.Contains(str_FSBackup))
+                if (str_FileFullName.Contains(C_StrFSBackup))
                 {
                     bl_hitFilterRule = true;
                 }
@@ -397,7 +397,7 @@ namespace FileSynchronizer
                     continue;
                 }
 
-                if (str_FileName.Equals(str_DirNameChar))
+                if (str_FileName.Equals(C_StrDirNameChar))
                 {
                     //检查DIR1根目录是否存在，若不存在，则提示出错并停止同步
                     if (!Directory.Exists(str_Dir1Path))
@@ -468,7 +468,7 @@ namespace FileSynchronizer
                 {
                     str_OutLogMsg = String.Empty;
                     str_FileFullName = directoryInfo.FullName;
-                    str_FileName = str_DirNameChar;
+                    str_FileName = C_StrDirNameChar;
                     str_FilePath = directoryInfo.FullName;
                     str_FileSize = "0";
                     str_FileMD5 = String.Empty;
@@ -476,7 +476,7 @@ namespace FileSynchronizer
                     bool bl_hitFilterRule = false;
 
                     //检查文件是否处于_FSBackup目录，如果存在则跳过
-                    if (str_FileFullName.Contains(str_FSBackup))
+                    if (str_FileFullName.Contains(C_StrFSBackup))
                     {
                         bl_hitFilterRule = true;
                     }
@@ -522,7 +522,7 @@ namespace FileSynchronizer
                     }
 
                     //绝对路径总长度超过260，系统无法处理，抛出信息后跳过
-                    if (str_FileFullName.Length > 260)
+                    if (str_FileFullName.Length > C_IMaxDirLengthWIN32)
                     {
                         string str_LogMsgC = "PAIR-ANALYSIS: " + str_PairName + " DIR2-Path length exceeds limit-Skip DIR: " + str_FileFullName;
                         string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
@@ -579,7 +579,7 @@ namespace FileSynchronizer
                     bool bl_hitFilterRule = false;
 
                     //检查文件是否处于_FSBackup目录，如果存在则跳过
-                    if (str_FileFullName.Contains(str_FSBackup))
+                    if (str_FileFullName.Contains(C_StrFSBackup))
                     {
                         bl_hitFilterRule = true;
                     }
@@ -625,7 +625,7 @@ namespace FileSynchronizer
                     }
 
                     //绝对路径总长度超过260，系统无法处理，抛出信息后跳过
-                    if (str_FileFullName.Length > 260)
+                    if (str_FileFullName.Length > C_IMaxDirLengthWIN32)
                     {
                         string str_LogMsgC = "PAIR-ANALYSIS: " + str_PairName + " DIR2-Path length exceeds limit-Skip File: " + str_FileFullName;
                         string str_LogMsgC_CN = "写入文件信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
@@ -710,7 +710,7 @@ namespace FileSynchronizer
                 }
 
                 //检查文件是否处于_FSBackup目录，如果存在则跳过
-                if (str_FileFullName.Contains(str_FSBackup))
+                if (str_FileFullName.Contains(C_StrFSBackup))
                 {
                     bl_hitFilterRule = true;
                 }
@@ -748,7 +748,7 @@ namespace FileSynchronizer
                     continue;
                 }
 
-                if (str_FileName.Equals(str_DirNameChar))
+                if (str_FileName.Equals(C_StrDirNameChar))
                 {
                     //检查DIR2根目录是否存在，若不存在，则提示出错并停止同步
                     if (!Directory.Exists(str_Dir2Path))
@@ -864,7 +864,7 @@ namespace FileSynchronizer
 
                         #region 排除文件、目录
                         //检查文件是否处于_FSBackup目录，如果存在则跳过
-                        if (str_FromFile.Contains(str_FSBackup))
+                        if (str_FromFile.Contains(C_StrFSBackup))
                         {
                             LogPairMessage(str_PairName, "Exclude DIR/File: " + str_FromFile + " due to backup folder", true, true, 3);
                             bl_hitFilterRule = true;
@@ -887,7 +887,7 @@ namespace FileSynchronizer
                         //DIR1中有DIR2中没有的，DIFFTYPE=1，需要从DIR1同步至DIR2
                         if (int_FileDiffType == 1)
                         {
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
                                 LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
@@ -901,7 +901,7 @@ namespace FileSynchronizer
                         //DIR2中有DIR1中没有的，DIFFTYPE=2，需要从DIR2同步至DIR1
                         if (int_FileDiffType == 2)
                         {
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
                                 LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
@@ -916,7 +916,7 @@ namespace FileSynchronizer
                         if (int_FileDiffType == 3)
                         {
                             //文件夹目录，跳过
-                            if (str_FileName.Equals(str_DirNameChar)) continue;
+                            if (str_FileName.Equals(C_StrDirNameChar)) continue;
 
                             str_LogMsg = "文件: " + str_FromFile + " -U-> " + str_ToFile;
                             LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
@@ -925,7 +925,7 @@ namespace FileSynchronizer
                         if (int_FileDiffType == 4)
                         {
                             //文件夹目录，跳过
-                            if (str_FileName.Equals(str_DirNameChar)) continue;
+                            if (str_FileName.Equals(C_StrDirNameChar)) continue;
 
                             str_LogMsg = "文件: " + str_ToFile + " <-U- " + str_FromFile;
                             LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
@@ -933,7 +933,7 @@ namespace FileSynchronizer
                         //DIR1和DIR2都有而且MD5值相同，但是DIR1中文件状态是'DL'，DIFFTYPE=5，需要从DIR2中删除
                         if (int_FileDiffType == 5)
                         {
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
                                 LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
@@ -947,7 +947,7 @@ namespace FileSynchronizer
                         //DIR1和DIR2都有而且MD5值相同，但是DIR2中文件状态是'DL'，DIFFTYPE=6，需要从DIR1中删除
                         if (int_FileDiffType == 6)
                         {
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
                                 LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
@@ -1019,6 +1019,7 @@ namespace FileSynchronizer
             LogPairMessage(str_PairName, "开始同步配对（" + str_PairName + "）", true, true, 2);
             OnPairStatusChange(PairStatus.SYNC);
             string str_OutLogMsg = String.Empty;
+            string str_SyncOutput = String.Empty;
             string[] arr_FilterRule = String.IsNullOrEmpty(str_FilterRule) ? new string[] { } : str_FilterRule.Split(',');
             DirectoryInfo directoryInfo1 = new DirectoryInfo(str_Dir1Path);
             string str_Dir1TableName = str_PairName + "_DIR1_" + directoryInfo1.Name;
@@ -1058,7 +1059,7 @@ namespace FileSynchronizer
 
                         #region 排除文件、目录
                         //检查文件是否处于_FSBackup目录，如果存在则跳过
-                        if (str_FromFile.Contains(str_FSBackup))
+                        if (str_FromFile.Contains(C_StrFSBackup))
                         {
                             //更新同步进度
                             OnAdd1Sync(int_TotalChngCount);
@@ -1081,10 +1082,7 @@ namespace FileSynchronizer
                         {
                             int_SyncedCount++;
                             bl_SyncRecordDone = true;
-                            if (File.Exists(str_FromFileTemp))
-                            {
-                                File.Delete(str_FromFileTemp);
-                            }
+                            FileHelper.DeleteDirectoryOrFile(str_FromFileTemp);
                             LogPairMessage(str_PairName, "PAIR-SYNC: " + str_PairName + " FilterRule-Exclude Item: " + str_FileFromPath + " due to filter rule", true, true, 4);
                             continue;
                         }
@@ -1099,10 +1097,10 @@ namespace FileSynchronizer
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(str_FileToPath);
                                 directoryInfo.Create();
-                                cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, str_DirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_OutLogMsg);
+                                cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, C_StrDirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_OutLogMsg);
                             }
 
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "同步目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
                                 OnSetOngoingItem(str_LogMsg);
@@ -1114,6 +1112,10 @@ namespace FileSynchronizer
                                 str_LogMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
                                 OnSetOngoingItem(str_LogMsg);
                                 LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                                {
+                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                }
                                 if (!cls_Global_Settings.DebugMode)
                                 {
                                     if (File.Exists(str_FromFileTemp) || File.Exists(str_FromFile))
@@ -1131,6 +1133,13 @@ namespace FileSynchronizer
                                             if (!cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutLogMsg))
                                             {
                                                 LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
+                                            }
+                                            else
+                                            {
+                                                if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                                {
+                                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                                }
                                             }
                                         }
                                     }
@@ -1151,10 +1160,10 @@ namespace FileSynchronizer
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(str_FileToPath);
                                 directoryInfo.Create();
-                                cls_Files_InfoDB.AddFileInfor(str_Dir1TableName, str_DirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_OutLogMsg);
+                                cls_Files_InfoDB.AddFileInfor(str_Dir1TableName, C_StrDirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_OutLogMsg);
                             }
 
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "同步目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
                                 OnSetOngoingItem(str_LogMsg);
@@ -1166,6 +1175,10 @@ namespace FileSynchronizer
                                 str_LogMsg = "同步文件: " + str_ToFile + " <-A- " + str_FromFile;
                                 OnSetOngoingItem(str_LogMsg);
                                 LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                                {
+                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                }
                                 if (!cls_Global_Settings.DebugMode)
                                 {
                                     if (File.Exists(str_FromFileTemp) || File.Exists(str_FromFile))
@@ -1184,6 +1197,13 @@ namespace FileSynchronizer
                                             {
                                                 LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
                                             }
+                                            else
+                                            {
+                                                if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                                {
+                                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                                }
+                                            }
                                         }
                                     }
                                     else
@@ -1199,7 +1219,7 @@ namespace FileSynchronizer
                         if (int_FileDiffType == 3)
                         {
                             //文件夹目录，跳过
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 bl_SyncRecordDone = true;
                                 continue;
@@ -1208,6 +1228,10 @@ namespace FileSynchronizer
                             str_LogMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
                             OnSetOngoingItem(str_LogMsg);
                             LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                            {
+                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                            }
                             if (!cls_Global_Settings.DebugMode)
                             {
                                 if (File.Exists(str_FromFileTemp) || File.Exists(str_FromFile))
@@ -1230,6 +1254,13 @@ namespace FileSynchronizer
                                         {
                                             LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
                                         }
+                                        else
+                                        {
+                                            if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                            {
+                                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                            }
+                                        }
                                     }
                                 }
                                 else
@@ -1244,7 +1275,7 @@ namespace FileSynchronizer
                         if (int_FileDiffType == 4)
                         {
                             //文件夹目录，跳过
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 bl_SyncRecordDone = true;
                                 continue;
@@ -1253,6 +1284,10 @@ namespace FileSynchronizer
                             str_LogMsg = "同步文件: " + str_ToFile + " <-U- " + str_FromFile;
                             OnSetOngoingItem(str_LogMsg);
                             LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                            {
+                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                            }
                             if (!cls_Global_Settings.DebugMode)
                             {
                                 if (File.Exists(str_FromFileTemp) || File.Exists(str_FromFile))
@@ -1277,6 +1312,13 @@ namespace FileSynchronizer
                                                 LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
                                             }
                                         }
+                                        else
+                                        {
+                                            if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                            {
+                                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                            }
+                                        }
                                     }
                                 }
                                 else
@@ -1290,7 +1332,7 @@ namespace FileSynchronizer
                         //DIR1和DIR2都有而且MD5值相同，但是DIR1中文件状态是'DL'，DIFFTYPE=5，需要从DIR2中删除
                         if (int_FileDiffType == 5)
                         {
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "同步目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
                                 OnSetOngoingItem(str_LogMsg);
@@ -1305,7 +1347,7 @@ namespace FileSynchronizer
                                         }
                                         else
                                         {
-                                            Directory.Delete(str_FileToPath, true);
+                                            FileHelper.DeleteDirectoryOrFile(str_FileToPath, true);
                                         }
                                     }
                                     if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, str_PairID, out str_OutLogMsg))
@@ -1330,7 +1372,7 @@ namespace FileSynchronizer
                                         }
                                         else
                                         {
-                                            File.Delete(str_ToFile);
+                                            FileHelper.DeleteDirectoryOrFile(str_ToFile);
                                         }
                                     }
                                     if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, str_PairID, out str_OutLogMsg))
@@ -1344,7 +1386,7 @@ namespace FileSynchronizer
                         //DIR1和DIR2都有而且MD5值相同，但是DIR2中文件状态是'DL'，DIFFTYPE=6，需要从DIR1中删除
                         if (int_FileDiffType == 6)
                         {
-                            if (str_FileName.Equals(str_DirNameChar))
+                            if (str_FileName.Equals(C_StrDirNameChar))
                             {
                                 str_LogMsg = "同步目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
                                 OnSetOngoingItem(str_LogMsg);
@@ -1359,7 +1401,7 @@ namespace FileSynchronizer
                                         }
                                         else
                                         {
-                                            Directory.Delete(str_FileToPath, true);
+                                            FileHelper.DeleteDirectoryOrFile(str_FileToPath, true);
                                         }
                                     }
                                     if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, str_PairID, out str_OutLogMsg))
@@ -1384,7 +1426,7 @@ namespace FileSynchronizer
                                         }
                                         else
                                         {
-                                            File.Delete(str_ToFile);
+                                            FileHelper.DeleteDirectoryOrFile(str_ToFile);
                                         }
                                     }
                                     if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, str_PairID, out str_OutLogMsg))
@@ -1454,6 +1496,15 @@ namespace FileSynchronizer
                 LogPairMessage(str_PairName, "Hard Delete DIR/FILE records whose status is 'DL'", true, true, 4);
                 cls_Files_InfoDB.DelFileInforAllHard(str_Dir1TableName, str_PairID);
                 cls_Files_InfoDB.DelFileInforAllHard(str_Dir2TableName, str_PairID);
+
+                //根据最大保留的backup数调整
+                LogPairMessage(str_PairName, "Delete backup DIR according to the Max. count of backup keep", true, true, 4);
+                ClearBackupMaxKeep(str_Dir1Path, out str_ExceptionFile);
+                ClearBackupMaxKeep(str_Dir2Path, out str_ExceptionFile);
+                if (!String.IsNullOrEmpty(str_ExceptionFile))
+                {
+                    LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
+                }
             }
 
             if (int_SyncedCount.Equals(int_TotalChngCount))
@@ -1663,22 +1714,31 @@ namespace FileSynchronizer
         private string CalcFileMD5withLocal(string str_FileFullName, bool bl_IsForceSameFile, out string str_OutLogMsg)
         {
             str_OutLogMsg = String.Empty;
-            string str_NewFileFullPath = bl_IsForceSameFile ? str_FileFullName : GetTempFileNameWithLocal(str_FileFullName, out str_OutLogMsg);
 
-            if (!String.IsNullOrEmpty(str_NewFileFullPath))
+            try
             {
-                if (!String.Equals(str_FileFullName, str_NewFileFullPath))
+                string str_NewFileFullPath = bl_IsForceSameFile ? str_FileFullName : GetTempFileNameWithLocal(str_FileFullName, out str_OutLogMsg);
+
+                if (!String.IsNullOrEmpty(str_NewFileFullPath))
                 {
-                    if (!FileHelper.CopyOrMoveFile(str_FileFullName, str_NewFileFullPath, false, true))
+                    if (!String.Equals(str_FileFullName, str_NewFileFullPath))
                     {
-                        return String.Empty;
+                        if (!FileHelper.CopyOrMoveFile(str_FileFullName, str_NewFileFullPath, false, true))
+                        {
+                            return String.Empty;
+                        }
                     }
-                }
 
-                return CommonFunctions.MD5Encrypt(str_NewFileFullPath, out str_OutLogMsg);
+                    return CommonFunctions.MD5Encrypt(str_NewFileFullPath, out str_OutLogMsg);
+                }
+                else
+                {
+                    return String.Empty;
+                }
             }
-            else
+            catch (Exception ex)
             {
+                str_OutLogMsg = ex.ToString();
                 return String.Empty;
             }
         }
@@ -1710,7 +1770,7 @@ namespace FileSynchronizer
 
         private void MoveFileToBackup(string str_RootDirPath, string str_FileFullPath, bool bl_IsDirectory, string str_Timestamp)
         {
-            string str_BackupFolder = Path.Combine(str_RootDirPath, str_FSBackup);
+            string str_BackupFolder = Path.Combine(str_RootDirPath, C_StrFSBackup);
             string str_BackupFolder_WithTime = Path.Combine(str_BackupFolder, str_Timestamp);
             string str_TargetFilePath = str_FileFullPath.Replace(str_RootDirPath, str_BackupFolder_WithTime);
 
@@ -1729,16 +1789,28 @@ namespace FileSynchronizer
             {
                 FileHelper.CopyOrMoveDirectory(str_FileFullPath, str_TargetFilePath, true, true);
             }
+        }
 
-            DirectoryInfo[] directories = (new DirectoryInfo(str_BackupFolder).GetDirectories("*", SearchOption.TopDirectoryOnly)).Reverse().ToArray();
-            directories.Reverse();
-            for (int i = 0; i < directories.Length; i++)
+        private void ClearBackupMaxKeep(string str_RootDirPath, out string str_ErrorMsg)
+        {
+            str_ErrorMsg = String.Empty;
+            string str_BackupFolder = Path.Combine(str_RootDirPath, C_StrFSBackup);
+
+            try
             {
-                int i_CurrentIdx = i + 1;
-                if (i_CurrentIdx > cls_Global_Settings.MaxKeepBackup)
+                DirectoryInfo[] directories = (new DirectoryInfo(str_BackupFolder).GetDirectories("*", SearchOption.TopDirectoryOnly)).OrderByDescending(f => f.Name).ToArray();
+                for (int i = 0; i < directories.Length; i++)
                 {
-                    directories[i].Delete(true);
+                    int i_CurrentIdx = i + 1;
+                    if (i_CurrentIdx > cls_Global_Settings.MaxKeepBackup)
+                    {
+                        FileHelper.DeleteDirectoryOrFile(str_RootDirPath, true);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                str_ErrorMsg = ex.Message;
             }
         }
 
