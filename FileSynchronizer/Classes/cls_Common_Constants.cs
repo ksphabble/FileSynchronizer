@@ -8,11 +8,11 @@ namespace FileSynchronizer
 {
     public static class cls_Common_Constants
     {
-        public const string C_StrFSBackup = @"_FSBackup";
-        public const string C_StrDirNameChar = "~";
-        public const string C_StrThreadPrefix = @"->";
-        public const Int32 C_IMaxDirLengthWIN32 = 260;
-        public const string C_StrExtMaxDirLengthPrefix = @"\\?\";
+        public const string c_FSBackup_Str = @"_FSBackup";
+        public const string c_DirNameChar_Str = "~";
+        public const string c_ThreadPrefix_Str = @"->";
+        public const Int32 c_MaxDirLengthWIN32_Int = 260;
+        public const string c_ExtMaxDirLengthPrefix_Str = @"\\?\";
 
         public enum PairStatus
         {

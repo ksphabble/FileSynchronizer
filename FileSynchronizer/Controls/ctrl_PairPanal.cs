@@ -333,7 +333,7 @@ namespace FileSynchronizer
         public void DoAnalysisSyncDirPair(bool IsAnalysisOnly)
         {
             threadOperation = new Thread(new ParameterizedThreadStart(AnalysisSyncDirPair));
-            threadOperation.Name = (IsAnalysisOnly ? "Click_Analysis" : "Click_Sync") + cls_Common_Constants.C_StrThreadPrefix + PairName;
+            threadOperation.Name = (IsAnalysisOnly ? "Click_Analysis" : "Click_Sync") + cls_Common_Constants.c_ThreadPrefix_Str + PairName;
             threadOperation.IsBackground = true;
             threadOperation.Start(IsAnalysisOnly);
         }

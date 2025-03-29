@@ -46,8 +46,7 @@ namespace FileSynchronizer
             btnAnalysis.Visible = cls_Global_Settings.DebugMode;
             btnTest.Visible = cls_Global_Settings.DebugMode;
 
-            cls_Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, cls_Global_Settings.DebugMode, out str_ErrorMsg);
-            if (!String.IsNullOrEmpty(str_ErrorMsg))
+            if (!cls_Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, cls_Global_Settings.DebugMode, out str_ErrorMsg))
             {
                 LogProgramMessage(str_ErrorMsg, true, true, 1);
             }
@@ -375,7 +374,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, 5);
+                LogProgramMessage(ex.Message, true, true, 5, true);
             }
         }
 
@@ -468,9 +467,14 @@ namespace FileSynchronizer
                 tabControl1.Controls[i].Dispose();
             }
 
-            if (dt_DirPair == null || dt_DirPair.Rows.Count.Equals(0)) return;
-            DataTable dt_Temp = dt_DirPair.Copy();
+            if (dt_DirPair == null) return;
+            if (dt_DirPair.Rows.Count.Equals(0))
+            {
+                LogProgramMessage("没有找到任何配对信息，请先到“程序-管理目录配对”窗口添加配对", true, true, 1);
+                return;
+            }
 
+            DataTable dt_Temp = dt_DirPair.Copy();
             foreach (DataRow dataRow in dt_Temp.Rows)
             {
                 string str_PairID = dataRow.ItemArray[0].ToString();

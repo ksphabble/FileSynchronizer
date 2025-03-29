@@ -865,7 +865,7 @@ namespace FileSynchronizer
             }
 
             str_OutMsg = str_OutMsg + "清理完成" + (i_RevertedCount > 0 ? "，请按需手动处理上述未完成的同步任务" : String.Empty);
-            return i_RevertedCount > 0;
+            return i_RevertedCount == 0;
         }
         #endregion
     }
