@@ -13,6 +13,7 @@ namespace FileSynchronizer
         public const string c_ThreadPrefix_Str = @"->";
         public const Int32 c_MaxDirLengthWIN32_Int = 260;
         public const string c_ExtMaxDirLengthPrefix_Str = @"\\?\";
+        public const string c_TempUpdFileExt_Str = @".tmp";
 
         public enum PairStatus
         {

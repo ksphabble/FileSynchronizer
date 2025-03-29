@@ -5,6 +5,8 @@ using System.Data.SQLite;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Net.WebRequestMethods;
+using static FileSynchronizer.cls_Common_Constants;
 
 namespace FileSynchronizer
 {
@@ -53,12 +55,12 @@ namespace FileSynchronizer
         {
             //首先检查数据库文件是否存在，并确定数据库类型（顺序：SQLITE->ACCESS）
             m_DBType = cls_SQLBuilder.DATABASE_TYPE.NONE;
-            if (File.Exists(cls_Files_InfoDB_SQLITE.DBFileName))
+            if (System.IO.File.Exists(cls_Files_InfoDB_SQLITE.DBFileName))
             {
                 m_DBType = cls_SQLBuilder.DATABASE_TYPE.SQLITE;
                 m_DBDateTimeFormat = cls_Files_InfoDB_SQLITE.DBDateTimeFormat;
             }
-            else if (File.Exists(cls_Files_InfoDB_ACCESS.DBFileName))
+            else if (System.IO.File.Exists(cls_Files_InfoDB_ACCESS.DBFileName))
             {
                 m_DBType = cls_SQLBuilder.DATABASE_TYPE.ACCESS;
                 m_DBDateTimeFormat = cls_Files_InfoDB_ACCESS.DBDateTimeFormat;
@@ -126,7 +128,7 @@ namespace FileSynchronizer
 
             try
             {
-                File.Copy(str_CurrentDBFile, str_NewDBFile);
+                System.IO.File.Copy(str_CurrentDBFile, str_NewDBFile);
                 return true;
             }
             catch (Exception)
@@ -192,7 +194,7 @@ namespace FileSynchronizer
             else
             {
                 str_OutMsg = "全局设置获取失败！";
-                File.Delete(str_NewDBFileName);
+                System.IO.File.Delete(str_NewDBFileName);
                 return false;
             }
 
@@ -296,7 +298,7 @@ namespace FileSynchronizer
             else
             {
                 str_OutMsg = "配对获取失败！";
-                File.Delete(str_NewDBFileName);
+                System.IO.File.Delete(str_NewDBFileName);
                 return false;
             }
 
@@ -314,13 +316,13 @@ namespace FileSynchronizer
                 Thread.Sleep(1000);
                 if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
                 {
-                    if (File.Exists(cls_Files_InfoDB_ACCESS.DBFileName))
-                        File.Delete(cls_Files_InfoDB_ACCESS.DBFileName);
+                    if (System.IO.File.Exists(cls_Files_InfoDB_ACCESS.DBFileName))
+                        System.IO.File.Delete(cls_Files_InfoDB_ACCESS.DBFileName);
                 }
                 else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
                 {
-                    if (File.Exists(cls_Files_InfoDB_SQLITE.DBFileName))
-                        File.Delete(cls_Files_InfoDB_SQLITE.DBFileName);
+                    if (System.IO.File.Exists(cls_Files_InfoDB_SQLITE.DBFileName))
+                        System.IO.File.Delete(cls_Files_InfoDB_SQLITE.DBFileName);
                 }
 
                 return true;
@@ -826,8 +828,8 @@ namespace FileSynchronizer
                         break;
                 }
 
-                //仅针对DIFFTYPE=1~2（同步增加）失败的记录作处理
-                if (int_FileDiffType >= 1 && int_FileDiffType <= 2)
+                //仅针对DIFFTYPE=1~2（同步增加）和DIFFTYPE=3~4（同步更改）的未完成记录作处理
+                if (int_FileDiffType >= 1 && int_FileDiffType <= 4)
                 {
                     str_OutMsg = str_OutMsg + "配对" + str_CurrentPairName + "存在未完成的同步任务：" + str_FromFile + str_Direction + str_ToFile + "\n";
                     //需要处理的目标文件夹不存在，需打印出来人手跟进
@@ -842,19 +844,18 @@ namespace FileSynchronizer
                         continue;
                     }
 
-                    if (File.Exists(str_ToFile) && !bl_IsDebugMode)
+                    //如果是DIFFTYPE=3~4（同步更改）的记录，则尝试删除带有“.tmp”后缀的临时文件，参考FileHelper.CopyOrMoveFile方法
+                    if (int_FileDiffType >= 3 && int_FileDiffType <= 4)
                     {
-                        str_OutMsg = str_OutMsg + "删除未完成任务的目标文件：" + str_ToFile + "\n";
-                        File.Delete(str_ToFile);
-                        i_RevertedCount++;
+                        str_ToFile += c_TempUpdFileExt_Str;
                     }
-                }
 
-                //仅针对DIFFTYPE=3~4（同步更改）失败的记录作处理，无法自动处理，需要手动处理
-                if (int_FileDiffType >= 3 && int_FileDiffType <= 4)
-                {
-                    str_OutMsg = str_OutMsg + "配对" + str_CurrentPairName + "存在未完成的同步任务：" + str_FromFile + str_Direction + str_ToFile + "，需手动处理\n";
+                    str_OutMsg = str_OutMsg + "删除未完成任务的目标文件：" + str_ToFile + "\n";
                     i_RevertedCount++;
+                    if (System.IO.File.Exists(str_ToFile) && !bl_IsDebugMode)
+                    {
+                        System.IO.File.Delete(str_ToFile);
+                    }
                 }
             }
 
