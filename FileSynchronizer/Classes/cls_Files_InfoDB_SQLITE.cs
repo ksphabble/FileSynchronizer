@@ -17,7 +17,7 @@ namespace FileSynchronizer
         #region Variables
         private static string m_DBFileName = Path.Combine(Application.StartupPath, @"FileSynchronizer_DB.sqlite");
         private static string DBlocation_SQLITE = @"Data Source=" + m_DBFileName + @";Version=3;Max Pool Size=10;";
-        private static string DBlocation_SQLITE_Migra = @"Data Source=.\FileSynchronizer_DB.sqlite";
+        //private static string DBlocation_SQLITE_Migra = @"Data Source=.\FileSynchronizer_DB.sqlite";
         private static SQLiteConnection dbconn_SQLITE; //数据库连接
         public const string DBDateTimeFormat = @"yyyy-MM-dd HH:mm:ss";
         public static string DBFileName { get => m_DBFileName; }
@@ -368,7 +368,7 @@ namespace FileSynchronizer
                 //dbconn.Close();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //dbconn.Close();
                 return false;
@@ -427,7 +427,7 @@ namespace FileSynchronizer
 
                 return dt;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -592,7 +592,7 @@ namespace FileSynchronizer
                 SQLiteCommand cmd = new SQLiteCommand(sql_upd, dbconn_SQLITE);
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }

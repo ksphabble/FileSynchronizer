@@ -1018,8 +1018,6 @@ namespace FileSynchronizer
             #region Define Varibles
             LogPairMessage(str_PairName, "开始同步配对（" + str_PairName + "）", true, true, 2);
             OnPairStatusChange(PairStatus.SYNC);
-            string str_OutLogMsg = String.Empty;
-            string str_SyncOutput = String.Empty;
             string[] arr_FilterRule = String.IsNullOrEmpty(str_FilterRule) ? new string[] { } : str_FilterRule.Split(',');
             DirectoryInfo directoryInfo1 = new DirectoryInfo(str_Dir1Path);
             string str_Dir1TableName = str_PairName + "_DIR1_" + directoryInfo1.Name;
@@ -1029,6 +1027,7 @@ namespace FileSynchronizer
             int int_SyncedCount = 0;
             string str_ExceptionFile = String.Empty;
             string str_SyncTimestamp = DateTime.Now.ToLocalTime().ToString("yyyyMMdd_HHmmss");
+            bool bExceptionFound = false;
             #endregion
 
             foreach (DataRow dataRow in TableFileDiff.Rows)
@@ -1041,7 +1040,8 @@ namespace FileSynchronizer
                     {
                         #region Define Varibles
                         int_TrySyncCount++;
-                        string str_LogMsg = String.Empty;
+                        string str_OngoingRecMsg = String.Empty;
+                        string str_DatabaseErrorMsg = String.Empty;
                         string str_FileName = dataRow.ItemArray[0].ToString();
                         string str_FileFromPath = dataRow.ItemArray[1].ToString();
                         string str_FileToPath = dataRow.ItemArray[2].ToString();
@@ -1050,11 +1050,11 @@ namespace FileSynchronizer
                         string str_FileSize = dataRow.ItemArray[5].ToString();
                         int int_FileDiffType = int.Parse(dataRow.ItemArray[6].ToString());
                         string str_FromFile = Path.Combine(str_FileFromPath, str_FileName);
-                        string str_FromFileTemp = GetTempFileNameWithLocal(str_FromFile, out str_LogMsg);
+                        string str_FromFileTemp = GetTempFileNameWithLocal(str_FromFile, out str_DatabaseErrorMsg);
                         string str_ToFile = Path.Combine(str_FileToPath, str_FileName);
                         string str_FileID = dataRow.ItemArray[7].ToString();
                         bool bl_hitFilterRule = false;
-                        str_ExceptionFile = "文件：(" + str_FileName + ")从<" + str_FileFromPath + ">至<" + str_FileToPath + ">发生异常";
+                        str_ExceptionFile = "同步" + (str_FileName.Equals(C_StrDirNameChar) ? "目录" : "文件") + "：(" + str_FileName + ")从<" + str_FileFromPath + ">至<" + str_FileToPath + ">发生异常：";
                         #endregion
 
                         #region 排除文件、目录
@@ -1097,24 +1097,24 @@ namespace FileSynchronizer
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(str_FileToPath);
                                 directoryInfo.Create();
-                                cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, C_StrDirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_OutLogMsg);
+                                cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, C_StrDirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_DatabaseErrorMsg);
                             }
 
                             if (str_FileName.Equals(C_StrDirNameChar))
                             {
-                                str_LogMsg = "同步目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                str_OngoingRecMsg = "同步目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
                                 bl_SyncRecordDone = true;
                             }
                             else
                             {
-                                str_LogMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
-                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                                str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
+                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                                 }
                                 if (!cls_Global_Settings.DebugMode)
                                 {
@@ -1130,23 +1130,23 @@ namespace FileSynchronizer
                                         }
                                         if (bl_SyncRecordDone)
                                         {
-                                            if (!cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutLogMsg))
+                                            if (!cls_Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
+                                                LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 1);
                                             }
                                             else
                                             {
-                                                if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                                if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                                 {
-                                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                                                 }
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        str_LogMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                        LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
+                                        str_OngoingRecMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
+                                        LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 1);
                                         bl_SyncRecordDone = true;
                                     }
                                 }
@@ -1160,24 +1160,24 @@ namespace FileSynchronizer
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(str_FileToPath);
                                 directoryInfo.Create();
-                                cls_Files_InfoDB.AddFileInfor(str_Dir1TableName, C_StrDirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_OutLogMsg);
+                                cls_Files_InfoDB.AddFileInfor(str_Dir1TableName, C_StrDirNameChar, str_FileToPath, "0", String.Empty, directoryInfo.LastWriteTime.ToString(cls_Files_InfoDB.DBDateTimeFormat), str_PairID, out str_DatabaseErrorMsg);
                             }
 
                             if (str_FileName.Equals(C_StrDirNameChar))
                             {
-                                str_LogMsg = "同步目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                str_OngoingRecMsg = "同步目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
                                 bl_SyncRecordDone = true;
                             }
                             else
                             {
-                                str_LogMsg = "同步文件: " + str_ToFile + " <-A- " + str_FromFile;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
-                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                                str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-A- " + str_FromFile;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
+                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                                 }
                                 if (!cls_Global_Settings.DebugMode)
                                 {
@@ -1193,23 +1193,23 @@ namespace FileSynchronizer
                                         }
                                         if (bl_SyncRecordDone)
                                         {
-                                            if (!cls_Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutLogMsg))
+                                            if (!cls_Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
+                                                LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 1);
                                             }
                                             else
                                             {
-                                                if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                                if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                                 {
-                                                    LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                                                 }
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        str_LogMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                        LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
+                                        str_OngoingRecMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
+                                        LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 1);
                                         bl_SyncRecordDone = true;
                                     }
                                 }
@@ -1225,12 +1225,12 @@ namespace FileSynchronizer
                                 continue;
                             }
 
-                            str_LogMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
-                            OnSetOngoingItem(str_LogMsg);
-                            LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
-                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                            str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
+                            OnSetOngoingItem(str_OngoingRecMsg);
+                            LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
+                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                             {
-                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                             }
                             if (!cls_Global_Settings.DebugMode)
                             {
@@ -1250,23 +1250,23 @@ namespace FileSynchronizer
                                     }
                                     if (bl_SyncRecordDone)
                                     {
-                                        if (!cls_Files_InfoDB.UpdFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutLogMsg))
+                                        if (!cls_Files_InfoDB.UpdFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
+                                            LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 1);
                                         }
                                         else
                                         {
-                                            if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                            if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                                LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                                             }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    str_LogMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                    LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
+                                    str_OngoingRecMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
+                                    LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 1);
                                     bl_SyncRecordDone = true;
                                 }
                             }
@@ -1281,12 +1281,12 @@ namespace FileSynchronizer
                                 continue;
                             }
 
-                            str_LogMsg = "同步文件: " + str_ToFile + " <-U- " + str_FromFile;
-                            OnSetOngoingItem(str_LogMsg);
-                            LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
-                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_SyncOutput))
+                            str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-U- " + str_FromFile;
+                            OnSetOngoingItem(str_OngoingRecMsg);
+                            LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
+                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                             {
-                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                             }
                             if (!cls_Global_Settings.DebugMode)
                             {
@@ -1306,25 +1306,25 @@ namespace FileSynchronizer
                                     }
                                     if (bl_SyncRecordDone)
                                     {
-                                        if (!cls_Files_InfoDB.UpdFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutLogMsg))
+                                        if (!cls_Files_InfoDB.UpdFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_DatabaseErrorMsg))
                                         {
                                             {
-                                                LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 1);
+                                                LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 1);
                                             }
                                         }
                                         else
                                         {
-                                            if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_SyncOutput))
+                                            if (!cls_Files_InfoDB.UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(str_PairName, str_SyncOutput, true, true, 3);
+                                                LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
                                             }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    str_LogMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                    LogPairMessage(str_PairName, str_LogMsg, true, true, 1);
+                                    str_OngoingRecMsg = "文件" + (cls_Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
+                                    LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 1);
                                     bl_SyncRecordDone = true;
                                 }
                             }
@@ -1334,9 +1334,9 @@ namespace FileSynchronizer
                         {
                             if (str_FileName.Equals(C_StrDirNameChar))
                             {
-                                str_LogMsg = "同步目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                str_OngoingRecMsg = "同步目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
                                 if (!cls_Global_Settings.DebugMode)
                                 {
                                     if (Directory.Exists(str_FileToPath))
@@ -1350,18 +1350,18 @@ namespace FileSynchronizer
                                             FileHelper.DeleteDirectoryOrFile(str_FileToPath, true);
                                         }
                                     }
-                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, str_PairID, out str_OutLogMsg))
+                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, str_PairID, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 3);
+                                        LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 3);
                                     }
                                     bl_SyncRecordDone = true;
                                 }
                             }
                             else
                             {
-                                str_LogMsg = "同步文件: " + str_FromFile + " -X-> " + str_ToFile;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                str_OngoingRecMsg = "同步文件: " + str_FromFile + " -X-> " + str_ToFile;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
                                 if (!cls_Global_Settings.DebugMode)
                                 {
                                     if (File.Exists(str_ToFile))
@@ -1375,9 +1375,9 @@ namespace FileSynchronizer
                                             FileHelper.DeleteDirectoryOrFile(str_ToFile);
                                         }
                                     }
-                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, str_PairID, out str_OutLogMsg))
+                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, str_PairID, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 3);
+                                        LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 3);
                                     }
                                     bl_SyncRecordDone = true;
                                 }
@@ -1388,9 +1388,9 @@ namespace FileSynchronizer
                         {
                             if (str_FileName.Equals(C_StrDirNameChar))
                             {
-                                str_LogMsg = "同步目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                str_OngoingRecMsg = "同步目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
                                 if (!cls_Global_Settings.DebugMode)
                                 {
                                     if (Directory.Exists(str_FileToPath))
@@ -1404,18 +1404,18 @@ namespace FileSynchronizer
                                             FileHelper.DeleteDirectoryOrFile(str_FileToPath, true);
                                         }
                                     }
-                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, str_PairID, out str_OutLogMsg))
+                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, str_PairID, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 3);
+                                        LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 3);
                                     }
                                     bl_SyncRecordDone = true;
                                 }
                             }
                             else
                             {
-                                str_LogMsg = "同步文件: " + str_ToFile + " <-X- " + str_FromFile;
-                                OnSetOngoingItem(str_LogMsg);
-                                LogPairMessage(str_PairName, str_LogMsg, true, true, 3);
+                                str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-X- " + str_FromFile;
+                                OnSetOngoingItem(str_OngoingRecMsg);
+                                LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
                                 if (!cls_Global_Settings.DebugMode)
                                 {
                                     if (File.Exists(str_ToFile))
@@ -1429,9 +1429,9 @@ namespace FileSynchronizer
                                             FileHelper.DeleteDirectoryOrFile(str_ToFile);
                                         }
                                     }
-                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, str_PairID, out str_OutLogMsg))
+                                    if (!cls_Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, str_PairID, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(str_PairName, str_LogMsg + "失败", true, true, 3);
+                                        LogPairMessage(str_PairName, str_OngoingRecMsg + "失败", true, true, 3);
                                     }
                                     bl_SyncRecordDone = true;
                                 }
@@ -1446,10 +1446,10 @@ namespace FileSynchronizer
 
                         #region Post Processing
                         //检查同步过程发生的错误消息
-                        if (!String.IsNullOrEmpty(str_OutLogMsg))
+                        if (!String.IsNullOrEmpty(str_DatabaseErrorMsg))
                         {
-                            LogPairMessage(str_PairName, "同步过程发生了一些错误，请检查日志文件", true, true, 1);
-                            LogPairMessage(str_PairName, str_OutLogMsg, true, true, 5, true);
+                            bExceptionFound = true;
+                            LogPairMessage(str_PairName, str_ExceptionFile + str_DatabaseErrorMsg, true, true, 3, true);
                         }
                         //调试模式下强制同步成功
                         if (cls_Global_Settings.DebugMode)
@@ -1467,15 +1467,16 @@ namespace FileSynchronizer
                         {
                             if (int_TrySyncCount >= cls_Global_Settings.RetryCountWhenSyncFailed)
                             {
-                                LogPairMessage(str_PairName, "同步" + str_FromFile + "失败，超过最大重试次数", true, true, 1);
+                                LogPairMessage(str_PairName, str_ExceptionFile + "超过最大重试次数", true, true, 1);
                                 //更新同步进度
                                 OnAdd1Sync(int_TotalChngCount);
                                 int_SyncedCount++;
                                 bl_SyncRecordDone = true;
+                                bExceptionFound = true;
                             }
                             else
                             {
-                                LogPairMessage(str_PairName, "同步" + str_FromFile + "的时候发生了错误，等待" + cls_Global_Settings.RetryIntervalWhenSyncFailed.ToString() + "分钟后重试", true, true, 1);
+                                LogPairMessage(str_PairName, str_ExceptionFile + "等待" + cls_Global_Settings.RetryIntervalWhenSyncFailed.ToString() + "分钟后重试", true, true, 1);
                                 Thread.Sleep(cls_Global_Settings.RetryIntervalWhenSyncFailed * 60000);
                             }
                         }
@@ -1484,10 +1485,15 @@ namespace FileSynchronizer
                 }
                 catch (Exception ex)
                 {
-                    LogPairMessage(str_PairName, "同步的时候发生了错误！！！检查日志文件", true, true, 1);
-                    LogPairMessage(str_PairName, str_ExceptionFile, true, true, 1);
-                    LogPairMessage(str_PairName, ex.Message, true, true, 5, true);
+                    bExceptionFound = true;
+                    string str_PrintMsg = str_ExceptionFile + ex.Message;
+                    LogPairMessage(str_PairName, str_PrintMsg, true, true, 3, true);
                 }
+            }
+
+            if (bExceptionFound)
+            {
+                LogPairMessage(str_PairName, "同步过程发生了一些错误！！！检查日志文件", true, true, 1);
             }
 
             if (!cls_Global_Settings.DebugMode)
@@ -1510,9 +1516,9 @@ namespace FileSynchronizer
             if (int_SyncedCount.Equals(int_TotalChngCount))
             {
                 LogPairMessage(str_PairName, "配对（" + str_PairName + "）同步完成，共同步了" + int_SyncedCount + "条记录", true, true, 1);
-                OnSetOngoingItem(string.Empty);
             }
             OnPairStatusChange(PairStatus.FREE);
+            OnSetOngoingItem(string.Empty);
         }
 
         private DataTable Create_FileDiff_Empty()
@@ -1759,6 +1765,7 @@ namespace FileSynchronizer
                     string str_NewFileName = CommonFunctions.MD5EncryptString(str_NewFileFullPath, out str_OutLogMsg);
                     if (String.IsNullOrEmpty(str_NewFileName))
                     {
+                        str_OutLogMsg = "MD5 Encrypt String failed for " + str_NewFileFullPath;
                         return String.Empty;
                     }
                     str_NewFileFullPath = Path.Combine(cls_Global_Settings.LocalTempFolder, str_NewFileName);

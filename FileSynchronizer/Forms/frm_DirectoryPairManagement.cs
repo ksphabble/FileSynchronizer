@@ -184,7 +184,7 @@ namespace FileSynchronizer
                 cls_LogPairFile cls_LogPairFile = new cls_LogPairFile(str_PairName, false);
                 lblPairLogSize.Text = FileHelper.CalcFileSizeStr(cls_LogPairFile.LogFileFullName());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }

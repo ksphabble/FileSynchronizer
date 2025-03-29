@@ -129,7 +129,7 @@ namespace FileSynchronizer
                 File.Copy(str_CurrentDBFile, str_NewDBFile);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -325,7 +325,7 @@ namespace FileSynchronizer
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

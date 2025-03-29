@@ -414,7 +414,7 @@ namespace FileSynchronizer
                 //dbconn.Close();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //dbconn.Close();
                 return false;
@@ -473,7 +473,7 @@ namespace FileSynchronizer
 
                 return dt;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -638,7 +638,7 @@ namespace FileSynchronizer
                 OleDbCommand cmd = new OleDbCommand(sql_upd, dbconn_ACCESS);
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }
