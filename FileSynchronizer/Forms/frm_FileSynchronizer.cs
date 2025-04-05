@@ -46,13 +46,16 @@ namespace FileSynchronizer
             btnAnalysis.Visible = cls_Global_Settings.DebugMode;
             btnTest.Visible = cls_Global_Settings.DebugMode;
 
+            timer1_Tick(sender, e);
+
             if (!cls_Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, cls_Global_Settings.DebugMode, out str_ErrorMsg))
             {
                 LogProgramMessage(str_ErrorMsg, true, true, 1);
             }
-
-            timer1_Tick(sender, e);
-            //dataGridView1_CellClick(sender, new DataGridViewCellEventArgs(0, 0));
+            else
+            {
+                dataGridView1_CellClick(sender, new DataGridViewCellEventArgs(0, 0));
+            }
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)

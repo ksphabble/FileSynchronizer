@@ -54,7 +54,8 @@ namespace FileSynchronizer
         public DataTable AnalysisDirPair(bool IsAnalysisOnly)
         {
             #region Define Varibles
-            LogPairMessage(str_PairName, "开始分析配对（" + str_PairName + "）", true, true, 2);
+            string str_StartOprMessage = "开始分析配对（" + str_PairName + "）" + (cls_Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致此操作不能全部完成，请注意！" : "");
+            LogPairMessage(str_PairName, str_StartOprMessage, true, true, cls_Global_Settings.DebugMode ? 2 : 1);
             OnPairStatusChange(PairStatus.ANALYSIS);
             string str_OutLogMsg = String.Empty;
             string[] arr_FilterRule = String.IsNullOrEmpty(str_FilterRule) ? new string[] { } : str_FilterRule.Split(',');
@@ -1016,7 +1017,8 @@ namespace FileSynchronizer
         public void SyncDirPair(DataTable TableFileDiff)
         {
             #region Define Varibles
-            LogPairMessage(str_PairName, "开始同步配对（" + str_PairName + "）", true, true, 2);
+            string str_StartOprMessage = "开始同步配对（" + str_PairName + "）" + (cls_Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致此操作不能全部完成，请注意！" : "");
+            LogPairMessage(str_PairName, str_StartOprMessage, true, true, cls_Global_Settings.DebugMode ? 2 : 1);
             OnPairStatusChange(PairStatus.SYNC);
             string[] arr_FilterRule = String.IsNullOrEmpty(str_FilterRule) ? new string[] { } : str_FilterRule.Split(',');
             DirectoryInfo directoryInfo1 = new DirectoryInfo(str_Dir1Path);
@@ -1491,11 +1493,6 @@ namespace FileSynchronizer
                 }
             }
 
-            if (bExceptionFound)
-            {
-                LogPairMessage(str_PairName, "同步过程发生了一些错误！！！检查日志文件", true, true, 1);
-            }
-
             if (!cls_Global_Settings.DebugMode)
             {
                 //彻底删除状态标记为'DL'的文件记录
@@ -1506,11 +1503,22 @@ namespace FileSynchronizer
                 //根据最大保留的backup数调整
                 LogPairMessage(str_PairName, "Delete backup DIR according to the Max. count of backup keep", true, true, 4);
                 ClearBackupMaxKeep(str_Dir1Path, out str_ExceptionFile);
+                if (!String.IsNullOrEmpty(str_ExceptionFile))
+                {
+                    bExceptionFound = true;
+                    LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
+                }
                 ClearBackupMaxKeep(str_Dir2Path, out str_ExceptionFile);
                 if (!String.IsNullOrEmpty(str_ExceptionFile))
                 {
+                    bExceptionFound = true;
                     LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
                 }
+            }
+
+            if (bExceptionFound)
+            {
+                LogPairMessage(str_PairName, "同步过程发生了一些错误！！！检查日志文件", true, true, 1);
             }
 
             if (int_SyncedCount.Equals(int_TotalChngCount))
