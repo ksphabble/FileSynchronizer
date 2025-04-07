@@ -16,8 +16,8 @@ namespace FileSynchronizer
         public const string c_ExtMaxDirLengthPrefix_Str = @"\\?\";
         public const string c_TempUpdFileExt_Str = @".tmp";
         public const string c_UpdateURL_Str = @"https://api.github.com/repos/ksphabble/FileSynchronizer/releases/latest";
-        public const string c_GithubToken_Str = @"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";
-        public const string c_GithubEnqLimitToken_Str = @"curl -H ""Authorization: token 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"" https://api.github.com/rate_limit";
+        public const string c_GithubToken_Str = @"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";
+        public const string c_GithubEnqLimitToken_Str = @"curl -H ""Authorization: token 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"" https://api.github.com/rate_limit";
         public const string c_GithubEnqLimit_Str = @"curl -i https://api.github.com/rate_limit";
 
         public enum PairStatus
