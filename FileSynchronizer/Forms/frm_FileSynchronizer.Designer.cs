@@ -52,6 +52,8 @@
             this.MenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.更新日志ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.项目Github主页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.检查更新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.btnStopOpr = new System.Windows.Forms.Button();
             this.btnSyncAll = new System.Windows.Forms.Button();
@@ -61,7 +63,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnTest = new System.Windows.Forms.Button();
             this.btnOpenPairLog = new System.Windows.Forms.Button();
-            this.项目Github主页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timerAutoUpdate = new System.Windows.Forms.Timer(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPageMain.SuspendLayout();
             this.NotifyMenu.SuspendLayout();
@@ -87,10 +89,10 @@
             // 
             this.tabPageMain.Controls.Add(this.TxtProgramLog);
             this.tabPageMain.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tabPageMain.Location = new System.Drawing.Point(4, 27);
+            this.tabPageMain.Location = new System.Drawing.Point(4, 24);
             this.tabPageMain.Name = "tabPageMain";
             this.tabPageMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMain.Size = new System.Drawing.Size(1232, 412);
+            this.tabPageMain.Size = new System.Drawing.Size(1232, 415);
             this.tabPageMain.TabIndex = 0;
             this.tabPageMain.Text = "程序日志";
             this.tabPageMain.UseVisualStyleBackColor = true;
@@ -102,7 +104,7 @@
             this.TxtProgramLog.Location = new System.Drawing.Point(3, 3);
             this.TxtProgramLog.Name = "TxtProgramLog";
             this.TxtProgramLog.ReadOnly = true;
-            this.TxtProgramLog.Size = new System.Drawing.Size(1226, 406);
+            this.TxtProgramLog.Size = new System.Drawing.Size(1226, 409);
             this.TxtProgramLog.TabIndex = 0;
             this.TxtProgramLog.TabStop = false;
             this.TxtProgramLog.Text = "";
@@ -147,12 +149,12 @@
             this.toolStripSeparator1,
             this.MenuItemExit});
             this.NotifyMenu.Name = "NotifyMenu";
-            this.NotifyMenu.Size = new System.Drawing.Size(154, 106);
+            this.NotifyMenu.Size = new System.Drawing.Size(137, 98);
             // 
             // MenuItemShowMain
             // 
             this.MenuItemShowMain.Name = "MenuItemShowMain";
-            this.MenuItemShowMain.Size = new System.Drawing.Size(153, 24);
+            this.MenuItemShowMain.Size = new System.Drawing.Size(136, 22);
             this.MenuItemShowMain.Text = "显示主界面";
             this.MenuItemShowMain.Click += new System.EventHandler(this.MenuItemShowMain_Click);
             this.MenuItemShowMain.MouseEnter += new System.EventHandler(this.MenuItemOther_MouseEnter);
@@ -160,14 +162,14 @@
             // MenuItemSync
             // 
             this.MenuItemSync.Name = "MenuItemSync";
-            this.MenuItemSync.Size = new System.Drawing.Size(153, 24);
+            this.MenuItemSync.Size = new System.Drawing.Size(136, 22);
             this.MenuItemSync.Text = "同步";
             this.MenuItemSync.MouseEnter += new System.EventHandler(this.MenuItemSync_MouseEnter);
             // 
             // MenuItemSyncAll
             // 
             this.MenuItemSyncAll.Name = "MenuItemSyncAll";
-            this.MenuItemSyncAll.Size = new System.Drawing.Size(153, 24);
+            this.MenuItemSyncAll.Size = new System.Drawing.Size(136, 22);
             this.MenuItemSyncAll.Text = "同步所有";
             this.MenuItemSyncAll.Click += new System.EventHandler(this.MenuItemSyncAll_Click);
             this.MenuItemSyncAll.MouseEnter += new System.EventHandler(this.MenuItemOther_MouseEnter);
@@ -175,12 +177,12 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(150, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
             // 
             // MenuItemExit
             // 
             this.MenuItemExit.Name = "MenuItemExit";
-            this.MenuItemExit.Size = new System.Drawing.Size(153, 24);
+            this.MenuItemExit.Size = new System.Drawing.Size(136, 22);
             this.MenuItemExit.Text = "退出程序";
             this.MenuItemExit.Click += new System.EventHandler(this.MenuItemExit_Click);
             // 
@@ -203,7 +205,7 @@
             this.MenuItemHelp});
             this.PgmMenu.Location = new System.Drawing.Point(0, 0);
             this.PgmMenu.Name = "PgmMenu";
-            this.PgmMenu.Size = new System.Drawing.Size(1264, 28);
+            this.PgmMenu.Size = new System.Drawing.Size(1264, 25);
             this.PgmMenu.TabIndex = 18;
             this.PgmMenu.Text = "PgmMenu";
             // 
@@ -215,32 +217,32 @@
             this.toolStripSeparator2,
             this.退出ToolStripMenuItem});
             this.MenuItemPGM.Name = "MenuItemPGM";
-            this.MenuItemPGM.Size = new System.Drawing.Size(53, 24);
+            this.MenuItemPGM.Size = new System.Drawing.Size(44, 21);
             this.MenuItemPGM.Text = "程序";
             // 
             // 全局设置ToolStripMenuItem
             // 
             this.全局设置ToolStripMenuItem.Name = "全局设置ToolStripMenuItem";
-            this.全局设置ToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.全局设置ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.全局设置ToolStripMenuItem.Text = "全局设置";
             this.全局设置ToolStripMenuItem.Click += new System.EventHandler(this.全局设置ToolStripMenuItem_Click);
             // 
             // 管理同步文件夹对ToolStripMenuItem
             // 
             this.管理同步文件夹对ToolStripMenuItem.Name = "管理同步文件夹对ToolStripMenuItem";
-            this.管理同步文件夹对ToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.管理同步文件夹对ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.管理同步文件夹对ToolStripMenuItem.Text = "管理目录配对";
             this.管理同步文件夹对ToolStripMenuItem.Click += new System.EventHandler(this.管理同步文件夹对ToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(179, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
             // 
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.退出ToolStripMenuItem.Text = "退出";
             this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
             // 
@@ -249,24 +251,39 @@
             this.MenuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.更新日志ToolStripMenuItem,
             this.关于ToolStripMenuItem1,
-            this.项目Github主页ToolStripMenuItem});
+            this.项目Github主页ToolStripMenuItem,
+            this.检查更新ToolStripMenuItem});
             this.MenuItemHelp.Name = "MenuItemHelp";
-            this.MenuItemHelp.Size = new System.Drawing.Size(53, 24);
+            this.MenuItemHelp.Size = new System.Drawing.Size(44, 21);
             this.MenuItemHelp.Text = "帮助";
             // 
             // 更新日志ToolStripMenuItem
             // 
             this.更新日志ToolStripMenuItem.Name = "更新日志ToolStripMenuItem";
-            this.更新日志ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.更新日志ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.更新日志ToolStripMenuItem.Text = "更新日志";
             this.更新日志ToolStripMenuItem.Click += new System.EventHandler(this.更新日志ToolStripMenuItem_Click);
             // 
             // 关于ToolStripMenuItem1
             // 
             this.关于ToolStripMenuItem1.Name = "关于ToolStripMenuItem1";
-            this.关于ToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.关于ToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.关于ToolStripMenuItem1.Text = "关于";
             this.关于ToolStripMenuItem1.Click += new System.EventHandler(this.关于ToolStripMenuItem1_Click);
+            // 
+            // 项目Github主页ToolStripMenuItem
+            // 
+            this.项目Github主页ToolStripMenuItem.Name = "项目Github主页ToolStripMenuItem";
+            this.项目Github主页ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.项目Github主页ToolStripMenuItem.Text = "项目Github主页";
+            this.项目Github主页ToolStripMenuItem.Click += new System.EventHandler(this.项目Github主页ToolStripMenuItem_Click);
+            // 
+            // 检查更新ToolStripMenuItem
+            // 
+            this.检查更新ToolStripMenuItem.Name = "检查更新ToolStripMenuItem";
+            this.检查更新ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.检查更新ToolStripMenuItem.Text = "检查更新";
+            this.检查更新ToolStripMenuItem.Click += new System.EventHandler(this.检查更新ToolStripMenuItem_Click);
             // 
             // timer1
             // 
@@ -375,12 +392,9 @@
             this.btnOpenPairLog.UseVisualStyleBackColor = true;
             this.btnOpenPairLog.Click += new System.EventHandler(this.btnOpenPairLog_Click);
             // 
-            // 项目Github主页ToolStripMenuItem
+            // timerAutoUpdate
             // 
-            this.项目Github主页ToolStripMenuItem.Name = "项目Github主页ToolStripMenuItem";
-            this.项目Github主页ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.项目Github主页ToolStripMenuItem.Text = "项目Github主页";
-            this.项目Github主页ToolStripMenuItem.Click += new System.EventHandler(this.项目Github主页ToolStripMenuItem_Click);
+            this.timerAutoUpdate.Tick += new System.EventHandler(this.timerAutoUpdate_Tick);
             // 
             // frm_FileSynchronizer
             // 
@@ -452,6 +466,8 @@
         private System.Windows.Forms.Button btnOpenPairLog;
         private System.Windows.Forms.ToolStripMenuItem MenuItemSync;
         private System.Windows.Forms.ToolStripMenuItem 项目Github主页ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 检查更新ToolStripMenuItem;
+        private System.Windows.Forms.Timer timerAutoUpdate;
     }
 }
 

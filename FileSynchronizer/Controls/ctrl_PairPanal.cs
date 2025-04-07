@@ -216,7 +216,7 @@ namespace FileSynchronizer
         /// <param name="IsAddTS">是否添加时间戳</param>
         private void LogPairMessage(string LogMessage, bool IsChangeLine, bool IsAddTS)
         {
-            string str_LogMsg = (IsAddTS ? DateTime.Now.ToString(m_DateTimeFormat) + " --- " : String.Empty) + LogMessage + (IsChangeLine ? "\n" : "");
+            string str_LogMsg = (IsAddTS ? DateTime.Now.ToString(m_DateTimeFormat) + " --- " : String.Empty) + LogMessage + (IsChangeLine ? Environment.NewLine : "");
 
             if (TxtPairLog.TextLength + str_LogMsg.Length > TxtPairLog.MaxLength)
             {

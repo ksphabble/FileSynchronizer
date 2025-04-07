@@ -49,7 +49,6 @@ namespace FileSynchronizer
             this.btnSelectLocalTempFolder = new System.Windows.Forms.Button();
             this.txtboxLocalTempFolder = new System.Windows.Forms.TextBox();
             this.chkboxUseLocalTemp = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtboxRetrySyncInterval = new System.Windows.Forms.TextBox();
@@ -59,12 +58,15 @@ namespace FileSynchronizer
             this.chkboxAutoRun = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.pnlDebugTools = new System.Windows.Forms.Panel();
+            this.btnSQLRunner = new System.Windows.Forms.Button();
             this.lblCurrentDB = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.comboxDBMigration = new System.Windows.Forms.ComboBox();
             this.btnStartDBMigration = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.btnSQLRunner = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtboxAutoCheckUpdateInterval = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.pnlDebugTools.SuspendLayout();
@@ -74,7 +76,7 @@ namespace FileSynchronizer
             // 
             this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(318, 326);
+            this.label18.Location = new System.Drawing.Point(318, 330);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(77, 12);
             this.label18.TabIndex = 104;
@@ -84,7 +86,7 @@ namespace FileSynchronizer
             // 
             this.lblPGMVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPGMVer.AutoSize = true;
-            this.lblPGMVer.Location = new System.Drawing.Point(401, 326);
+            this.lblPGMVer.Location = new System.Drawing.Point(401, 330);
             this.lblPGMVer.Name = "lblPGMVer";
             this.lblPGMVer.Size = new System.Drawing.Size(71, 12);
             this.lblPGMVer.TabIndex = 105;
@@ -94,7 +96,7 @@ namespace FileSynchronizer
             // 
             this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(318, 350);
+            this.label17.Location = new System.Drawing.Point(318, 354);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(77, 12);
             this.label17.TabIndex = 102;
@@ -104,7 +106,7 @@ namespace FileSynchronizer
             // 
             this.lblDBVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDBVer.AutoSize = true;
-            this.lblDBVer.Location = new System.Drawing.Point(401, 350);
+            this.lblDBVer.Location = new System.Drawing.Point(401, 354);
             this.lblDBVer.Name = "lblDBVer";
             this.lblDBVer.Size = new System.Drawing.Size(71, 12);
             this.lblDBVer.TabIndex = 103;
@@ -134,7 +136,7 @@ namespace FileSynchronizer
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button3.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button3.Location = new System.Drawing.Point(118, 329);
+            this.button3.Location = new System.Drawing.Point(118, 333);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 33);
             this.button3.TabIndex = 109;
@@ -145,7 +147,7 @@ namespace FileSynchronizer
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(12, 329);
+            this.button2.Location = new System.Drawing.Point(12, 333);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 33);
             this.button2.TabIndex = 108;
@@ -193,13 +195,15 @@ namespace FileSynchronizer
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.txtboxAutoCheckUpdateInterval);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.txtboxMaxKeepBackup);
             this.groupBox1.Controls.Add(this.chkBoxMinStart);
             this.groupBox1.Controls.Add(this.chkBoxAutoClearLog);
             this.groupBox1.Controls.Add(this.btnSelectLocalTempFolder);
             this.groupBox1.Controls.Add(this.txtboxLocalTempFolder);
             this.groupBox1.Controls.Add(this.chkboxUseLocalTemp);
-            this.groupBox1.Controls.Add(this.checkBox2);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.txtboxRetrySyncInterval);
@@ -211,7 +215,7 @@ namespace FileSynchronizer
             this.groupBox1.Controls.Add(this.chkboxLogMsgToFile);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(460, 167);
+            this.groupBox1.Size = new System.Drawing.Size(460, 171);
             this.groupBox1.TabIndex = 114;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "通用设置";
@@ -270,17 +274,6 @@ namespace FileSynchronizer
             this.chkboxUseLocalTemp.Text = "使用本地临时目录";
             this.chkboxUseLocalTemp.UseVisualStyleBackColor = true;
             this.chkboxUseLocalTemp.CheckedChanged += new System.EventHandler(this.chkboxUseLocalTemp_CheckedChanged);
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(6, 145);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(186, 16);
-            this.checkBox2.TabIndex = 122;
-            this.checkBox2.Text = "(XXXXXXXOccupyLabelXXXXXXX)";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.Visible = false;
             // 
             // label4
             // 
@@ -351,7 +344,7 @@ namespace FileSynchronizer
             this.groupBox2.Controls.Add(this.chkboxDebugMode);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.txtboxTraceLevel);
-            this.groupBox2.Location = new System.Drawing.Point(12, 185);
+            this.groupBox2.Location = new System.Drawing.Point(12, 189);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(460, 138);
             this.groupBox2.TabIndex = 115;
@@ -373,6 +366,17 @@ namespace FileSynchronizer
             this.pnlDebugTools.Name = "pnlDebugTools";
             this.pnlDebugTools.Size = new System.Drawing.Size(448, 59);
             this.pnlDebugTools.TabIndex = 117;
+            // 
+            // btnSQLRunner
+            // 
+            this.btnSQLRunner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnSQLRunner.Location = new System.Drawing.Point(255, 31);
+            this.btnSQLRunner.Name = "btnSQLRunner";
+            this.btnSQLRunner.Size = new System.Drawing.Size(120, 25);
+            this.btnSQLRunner.TabIndex = 122;
+            this.btnSQLRunner.Text = "SQLRunner";
+            this.btnSQLRunner.UseVisualStyleBackColor = true;
+            this.btnSQLRunner.Click += new System.EventHandler(this.btnSQLRunner_Click);
             // 
             // lblCurrentDB
             // 
@@ -426,23 +430,37 @@ namespace FileSynchronizer
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // btnSQLRunner
+            // label6
             // 
-            this.btnSQLRunner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSQLRunner.Location = new System.Drawing.Point(255, 31);
-            this.btnSQLRunner.Name = "btnSQLRunner";
-            this.btnSQLRunner.Size = new System.Drawing.Size(120, 25);
-            this.btnSQLRunner.TabIndex = 122;
-            this.btnSQLRunner.Text = "SQLRunner";
-            this.btnSQLRunner.UseVisualStyleBackColor = true;
-            this.btnSQLRunner.Click += new System.EventHandler(this.btnSQLRunner_Click);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(180, 148);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(155, 12);
+            this.label6.TabIndex = 132;
+            this.label6.Text = "天（设置为0则不自动检查）";
+            // 
+            // txtboxAutoCheckUpdateInterval
+            // 
+            this.txtboxAutoCheckUpdateInterval.Location = new System.Drawing.Point(149, 145);
+            this.txtboxAutoCheckUpdateInterval.Name = "txtboxAutoCheckUpdateInterval";
+            this.txtboxAutoCheckUpdateInterval.Size = new System.Drawing.Size(25, 21);
+            this.txtboxAutoCheckUpdateInterval.TabIndex = 131;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 148);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(125, 12);
+            this.label7.TabIndex = 130;
+            this.label7.Text = "自动查找程序更新，每";
             // 
             // frm_GlobalSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button3;
-            this.ClientSize = new System.Drawing.Size(484, 371);
+            this.ClientSize = new System.Drawing.Size(484, 375);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button3);
@@ -492,7 +510,6 @@ namespace FileSynchronizer
         private System.Windows.Forms.TextBox txtboxRetrySyncInterval;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtboxRetrySyncCount;
-        private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox chkboxUseLocalTemp;
         private System.Windows.Forms.TextBox txtboxLocalTempFolder;
         private System.Windows.Forms.Button btnSelectLocalTempFolder;
@@ -506,5 +523,8 @@ namespace FileSynchronizer
         private System.Windows.Forms.CheckBox chkBoxMinStart;
         private System.Windows.Forms.TextBox txtboxMaxKeepBackup;
         private System.Windows.Forms.Button btnSQLRunner;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtboxAutoCheckUpdateInterval;
+        private System.Windows.Forms.Label label7;
     }
 }

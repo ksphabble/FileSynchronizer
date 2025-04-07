@@ -1,10 +1,6 @@
 ﻿using Common.Components;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileSynchronizer
 {
@@ -28,6 +24,7 @@ namespace FileSynchronizer
         @"AutoClearLog|bool|false",
         @"MinWhenStart|bool|false",
         @"MaxKeepBackup|int|5",
+        @"AutoCheckUpdateInterval|int|7",
         };
 
         #region Program Common Variables
@@ -44,6 +41,7 @@ namespace FileSynchronizer
         public static bool AutoClearLog;
         public static bool MinWhenStart;
         public static int MaxKeepBackup;
+        public static int AutoCheckUpdateInterval;
         #endregion
         #endregion
 

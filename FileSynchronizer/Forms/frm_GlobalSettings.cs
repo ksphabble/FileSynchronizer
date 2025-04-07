@@ -50,6 +50,7 @@ namespace FileSynchronizer
             chkBoxAutoClearLog.Checked = cls_Global_Settings.AutoClearLog;
             chkBoxMinStart.Checked = cls_Global_Settings.MinWhenStart;
             txtboxMaxKeepBackup.Text = cls_Global_Settings.MaxKeepBackup.ToString();
+            txtboxAutoCheckUpdateInterval.Text = cls_Global_Settings.AutoCheckUpdateInterval.ToString();
 
             //调试模式下的功能
             pnlDebugTools.Visible = cls_Global_Settings.DebugMode;
@@ -74,6 +75,8 @@ namespace FileSynchronizer
             int int_tempRetrySyncInterval = 0;
             int int_tempRetrySyncCount = 0;
             int int_tempMaxKeepBackup = 0;
+            int int_tempAutoCheckUpdateInterval = 0;
+
             if (!Int32.TryParse(txtboxTraceLevel.Text, out int_tempTraceLevel))
             {
                 MessageBox.Show("日志等级设置错误，请输入数字！", "信息");
@@ -99,6 +102,11 @@ namespace FileSynchronizer
                 MessageBox.Show("最大保留备份数量设置错误，请输入数字！", "信息");
                 return;
             }
+            if (!Int32.TryParse(txtboxAutoCheckUpdateInterval.Text, out int_tempAutoCheckUpdateInterval))
+            {
+                MessageBox.Show("自动查找程序更新天数设置错误，请输入数字！", "信息");
+                return;
+            }
 
             cls_Global_Settings.DebugMode = chkboxDebugMode.Checked;
             cls_Global_Settings.LogMessageToFile = chkboxLogMsgToFile.Checked;
@@ -112,6 +120,8 @@ namespace FileSynchronizer
             cls_Global_Settings.AutoClearLog = chkBoxAutoClearLog.Checked;
             cls_Global_Settings.MinWhenStart = chkBoxMinStart.Checked;
             cls_Global_Settings.MaxKeepBackup = int_tempMaxKeepBackup;
+            cls_Global_Settings.AutoCheckUpdateInterval = int_tempAutoCheckUpdateInterval;
+
 
             cls_Global_Settings.SaveInfoToDB();
             MessageBox.Show("信息已保存！", "信息");

@@ -1030,6 +1030,8 @@ namespace FileSynchronizer
             string str_ExceptionFile = String.Empty;
             string str_SyncTimestamp = DateTime.Now.ToLocalTime().ToString("yyyyMMdd_HHmmss");
             bool bExceptionFound = false;
+            bool bHasUpdDelOnDir1 = false;
+            bool bHasUpdDelOnDir2 = false;
             #endregion
 
             foreach (DataRow dataRow in TableFileDiff.Rows)
@@ -1241,6 +1243,7 @@ namespace FileSynchronizer
                                     if (cls_Global_Settings.DelToBackup)
                                     {
                                         MoveFileToBackup(str_Dir2Path, str_ToFile, false, str_SyncTimestamp);
+                                        bHasUpdDelOnDir2 = true;
                                     }
                                     if (File.Exists(str_FromFileTemp))
                                     {
@@ -1297,6 +1300,7 @@ namespace FileSynchronizer
                                     if (cls_Global_Settings.DelToBackup)
                                     {
                                         MoveFileToBackup(str_Dir1Path, str_ToFile, false, str_SyncTimestamp);
+                                        bHasUpdDelOnDir1 = true;
                                     }
                                     if (File.Exists(str_FromFileTemp))
                                     {
@@ -1346,6 +1350,7 @@ namespace FileSynchronizer
                                         if (cls_Global_Settings.DelToBackup)
                                         {
                                             MoveFileToBackup(str_Dir2Path, str_FileToPath, true, str_SyncTimestamp);
+                                            bHasUpdDelOnDir2 = true;
                                         }
                                         else
                                         {
@@ -1371,6 +1376,7 @@ namespace FileSynchronizer
                                         if (cls_Global_Settings.DelToBackup)
                                         {
                                             MoveFileToBackup(str_Dir2Path, str_ToFile, false, str_SyncTimestamp);
+                                            bHasUpdDelOnDir2 = true;
                                         }
                                         else
                                         {
@@ -1400,6 +1406,7 @@ namespace FileSynchronizer
                                         if (cls_Global_Settings.DelToBackup)
                                         {
                                             MoveFileToBackup(str_Dir1Path, str_FileToPath, true, str_SyncTimestamp);
+                                            bHasUpdDelOnDir1 = true;
                                         }
                                         else
                                         {
@@ -1425,6 +1432,7 @@ namespace FileSynchronizer
                                         if (cls_Global_Settings.DelToBackup)
                                         {
                                             MoveFileToBackup(str_Dir1Path, str_ToFile, false, str_SyncTimestamp);
+                                            bHasUpdDelOnDir1 = true;
                                         }
                                         else
                                         {
@@ -1502,17 +1510,23 @@ namespace FileSynchronizer
 
                 //根据最大保留的backup数调整
                 LogPairMessage(str_PairName, "Delete backup DIR according to the Max. count of backup keep", true, true, 4);
-                ClearBackupMaxKeep(str_Dir1Path, out str_ExceptionFile);
-                if (!String.IsNullOrEmpty(str_ExceptionFile))
+                if (bHasUpdDelOnDir1)
                 {
-                    bExceptionFound = true;
-                    LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
+                    ClearBackupMaxKeep(str_Dir1Path, out str_ExceptionFile);
+                    if (!String.IsNullOrEmpty(str_ExceptionFile))
+                    {
+                        bExceptionFound = true;
+                        LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
+                    }
                 }
-                ClearBackupMaxKeep(str_Dir2Path, out str_ExceptionFile);
-                if (!String.IsNullOrEmpty(str_ExceptionFile))
+                if (bHasUpdDelOnDir2)
                 {
-                    bExceptionFound = true;
-                    LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
+                    ClearBackupMaxKeep(str_Dir2Path, out str_ExceptionFile);
+                    if (!String.IsNullOrEmpty(str_ExceptionFile))
+                    {
+                        bExceptionFound = true;
+                        LogPairMessage(str_PairName, str_ExceptionFile, true, true, 5, true);
+                    }
                 }
             }
 
@@ -1810,6 +1824,8 @@ namespace FileSynchronizer
         {
             str_ErrorMsg = String.Empty;
             string str_BackupFolder = Path.Combine(str_RootDirPath, c_FSBackup_Str);
+
+            if (!Directory.Exists(str_BackupFolder)) return;
 
             try
             {

@@ -1,12 +1,11 @@
 ﻿using Common.Components;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Common.Components.Common_Constants;
 using static FileSynchronizer.cls_Common_Constants;
 
 namespace FileSynchronizer
@@ -17,6 +16,7 @@ namespace FileSynchronizer
         DataTable dt_DirPair;
         string str_MainProgramVersion = string.Empty;
         string str_SelectedPairName = string.Empty;
+        IFormUpdater pu_ProgramUpdater;
         #endregion
 
         #region 窗体事件
@@ -32,10 +32,15 @@ namespace FileSynchronizer
 
             InitLocalDatabase();
 
-            this.Text = String.Join("_Ver.", "FileSynchronizer", str_MainProgramVersion);
+            this.Text = String.Join("_Ver.", c_ProgramTitle, str_MainProgramVersion);
             cls_LogProgramFile.LogToCache = false;
             Control.CheckForIllegalCrossThreadCalls = false;
             string str_ErrorMsg = String.Empty;
+            InitProgramUpdater();
+            SetTimerAutoUpdate();
+
+            //调整调试模式功能
+            DebugModeFunction(true);
 
             //检查程序启动时是否自动最小化窗口
             if (cls_Global_Settings.MinWhenStart)
@@ -43,10 +48,8 @@ namespace FileSynchronizer
                 HideMainForm();
             }
 
-            btnAnalysis.Visible = cls_Global_Settings.DebugMode;
-            btnTest.Visible = cls_Global_Settings.DebugMode;
-
             timer1_Tick(sender, e);
+            timerAutoUpdate_Tick(sender, e);
 
             if (!cls_Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, cls_Global_Settings.DebugMode, out str_ErrorMsg))
             {
@@ -153,6 +156,11 @@ namespace FileSynchronizer
                     System.Diagnostics.Process.Start("Explorer.exe", str_Dir);
                 }
             }
+        }
+
+        private void timerAutoUpdate_Tick(object sender, EventArgs e)
+        {
+            CheckForNewVersion();
         }
         #endregion
 
@@ -334,7 +342,7 @@ namespace FileSynchronizer
         private void LogProgramMessage(string LogMessage, bool IsChangeLine, bool IsAddTS, int MsgTraceLevel, bool IsALwaysLogFile = false)
         {
             string str_LogMsgToFile = (IsAddTS ? DateTime.Now.ToString(cls_Files_InfoDB.DBDateTimeFormat) + " --- " : String.Empty) + LogMessage;
-            string str_LogMsgChngLine = str_LogMsgToFile + (IsChangeLine ? "\n" : "");
+            string str_LogMsgChngLine = str_LogMsgToFile + (IsChangeLine ? Environment.NewLine : "");
             bool bl_HasWrittenFile = IsALwaysLogFile;
 
             if (IsALwaysLogFile)
@@ -700,6 +708,77 @@ namespace FileSynchronizer
                 LogProgramMessage(ex.Message, true, true, 5);
             }
         }
+
+        private void DebugModeFunction(bool bIsCallFromMain)
+        {
+            if (cls_Global_Settings.DebugMode)
+            {
+                LogProgramMessage(@"程序处于调试模式，请注意对功能的影响！", true, true, 1);
+            }
+
+            btnAnalysis.Visible = cls_Global_Settings.DebugMode;
+            btnTest.Visible = cls_Global_Settings.DebugMode;
+            //检查更新ToolStripMenuItem.Visible = cls_Global_Settings.DebugMode;
+
+            //调试模式功能：把程序版本降一级
+            if (cls_Global_Settings.DebugMode)
+            {
+                int i_PrevRevision = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Revision - 1;
+                str_MainProgramVersion = str_MainProgramVersion.Substring(0, str_MainProgramVersion.Length - 1) + i_PrevRevision.ToString();
+            }
+            else
+            {
+                str_MainProgramVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+            this.Text = String.Join("_Ver.", c_ProgramTitle, str_MainProgramVersion);
+
+            if (pu_ProgramUpdater != null)
+            {
+                pu_ProgramUpdater.SetDebugMode(cls_Global_Settings.DebugMode);
+                pu_ProgramUpdater.SetMainPgmVer(str_MainProgramVersion);
+                if (!bIsCallFromMain)
+                {
+                    CheckForNewVersion();
+                }
+            }
+        }
+
+        private void InitProgramUpdater()
+        {
+            if (pu_ProgramUpdater == null)
+            {
+                pu_ProgramUpdater = new IFormUpdater(c_ProgramTitle, str_MainProgramVersion, c_UpdateURL_Str, ProgramUpdateSource.GITHUB, cls_Global_Settings.DebugMode);
+            }
+        }
+
+        private bool CheckForNewVersion()
+        {
+            bool bHasNewVesion = false;
+            string str_ErrorMsg = String.Empty;
+
+            if (pu_ProgramUpdater != null)
+            {
+                bHasNewVesion = pu_ProgramUpdater.CheckNewVersion(out str_ErrorMsg);
+                if (bHasNewVesion)
+                {
+                    检查更新ToolStripMenuItem.Text = @"检查更新（有新版本可用）";
+                    LogProgramMessage(str_ErrorMsg, true, true, 3);
+                }
+                else
+                {
+                    检查更新ToolStripMenuItem.Text = @"检查更新";
+                    LogProgramMessage(str_ErrorMsg, true, true, 3);
+                }
+            }
+
+            return bHasNewVesion;
+        }
+
+        private void SetTimerAutoUpdate()
+        {
+            timerAutoUpdate.Enabled = cls_Global_Settings.AutoCheckUpdateInterval == 0 ? false : true;
+            timerAutoUpdate.Interval = cls_Global_Settings.AutoCheckUpdateInterval == 0 ? 100 : cls_Global_Settings.AutoCheckUpdateInterval * 24 * 60 * 1000;
+        }
         #endregion
 
         #region 窗体方法 处理窗体的 显示 隐藏
@@ -846,8 +925,10 @@ namespace FileSynchronizer
         {
             timer1.Stop();
             new frm_GlobalSettings(str_MainProgramVersion).ShowDialog();
-            btnAnalysis.Visible = cls_Global_Settings.DebugMode;
-            btnTest.Visible = cls_Global_Settings.DebugMode;
+
+            SetTimerAutoUpdate();
+            //调整调试模式功能
+            DebugModeFunction(false);
             timer1.Start();
         }
 
@@ -864,6 +945,14 @@ namespace FileSynchronizer
         private void 项目Github主页ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(@"https://github.com/ksphabble/FileSynchronizer");
+        }
+
+        private void 检查更新ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (pu_ProgramUpdater != null)
+            {
+                pu_ProgramUpdater.Show();
+            }
         }
         #endregion
     }
