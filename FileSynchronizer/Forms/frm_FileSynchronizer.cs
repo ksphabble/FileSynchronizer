@@ -748,6 +748,7 @@ namespace FileSynchronizer
             if (pu_ProgramUpdater == null)
             {
                 pu_ProgramUpdater = new IFormUpdater(c_ProgramTitle, str_MainProgramVersion, c_UpdateURL_Str, ProgramUpdateSource.GITHUB, cls_Global_Settings.DebugMode);
+                pu_ProgramUpdater.SetGithubToken(c_GithubToken_Str);
             }
         }
 
