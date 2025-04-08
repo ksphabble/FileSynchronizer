@@ -748,7 +748,7 @@ namespace FileSynchronizer
             if (pu_ProgramUpdater == null)
             {
                 pu_ProgramUpdater = new IFormUpdater(c_ProgramTitle, str_MainProgramVersion, c_UpdateURL_Str, ProgramUpdateSource.GITHUB, cls_Global_Settings.DebugMode);
-                pu_ProgramUpdater.SetGithubToken(c_GithubToken_Str);
+                pu_ProgramUpdater.SetGithubToken(cls_Global_Settings.GithubToken);
             }
         }
 
@@ -924,12 +924,18 @@ namespace FileSynchronizer
 
         private void 全局设置ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            bool bPrevDebugMode = cls_Global_Settings.DebugMode;
             timer1.Stop();
             new frm_GlobalSettings(str_MainProgramVersion).ShowDialog();
 
             SetTimerAutoUpdate();
-            //调整调试模式功能
-            DebugModeFunction(false);
+
+            if (bPrevDebugMode != cls_Global_Settings.DebugMode)
+            {
+                //调整调试模式功能
+                DebugModeFunction(false);
+            }
+
             timer1.Start();
         }
 

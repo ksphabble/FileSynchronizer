@@ -276,5 +276,13 @@ namespace FileSynchronizer
             cls_Global_Settings.Init_Settings();
             Fill_Setting();
         }
+
+        private void btnSetGithubToken_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Github Token为Github设置，不是开发人员请勿触碰，否则造成的问题概不负责，确定？", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                new frm_SetGithubToken().ShowDialog();
+            }
+        }
     }
 }

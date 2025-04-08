@@ -150,6 +150,12 @@
     <Compile Include="Forms\frm_GlobalSettings.Designer.cs">
       <DependentUpon>frm_GlobalSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frm_SetGithubToken.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frm_SetGithubToken.Designer.cs">
+      <DependentUpon>frm_SetGithubToken.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frm_SQLRunner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -175,6 +181,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frm_GlobalSettings.resx">
       <DependentUpon>frm_GlobalSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frm_SetGithubToken.resx">
+      <DependentUpon>frm_SetGithubToken.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frm_SQLRunner.resx">
       <DependentUpon>frm_SQLRunner.cs</DependentUpon>

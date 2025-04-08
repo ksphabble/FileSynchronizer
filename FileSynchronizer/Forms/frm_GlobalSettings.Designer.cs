@@ -43,6 +43,9 @@ namespace FileSynchronizer
             this.txtboxTraceLevel = new System.Windows.Forms.TextBox();
             this.chkboxDeleteToBackup = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtboxAutoCheckUpdateInterval = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.txtboxMaxKeepBackup = new System.Windows.Forms.TextBox();
             this.chkBoxMinStart = new System.Windows.Forms.CheckBox();
             this.chkBoxAutoClearLog = new System.Windows.Forms.CheckBox();
@@ -64,9 +67,7 @@ namespace FileSynchronizer
             this.comboxDBMigration = new System.Windows.Forms.ComboBox();
             this.btnStartDBMigration = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtboxAutoCheckUpdateInterval = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.btnSetGithubToken = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.pnlDebugTools.SuspendLayout();
@@ -76,7 +77,7 @@ namespace FileSynchronizer
             // 
             this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(318, 330);
+            this.label18.Location = new System.Drawing.Point(338, 330);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(77, 12);
             this.label18.TabIndex = 104;
@@ -86,7 +87,7 @@ namespace FileSynchronizer
             // 
             this.lblPGMVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPGMVer.AutoSize = true;
-            this.lblPGMVer.Location = new System.Drawing.Point(401, 330);
+            this.lblPGMVer.Location = new System.Drawing.Point(421, 330);
             this.lblPGMVer.Name = "lblPGMVer";
             this.lblPGMVer.Size = new System.Drawing.Size(71, 12);
             this.lblPGMVer.TabIndex = 105;
@@ -96,7 +97,7 @@ namespace FileSynchronizer
             // 
             this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(318, 354);
+            this.label17.Location = new System.Drawing.Point(338, 354);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(77, 12);
             this.label17.TabIndex = 102;
@@ -106,7 +107,7 @@ namespace FileSynchronizer
             // 
             this.lblDBVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDBVer.AutoSize = true;
-            this.lblDBVer.Location = new System.Drawing.Point(401, 354);
+            this.lblDBVer.Location = new System.Drawing.Point(421, 354);
             this.lblDBVer.Name = "lblDBVer";
             this.lblDBVer.Size = new System.Drawing.Size(71, 12);
             this.lblDBVer.TabIndex = 103;
@@ -157,9 +158,9 @@ namespace FileSynchronizer
             // 
             // btnFixPair
             // 
-            this.btnFixPair.Location = new System.Drawing.Point(129, 31);
+            this.btnFixPair.Location = new System.Drawing.Point(119, 31);
             this.btnFixPair.Name = "btnFixPair";
-            this.btnFixPair.Size = new System.Drawing.Size(120, 25);
+            this.btnFixPair.Size = new System.Drawing.Size(110, 25);
             this.btnFixPair.TabIndex = 110;
             this.btnFixPair.Text = "修复文件夹配对";
             this.btnFixPair.UseVisualStyleBackColor = true;
@@ -168,17 +169,17 @@ namespace FileSynchronizer
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 49);
+            this.label1.Location = new System.Drawing.Point(198, 23);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(263, 12);
+            this.label1.Size = new System.Drawing.Size(239, 12);
             this.label1.TabIndex = 111;
-            this.label1.Text = "日志消息等级（1~5，等级越高日志记录越完整）";
+            this.label1.Text = "日志等级（1~5，等级越高日志记录越完整）";
             // 
             // txtboxTraceLevel
             // 
-            this.txtboxTraceLevel.Location = new System.Drawing.Point(274, 46);
+            this.txtboxTraceLevel.Location = new System.Drawing.Point(443, 20);
             this.txtboxTraceLevel.Name = "txtboxTraceLevel";
-            this.txtboxTraceLevel.Size = new System.Drawing.Size(40, 21);
+            this.txtboxTraceLevel.Size = new System.Drawing.Size(20, 21);
             this.txtboxTraceLevel.TabIndex = 112;
             // 
             // chkboxDeleteToBackup
@@ -215,10 +216,35 @@ namespace FileSynchronizer
             this.groupBox1.Controls.Add(this.chkboxLogMsgToFile);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(460, 171);
+            this.groupBox1.Size = new System.Drawing.Size(480, 171);
             this.groupBox1.TabIndex = 114;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "通用设置";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(180, 148);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(155, 12);
+            this.label6.TabIndex = 132;
+            this.label6.Text = "天（设置为0则不自动检查）";
+            // 
+            // txtboxAutoCheckUpdateInterval
+            // 
+            this.txtboxAutoCheckUpdateInterval.Location = new System.Drawing.Point(149, 145);
+            this.txtboxAutoCheckUpdateInterval.Name = "txtboxAutoCheckUpdateInterval";
+            this.txtboxAutoCheckUpdateInterval.Size = new System.Drawing.Size(25, 21);
+            this.txtboxAutoCheckUpdateInterval.TabIndex = 131;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 148);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(125, 12);
+            this.label7.TabIndex = 130;
+            this.label7.Text = "自动查找程序更新，每";
             // 
             // txtboxMaxKeepBackup
             // 
@@ -249,9 +275,9 @@ namespace FileSynchronizer
             // 
             // btnSelectLocalTempFolder
             // 
-            this.btnSelectLocalTempFolder.Location = new System.Drawing.Point(423, 87);
+            this.btnSelectLocalTempFolder.Location = new System.Drawing.Point(443, 91);
             this.btnSelectLocalTempFolder.Name = "btnSelectLocalTempFolder";
-            this.btnSelectLocalTempFolder.Size = new System.Drawing.Size(31, 25);
+            this.btnSelectLocalTempFolder.Size = new System.Drawing.Size(31, 21);
             this.btnSelectLocalTempFolder.TabIndex = 125;
             this.btnSelectLocalTempFolder.Text = "...";
             this.btnSelectLocalTempFolder.UseVisualStyleBackColor = true;
@@ -261,7 +287,7 @@ namespace FileSynchronizer
             // 
             this.txtboxLocalTempFolder.Location = new System.Drawing.Point(144, 91);
             this.txtboxLocalTempFolder.Name = "txtboxLocalTempFolder";
-            this.txtboxLocalTempFolder.Size = new System.Drawing.Size(273, 21);
+            this.txtboxLocalTempFolder.Size = new System.Drawing.Size(293, 21);
             this.txtboxLocalTempFolder.TabIndex = 124;
             // 
             // chkboxUseLocalTemp
@@ -346,7 +372,7 @@ namespace FileSynchronizer
             this.groupBox2.Controls.Add(this.txtboxTraceLevel);
             this.groupBox2.Location = new System.Drawing.Point(12, 189);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(460, 138);
+            this.groupBox2.Size = new System.Drawing.Size(480, 138);
             this.groupBox2.TabIndex = 115;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "开发人员设置(!!!请谨慎使用，可能会有未知BUG!!!)";
@@ -355,6 +381,7 @@ namespace FileSynchronizer
             // 
             this.pnlDebugTools.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlDebugTools.Controls.Add(this.btnSetGithubToken);
             this.pnlDebugTools.Controls.Add(this.btnSQLRunner);
             this.pnlDebugTools.Controls.Add(this.lblCurrentDB);
             this.pnlDebugTools.Controls.Add(this.label5);
@@ -362,17 +389,16 @@ namespace FileSynchronizer
             this.pnlDebugTools.Controls.Add(this.btnFixPair);
             this.pnlDebugTools.Controls.Add(this.btnStartDBMigration);
             this.pnlDebugTools.Controls.Add(this.button1);
-            this.pnlDebugTools.Location = new System.Drawing.Point(6, 73);
+            this.pnlDebugTools.Location = new System.Drawing.Point(6, 47);
             this.pnlDebugTools.Name = "pnlDebugTools";
-            this.pnlDebugTools.Size = new System.Drawing.Size(448, 59);
+            this.pnlDebugTools.Size = new System.Drawing.Size(468, 85);
             this.pnlDebugTools.TabIndex = 117;
             // 
             // btnSQLRunner
             // 
-            this.btnSQLRunner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSQLRunner.Location = new System.Drawing.Point(255, 31);
+            this.btnSQLRunner.Location = new System.Drawing.Point(235, 31);
             this.btnSQLRunner.Name = "btnSQLRunner";
-            this.btnSQLRunner.Size = new System.Drawing.Size(120, 25);
+            this.btnSQLRunner.Size = new System.Drawing.Size(110, 25);
             this.btnSQLRunner.TabIndex = 122;
             this.btnSQLRunner.Text = "SQLRunner";
             this.btnSQLRunner.UseVisualStyleBackColor = true;
@@ -405,13 +431,12 @@ namespace FileSynchronizer
             "ACCESS"});
             this.comboxDBMigration.Location = new System.Drawing.Point(229, 6);
             this.comboxDBMigration.Name = "comboxDBMigration";
-            this.comboxDBMigration.Size = new System.Drawing.Size(90, 20);
+            this.comboxDBMigration.Size = new System.Drawing.Size(110, 20);
             this.comboxDBMigration.TabIndex = 119;
             // 
             // btnStartDBMigration
             // 
-            this.btnStartDBMigration.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnStartDBMigration.Location = new System.Drawing.Point(325, 3);
+            this.btnStartDBMigration.Location = new System.Drawing.Point(345, 3);
             this.btnStartDBMigration.Name = "btnStartDBMigration";
             this.btnStartDBMigration.Size = new System.Drawing.Size(120, 25);
             this.btnStartDBMigration.TabIndex = 117;
@@ -421,46 +446,30 @@ namespace FileSynchronizer
             // 
             // button1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button1.Location = new System.Drawing.Point(3, 31);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 25);
+            this.button1.Size = new System.Drawing.Size(110, 25);
             this.button1.TabIndex = 116;
             this.button1.Text = "备份数据库";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label6
+            // btnSetGithubToken
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(180, 148);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(155, 12);
-            this.label6.TabIndex = 132;
-            this.label6.Text = "天（设置为0则不自动检查）";
-            // 
-            // txtboxAutoCheckUpdateInterval
-            // 
-            this.txtboxAutoCheckUpdateInterval.Location = new System.Drawing.Point(149, 145);
-            this.txtboxAutoCheckUpdateInterval.Name = "txtboxAutoCheckUpdateInterval";
-            this.txtboxAutoCheckUpdateInterval.Size = new System.Drawing.Size(25, 21);
-            this.txtboxAutoCheckUpdateInterval.TabIndex = 131;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 148);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(125, 12);
-            this.label7.TabIndex = 130;
-            this.label7.Text = "自动查找程序更新，每";
+            this.btnSetGithubToken.Location = new System.Drawing.Point(351, 31);
+            this.btnSetGithubToken.Name = "btnSetGithubToken";
+            this.btnSetGithubToken.Size = new System.Drawing.Size(114, 25);
+            this.btnSetGithubToken.TabIndex = 123;
+            this.btnSetGithubToken.Text = "设置Github Token";
+            this.btnSetGithubToken.UseVisualStyleBackColor = true;
+            this.btnSetGithubToken.Click += new System.EventHandler(this.btnSetGithubToken_Click);
             // 
             // frm_GlobalSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button3;
-            this.ClientSize = new System.Drawing.Size(484, 375);
+            this.ClientSize = new System.Drawing.Size(504, 375);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button3);
@@ -526,5 +535,6 @@ namespace FileSynchronizer
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtboxAutoCheckUpdateInterval;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btnSetGithubToken;
     }
 }

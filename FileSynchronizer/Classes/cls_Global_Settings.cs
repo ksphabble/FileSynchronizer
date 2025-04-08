@@ -25,6 +25,7 @@ namespace FileSynchronizer
         @"MinWhenStart|bool|false",
         @"MaxKeepBackup|int|5",
         @"AutoCheckUpdateInterval|int|7",
+        @"GithubToken|string|",
         };
 
         #region Program Common Variables
@@ -42,6 +43,7 @@ namespace FileSynchronizer
         public static bool MinWhenStart;
         public static int MaxKeepBackup;
         public static int AutoCheckUpdateInterval;
+        public static string GithubToken;
         #endregion
         #endregion
 

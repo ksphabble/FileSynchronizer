@@ -340,7 +340,8 @@ namespace FileSynchronizer
         /// <returns></returns>
         public static bool AddorUpdGlobalSetting(string str_Name, string str_Value, bool bl_IsUnique)
         {
-            if (String.IsNullOrEmpty(str_Name) || String.IsNullOrEmpty(str_Value)) return false;
+            if (String.IsNullOrEmpty(str_Name)) return false;
+            if (String.IsNullOrEmpty(str_Value)) str_Value = String.Empty;
 
             //dbconn.Open();
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
