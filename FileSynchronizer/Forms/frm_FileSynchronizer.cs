@@ -102,7 +102,7 @@ namespace FileSynchronizer
         private void FileSynchronizer_FormClosing(object sender, FormClosingEventArgs e)
         {
             string str_ErrorMsg = String.Empty;
-            cls_Files_InfoDB.CleanSyncDetailRecord(String.Empty, true, out str_ErrorMsg);
+            //cls_Files_InfoDB.CleanSyncDetailRecord(String.Empty, true, out str_ErrorMsg);
             cls_Files_InfoDB.FixDirPairStatus(false);
             cls_Files_InfoDB.CloseConnection();
             if (!String.IsNullOrEmpty(str_ErrorMsg))
@@ -110,6 +110,7 @@ namespace FileSynchronizer
                 LogProgramMessage(str_ErrorMsg, true, true, 0);
             }
             cls_LogProgramFile.LogMsgFromCacheToFile();
+            CleanLocalTempFolder();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -203,11 +204,12 @@ namespace FileSynchronizer
             if (dt_DirPair == null || dt_DirPair.Rows.Count.Equals(0)) return;
 
             LogProgramMessage("点击同步所有配对按钮", true, true, 3);
+            string[] arr_PairNames = new string[tabControl1.TabCount - 1];
             for (int i = 1; i < tabControl1.TabCount; i++)
             {
-                string str_PairName = tabControl1.TabPages[i].Name;
-                DoDirPairOperation(str_PairName, false);
+                arr_PairNames[i - 1] = tabControl1.TabPages[i].Name;
             }
+            ParallelSyncPair(arr_PairNames);
         }
 
         /// <summary>
@@ -296,15 +298,30 @@ namespace FileSynchronizer
         private void CheckAutoSyncPair()
         {
             string[] arr_PairInfor = cls_Files_InfoDB.CheckAutoSyncPair();
-            if (arr_PairInfor != null)
+            string[] arr_PairNames = new string[arr_PairInfor.Length];
+            for (int i = 0; i < arr_PairInfor.Length; i++)
             {
-                Parallel.ForEach(arr_PairInfor, (item) =>
-                {
-                    string str_PairName = item.Split('|')[1];
-                    LogProgramMessage("开始自动同步配对（" + str_PairName + "）", true, true, 1);
-                    DoDirPairOperation(str_PairName, false);
-                });
+                arr_PairNames[i] = arr_PairInfor[i].Split('|')[1];
             }
+
+            if (arr_PairNames != null)
+            {
+                ParallelSyncPair(arr_PairNames);
+            }
+        }
+
+        private void ParallelSyncPair(string[] arr_PairInfor)
+        {
+            Parallel.ForEach(arr_PairInfor, new ParallelOptions { MaxDegreeOfParallelism = arr_PairInfor.Length }, (item) =>
+            {
+                var task = Task.Factory.StartNew(() => DoParallelSyncPair(item));
+            });
+        }
+
+        private void DoParallelSyncPair(string str_PairName)
+        {
+            LogProgramMessage("开始自动同步配对（" + str_PairName + "）", true, true, 1);
+            DoDirPairOperation(str_PairName, false);
         }
 
         /// <summary>
@@ -779,6 +796,17 @@ namespace FileSynchronizer
         {
             timerAutoUpdate.Enabled = cls_Global_Settings.AutoCheckUpdateInterval == 0 ? false : true;
             timerAutoUpdate.Interval = cls_Global_Settings.AutoCheckUpdateInterval == 0 ? 100 : cls_Global_Settings.AutoCheckUpdateInterval * 24 * 60 * 1000;
+        }
+
+        private void CleanLocalTempFolder()
+        {
+            if (cls_Global_Settings.UseLocalTemp)
+            {
+                FileHelper.DeleteDirectoryOrFile(cls_Global_Settings.LocalTempFolder, true);
+                DirectoryInfo _directoryInfo = new DirectoryInfo(cls_Global_Settings.LocalTempFolder);
+                _directoryInfo.Create();
+                _directoryInfo.Attributes = FileAttributes.Hidden;
+            }
         }
         #endregion
 

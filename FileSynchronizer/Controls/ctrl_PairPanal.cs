@@ -222,6 +222,12 @@ namespace FileSynchronizer
             {
                 TxtPairLog.Clear();
             }
+
+            if (str_LogMsg.Length > TxtPairLog.MaxLength)
+            {
+                str_LogMsg = str_LogMsg.Substring(str_LogMsg.Length - TxtPairLog.MaxLength + 1);
+            }
+
             TxtPairLog.AppendText(str_LogMsg);
             TxtPairLog.ScrollToCaret();
         }
@@ -277,6 +283,11 @@ namespace FileSynchronizer
             OnOperationStarted();
             bool bl_IsAnalysisOnly = (bool)IsAnalysisOnly;
             ResetSyncLabels();
+            string str_ErrorMsg = String.Empty;
+            if (!cls_Files_InfoDB.RevertUnfinishedSyncDetail(m_PairName, cls_Global_Settings.DebugMode, out str_ErrorMsg))
+            {
+                LogPairMessage(str_ErrorMsg, true, true);
+            }
 
             bool bl_IsSync = Thread.CurrentThread.Name.Contains("Sync");
             DataTable dataTableFileDiff = AnalysisDirPair(!bl_IsSync);

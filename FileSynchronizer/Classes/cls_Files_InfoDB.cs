@@ -844,11 +844,8 @@ namespace FileSynchronizer
                         continue;
                     }
 
-                    //如果是DIFFTYPE=3~4（同步更改）的记录，则尝试删除带有“.tmp”后缀的临时文件，参考FileHelper.CopyOrMoveFile方法
-                    if (int_FileDiffType >= 3 && int_FileDiffType <= 4)
-                    {
-                        str_ToFile += c_TempUpdFileExt_Str;
-                    }
+                    //尝试删除带有“.tmp”后缀的临时文件，参考FileHelper.CopyOrMoveFile方法
+                    str_ToFile += c_TempUpdFileExt_Str;
 
                     str_OutMsg = str_OutMsg + "删除未完成任务的目标文件：" + str_ToFile + "\n";
                     i_RevertedCount++;
