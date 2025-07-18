@@ -270,7 +270,7 @@ namespace FileSynchronizer
         /// <param name="str_PairName"></param>
         private void SyncDirPair(DataTable dt_fileDiff)
         {
-            Dir_Pair_Helper.SyncDirPair(dt_fileDiff);
+            Dir_Pair_Helper.SyncDirPair(dt_fileDiff, progressBar1);
         }
 
         /// <summary>

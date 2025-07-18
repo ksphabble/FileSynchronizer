@@ -796,13 +796,10 @@ namespace FileSynchronizer
 
         public static bool RevertUnfinishedSyncDetail(string str_PairName, bool bl_IsDebugMode, out string str_OutMsg)
         { 
-            str_OutMsg = "正在清理未完成的同步任务\n";
+            str_OutMsg = "正在清理未完成的同步任务" + (String.IsNullOrEmpty(str_PairName) ? String.Empty : " - " + str_PairName) + "\n";
             string str_OutMsg2 = String.Empty;
             int i_RevertedCount = 0;
-            if (!String.IsNullOrEmpty(str_PairName))
-            {
-                str_OutMsg = str_OutMsg + " - " + str_PairName;
-            }
+
             DataTable dt_UnfinishedSyncDetail = GetUnfinishedSyncDetail(str_PairName, out str_OutMsg2);
             str_OutMsg += str_OutMsg2;
             if (dt_UnfinishedSyncDetail == null) { return false; }

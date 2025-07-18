@@ -705,7 +705,9 @@ namespace FileSynchronizer
 
                     if (bl_HasNextRecord)
                     {
-                        bl_Result = UpdFileInfor(str_SourceTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutMsg);
+                        string str_FileNameOrig = str_FileName.Replace("''", "'");
+                        string str_FilePathOrig = str_FilePath.Replace("''", "'");
+                        bl_Result = UpdFileInfor(str_SourceTableName, str_FileNameOrig, str_FilePathOrig, str_FileSize, str_FileMD5, str_FileLastModDate, str_PairID, out str_OutMsg);
                     }
                     else
                     {
@@ -890,6 +892,9 @@ namespace FileSynchronizer
                 return false;
             }
 
+            str_FromFile = str_FromFile.Replace("'", "''");
+            str_ToFile = str_ToFile.Replace("'", "''");
+
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
             string sql_ins = _SQLBuilder.SQL_AddSyncDetailIns(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus);
 
@@ -913,6 +918,9 @@ namespace FileSynchronizer
             {
                 return false;
             }
+
+            str_FromFile = str_FromFile.Replace("'", "''");
+            str_ToFile = str_ToFile.Replace("'", "''");
 
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
             string sql_upd = _SQLBuilder.SQL_UpdSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, bl_SyncStatus);

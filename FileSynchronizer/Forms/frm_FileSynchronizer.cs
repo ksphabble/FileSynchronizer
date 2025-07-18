@@ -299,6 +299,12 @@ namespace FileSynchronizer
         {
             string[] arr_PairInfor = cls_Files_InfoDB.CheckAutoSyncPair();
             string[] arr_PairNames = new string[arr_PairInfor.Length];
+
+            if (arr_PairInfor.Length == 0)
+            {
+                return;
+            }
+
             for (int i = 0; i < arr_PairInfor.Length; i++)
             {
                 arr_PairNames[i] = arr_PairInfor[i].Split('|')[1];

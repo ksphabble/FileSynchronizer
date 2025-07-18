@@ -30,6 +30,7 @@
         {
             this.TxtPairLog = new System.Windows.Forms.RichTextBox();
             this.pnlPairExInfor = new System.Windows.Forms.Panel();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblNextSyncTime = new System.Windows.Forms.Label();
             this.lblLastSyncTime = new System.Windows.Forms.Label();
             this.lblSyncProgress = new System.Windows.Forms.Label();
@@ -57,13 +58,14 @@
             this.TxtPairLog.Location = new System.Drawing.Point(0, 19);
             this.TxtPairLog.Name = "TxtPairLog";
             this.TxtPairLog.ReadOnly = true;
-            this.TxtPairLog.Size = new System.Drawing.Size(920, 446);
+            this.TxtPairLog.Size = new System.Drawing.Size(920, 448);
             this.TxtPairLog.TabIndex = 0;
             this.TxtPairLog.Text = "";
             // 
             // pnlPairExInfor
             // 
             this.pnlPairExInfor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlPairExInfor.Controls.Add(this.progressBar1);
             this.pnlPairExInfor.Controls.Add(this.lblNextSyncTime);
             this.pnlPairExInfor.Controls.Add(this.lblLastSyncTime);
             this.pnlPairExInfor.Controls.Add(this.lblSyncProgress);
@@ -79,10 +81,20 @@
             this.pnlPairExInfor.Controls.Add(this.label5);
             this.pnlPairExInfor.Controls.Add(this.label2);
             this.pnlPairExInfor.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlPairExInfor.Location = new System.Drawing.Point(0, 465);
+            this.pnlPairExInfor.Location = new System.Drawing.Point(0, 467);
             this.pnlPairExInfor.Name = "pnlPairExInfor";
-            this.pnlPairExInfor.Size = new System.Drawing.Size(920, 35);
+            this.pnlPairExInfor.Size = new System.Drawing.Size(920, 33);
             this.pnlPairExInfor.TabIndex = 20;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(757, 19);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(0);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(162, 12);
+            this.progressBar1.TabIndex = 31;
             // 
             // lblNextSyncTime
             // 
@@ -90,7 +102,7 @@
             this.lblNextSyncTime.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblNextSyncTime.Location = new System.Drawing.Point(264, 3);
             this.lblNextSyncTime.Name = "lblNextSyncTime";
-            this.lblNextSyncTime.Size = new System.Drawing.Size(127, 15);
+            this.lblNextSyncTime.Size = new System.Drawing.Size(95, 12);
             this.lblNextSyncTime.TabIndex = 29;
             this.lblNextSyncTime.Text = "(NextSyncTimeA)";
             // 
@@ -100,7 +112,7 @@
             this.lblLastSyncTime.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblLastSyncTime.Location = new System.Drawing.Point(83, 3);
             this.lblLastSyncTime.Name = "lblLastSyncTime";
-            this.lblLastSyncTime.Size = new System.Drawing.Size(127, 15);
+            this.lblLastSyncTime.Size = new System.Drawing.Size(95, 12);
             this.lblLastSyncTime.TabIndex = 27;
             this.lblLastSyncTime.Text = "(LastSyncTimeA)";
             // 
@@ -111,7 +123,7 @@
             this.lblSyncProgress.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblSyncProgress.Location = new System.Drawing.Point(874, 3);
             this.lblSyncProgress.Name = "lblSyncProgress";
-            this.lblSyncProgress.Size = new System.Drawing.Size(55, 15);
+            this.lblSyncProgress.Size = new System.Drawing.Size(41, 12);
             this.lblSyncProgress.TabIndex = 19;
             this.lblSyncProgress.Text = "(%%%%)";
             // 
@@ -122,7 +134,7 @@
             this.lblFileCountSync.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblFileCountSync.Location = new System.Drawing.Point(698, 3);
             this.lblFileCountSync.Name = "lblFileCountSync";
-            this.lblFileCountSync.Size = new System.Drawing.Size(63, 15);
+            this.lblFileCountSync.Size = new System.Drawing.Size(47, 12);
             this.lblFileCountSync.TabIndex = 23;
             this.lblFileCountSync.Text = "(FileA)";
             // 
@@ -133,7 +145,7 @@
             this.lblFileCountFound.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblFileCountFound.Location = new System.Drawing.Point(511, 3);
             this.lblFileCountFound.Name = "lblFileCountFound";
-            this.lblFileCountFound.Size = new System.Drawing.Size(63, 15);
+            this.lblFileCountFound.Size = new System.Drawing.Size(47, 12);
             this.lblFileCountFound.TabIndex = 20;
             this.lblFileCountFound.Text = "(FileF)";
             // 
@@ -144,7 +156,7 @@
             this.lblAnalysisProgress.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblAnalysisProgress.Location = new System.Drawing.Point(433, 3);
             this.lblAnalysisProgress.Name = "lblAnalysisProgress";
-            this.lblAnalysisProgress.Size = new System.Drawing.Size(55, 15);
+            this.lblAnalysisProgress.Size = new System.Drawing.Size(41, 12);
             this.lblAnalysisProgress.TabIndex = 17;
             this.lblAnalysisProgress.Text = "(%%%%)";
             // 
@@ -154,7 +166,7 @@
             this.label7.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label7.Location = new System.Drawing.Point(3, 3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(112, 15);
+            this.label7.Size = new System.Drawing.Size(89, 12);
             this.label7.TabIndex = 28;
             this.label7.Text = "最后同步时间：";
             // 
@@ -164,7 +176,7 @@
             this.label9.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label9.Location = new System.Drawing.Point(184, 3);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(112, 15);
+            this.label9.Size = new System.Drawing.Size(89, 12);
             this.label9.TabIndex = 30;
             this.label9.Text = "下次同步时间：";
             // 
@@ -173,9 +185,9 @@
             this.lblBeingSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblBeingSync.AutoSize = true;
             this.lblBeingSync.Font = new System.Drawing.Font("宋体", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblBeingSync.Location = new System.Drawing.Point(64, 21);
+            this.lblBeingSync.Location = new System.Drawing.Point(53, 19);
             this.lblBeingSync.Name = "lblBeingSync";
-            this.lblBeingSync.Size = new System.Drawing.Size(84, 13);
+            this.lblBeingSync.Size = new System.Drawing.Size(60, 10);
             this.lblBeingSync.TabIndex = 26;
             this.lblBeingSync.Text = "(BeingSync)";
             // 
@@ -184,9 +196,9 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("宋体", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(3, 21);
+            this.label4.Location = new System.Drawing.Point(3, 19);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(72, 13);
+            this.label4.Size = new System.Drawing.Size(55, 10);
             this.label4.TabIndex = 25;
             this.label4.Text = "正在进行：";
             // 
@@ -197,7 +209,7 @@
             this.label3.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label3.Location = new System.Drawing.Point(564, 3);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(172, 15);
+            this.label3.Size = new System.Drawing.Size(137, 12);
             this.label3.TabIndex = 24;
             this.label3.Text = "个文件或目录对象，其中";
             // 
@@ -208,7 +220,7 @@
             this.label1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label1.Location = new System.Drawing.Point(370, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 15);
+            this.label1.Size = new System.Drawing.Size(65, 12);
             this.label1.TabIndex = 18;
             this.label1.Text = "分析进度：";
             // 
@@ -219,7 +231,7 @@
             this.label5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label5.Location = new System.Drawing.Point(751, 3);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(157, 15);
+            this.label5.Size = new System.Drawing.Size(125, 12);
             this.label5.TabIndex = 22;
             this.label5.Text = "个需同步，同步进度：";
             // 
@@ -230,7 +242,7 @@
             this.label2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.Location = new System.Drawing.Point(473, 3);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(52, 15);
+            this.label2.Size = new System.Drawing.Size(41, 12);
             this.label2.TabIndex = 21;
             this.label2.Text = "已找到";
             // 
@@ -240,7 +252,7 @@
             this.lblPairInfor.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblPairInfor.Location = new System.Drawing.Point(3, 1);
             this.lblPairInfor.Name = "lblPairInfor";
-            this.lblPairInfor.Size = new System.Drawing.Size(191, 20);
+            this.lblPairInfor.Size = new System.Drawing.Size(157, 17);
             this.lblPairInfor.TabIndex = 2;
             this.lblPairInfor.Text = "PairName:DIR1<--->DIR2";
             // 
@@ -291,5 +303,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lblFileCountSync;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }

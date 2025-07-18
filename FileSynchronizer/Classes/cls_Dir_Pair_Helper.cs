@@ -1014,7 +1014,7 @@ namespace FileSynchronizer
         /// 同步文件夹配对
         /// </summary>
         /// <param name="TableFileDiff"></param>
-        public void SyncDirPair(DataTable TableFileDiff)
+        public void SyncDirPair(DataTable TableFileDiff, ProgressBar progressBar)
         {
             #region Define Varibles
             string str_StartOprMessage = "开始同步配对（" + str_PairName + "）" + (cls_Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致此操作不能全部完成，请注意！" : "");
@@ -1116,9 +1116,12 @@ namespace FileSynchronizer
                                 str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
                                 OnSetOngoingItem(str_OngoingRecMsg);
                                 LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
-                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                                if (int_TrySyncCount <= 1)
                                 {
-                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                    if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                                    {
+                                        LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                    }
                                 }
                                 if (!cls_Global_Settings.DebugMode)
                                 {
@@ -1126,11 +1129,11 @@ namespace FileSynchronizer
                                     {
                                         if (File.Exists(str_FromFileTemp))
                                         {
-                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
+                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
                                         }
                                         else
                                         {
-                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFile, str_ToFile, false, true);
+                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFile, str_ToFile, false, true);
                                         }
                                         if (bl_SyncRecordDone)
                                         {
@@ -1179,9 +1182,12 @@ namespace FileSynchronizer
                                 str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-A- " + str_FromFile;
                                 OnSetOngoingItem(str_OngoingRecMsg);
                                 LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
-                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                                if (int_TrySyncCount <= 1)
                                 {
-                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                    if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                                    {
+                                        LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                    }
                                 }
                                 if (!cls_Global_Settings.DebugMode)
                                 {
@@ -1189,11 +1195,11 @@ namespace FileSynchronizer
                                     {
                                         if (File.Exists(str_FromFileTemp))
                                         {
-                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
+                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
                                         }
                                         else
                                         {
-                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFile, str_ToFile, false, true);
+                                            bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFile, str_ToFile, false, true);
                                         }
                                         if (bl_SyncRecordDone)
                                         {
@@ -1232,9 +1238,12 @@ namespace FileSynchronizer
                             str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
                             OnSetOngoingItem(str_OngoingRecMsg);
                             LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
-                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                            if (int_TrySyncCount <= 1)
                             {
-                                LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                                {
+                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                }
                             }
                             if (!cls_Global_Settings.DebugMode)
                             {
@@ -1247,11 +1256,11 @@ namespace FileSynchronizer
                                     }
                                     if (File.Exists(str_FromFileTemp))
                                     {
-                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
+                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
                                     }
                                     else
                                     {
-                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFile, str_ToFile, false, true);
+                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFile, str_ToFile, false, true);
                                     }
                                     if (bl_SyncRecordDone)
                                     {
@@ -1289,9 +1298,12 @@ namespace FileSynchronizer
                             str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-U- " + str_FromFile;
                             OnSetOngoingItem(str_OngoingRecMsg);
                             LogPairMessage(str_PairName, str_OngoingRecMsg, true, true, 3);
-                            if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                            if (int_TrySyncCount <= 1)
                             {
-                                LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                if (!cls_Files_InfoDB.AddSyncDetail(str_PairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
+                                {
+                                    LogPairMessage(str_PairName, str_DatabaseErrorMsg, true, true, 3);
+                                }
                             }
                             if (!cls_Global_Settings.DebugMode)
                             {
@@ -1304,11 +1316,11 @@ namespace FileSynchronizer
                                     }
                                     if (File.Exists(str_FromFileTemp))
                                     {
-                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
+                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFileTemp, str_ToFile, str_FromFile != str_FromFileTemp, true);
                                     }
                                     else
                                     {
-                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFile(str_FromFile, str_ToFile, false, true);
+                                        bl_SyncRecordDone = FileHelper.CopyOrMoveFileWithProgress(progressBar, str_FromFile, str_ToFile, false, true);
                                     }
                                     if (bl_SyncRecordDone)
                                     {
