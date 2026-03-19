@@ -31,7 +31,6 @@ namespace FileSynchronizer
         {
             //检查日志文件
             if (cls_LogProgramFile.InitLog()) LogProgramMessage("生成日志文件", true, true, 0);
-
             InitLocalDatabase();
 
             this.Text = String.Join("_Ver.", c_ProgramTitle, g_sMainProgramVersion);
@@ -40,16 +39,8 @@ namespace FileSynchronizer
             string str_ErrorMsg = String.Empty;
             InitProgramUpdater();
             SetTimerAutoUpdate();
-
             //调整调试模式功能
             DebugModeFunction(true);
-
-            //检查程序启动时是否自动最小化窗口
-            if (Global_Settings.MinWhenStart)
-            {
-                HideMainForm();
-            }
-
             RebindPairTable();
 
             if (!Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, Global_Settings.DebugMode, out str_ErrorMsg))
@@ -63,6 +54,12 @@ namespace FileSynchronizer
 
             var task = Task.Factory.StartNew(() => StartTimer());
             //StartTimer();
+
+            //检查程序启动时是否自动最小化窗口
+            if (Global_Settings.MinWhenStart)
+            {
+                HideMainForm();
+            }
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -73,33 +70,40 @@ namespace FileSynchronizer
                 return;
             }
 
-            string str_PairName = tabControl1.SelectedTab.Name;
-            g_sSelectedPairName = str_PairName;
-            DataRow _dr = GetPairInfor(str_PairName);
-            if (_dr == null)
+            try
             {
-                LogProgramMessage("没有找到配对（" + str_PairName + "）的信息", true, true, 1);
-                return;
-            }
+                string str_PairName = tabControl1.SelectedTab.Name;
+                g_sSelectedPairName = str_PairName;
+                DataRow _dr = GetPairInfor(str_PairName);
+                if (_dr == null)
+                {
+                    LogProgramMessage("没有找到配对（" + str_PairName + "）的信息", true, true, 1);
+                    return;
+                }
 
-            string str_AutoSyncInterval = _dr.ItemArray[7].ToString();
-            int int_AutoSyncInterval = 0;
-            if (!Int32.TryParse(str_AutoSyncInterval, out int_AutoSyncInterval)) int_AutoSyncInterval = 0;
-            string str_IsPausedSync = _dr.ItemArray[9].ToString();
+                string str_AutoSyncInterval = _dr.ItemArray[7].ToString();
+                int int_AutoSyncInterval = 0;
+                if (!Int32.TryParse(str_AutoSyncInterval, out int_AutoSyncInterval)) int_AutoSyncInterval = 0;
+                string str_IsPausedSync = _dr.ItemArray[9].ToString();
 
-            btnPauseSync.Visible = int_AutoSyncInterval != 0;
-            if (!Boolean.Parse(str_IsPausedSync))
-            {
-                btnPauseSync.Text = "暂停自动同步";
-            }
-            else
-            {
-                btnPauseSync.Text = "恢复自动同步";
-            }
+                btnPauseSync.Visible = int_AutoSyncInterval != 0;
+                if (!Boolean.Parse(str_IsPausedSync))
+                {
+                    btnPauseSync.Text = "暂停自动同步";
+                }
+                else
+                {
+                    btnPauseSync.Text = "恢复自动同步";
+                }
 
-            if (dataGridView1.RowCount > 0)
+                if (dataGridView1.RowCount > 0)
+                {
+                    dataGridView1.Rows[tabControl1.SelectedIndex - 1].Selected = true;
+                }
+            }
+            catch (Exception ex)
             {
-                dataGridView1.Rows[tabControl1.SelectedIndex - 1].Selected = true;
+                LogProgramMessage(ex.Message, true, true, 4, true);
             }
         }
 
@@ -291,15 +295,18 @@ namespace FileSynchronizer
         {
             try
             {
-                //LogProgramMessage("Timer Test log", true, true, 0);
-                RebindPairTable();
-                CheckAutoSyncPair();
-                if (cls_LogProgramFile.LogToCache) cls_LogProgramFile.LogMsgFromCacheToFile();
-
-                if (DateTime.Now >= DateTime.Today.AddMilliseconds(0) && DateTime.Now <= DateTime.Today.AddMilliseconds(c_Timer_Interval) && Global_Settings.AutoClearLog)
+                lock (this)
                 {
-                    LogProgramMessage("执行每日自动清除界面日志", true, true, 3);
-                    ClearAllLogs();
+                    //LogProgramMessage("Timer Test log", true, true, 0);
+                    RebindPairTable();
+                    CheckAutoSyncPair();
+                    if (cls_LogProgramFile.LogToCache) cls_LogProgramFile.LogMsgFromCacheToFile();
+
+                    if (DateTime.Now >= DateTime.Today.AddMilliseconds(0) && DateTime.Now <= DateTime.Today.AddMilliseconds(c_Timer_Interval) && Global_Settings.AutoClearLog)
+                    {
+                        LogProgramMessage("执行每日自动清除界面日志", true, true, 3);
+                        ClearAllLogs();
+                    }
                 }
             }
             catch (Exception ex)
@@ -552,6 +559,7 @@ namespace FileSynchronizer
                 PairPanal.OperationStarted += PairPanal_OperationStarted;
                 PairPanal.OperationDone += PairPanal_OperationDone;
                 PairPanal.FileWatcherInitDone += PairPanal_FileWatcherInitDone;
+                PairPanal.ObjectsInforReady += PairPanal_ObjectsInforReady;
                 tabPageDirPair.Controls.Add(PairPanal);
                 tabControl1.Controls.Add(tabPageDirPair);
             }
@@ -560,6 +568,13 @@ namespace FileSynchronizer
             {
                 tabControl1.SelectedIndex = str_SlectedTabIdx;
             }
+        }
+
+        private void PairPanal_ObjectsInforReady(object sender)
+        {
+            ctrl_PairPanal _PairPanal = (ctrl_PairPanal)sender;
+            string sReadyPairName = _PairPanal.PairName;
+            LogProgramMessage("初始化配对获取信息完成 --- " + sReadyPairName, true, true, 1);
         }
 
         private void PairPanal_OperationStarted(object sender)
@@ -718,14 +733,18 @@ namespace FileSynchronizer
         {
             ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.TabPages[PairName].Controls[0];
             PairStatus pairStatus;
-            if (CurrentPair.IsPairBusy(out pairStatus))
+
+            lock (CurrentPair)
             {
-                string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
-                LogProgramMessage(str_PairStatus, true, true, 1);
-            }
-            else
-            {
-                CurrentPair.DoAnalysisSyncDirPair(IsAnalysis);
+                if (CurrentPair.IsPairBusy(out pairStatus))
+                {
+                    string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
+                    LogProgramMessage(str_PairStatus, true, true, 1);
+                }
+                else
+                {
+                    CurrentPair.DoAnalysisSyncDirPair(IsAnalysis);
+                }
             }
         }
 

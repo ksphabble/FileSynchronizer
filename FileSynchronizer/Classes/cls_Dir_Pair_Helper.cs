@@ -31,11 +31,13 @@ namespace FileSynchronizer
         private bool g_bCancelRequested = false;
         private cls_Files_Info_Helper g_Files_Info;
         private bool g_ObjectsInforReady = false;
+        private DateTime g_InitTime;
 
         public bool ObjectsInforReadyIndc { get => g_ObjectsInforReady; }
 
         public cls_Dir_Pair_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2, string sLastSyncDT, PairStatus pPairStatus, string sFilterRule, int iAutoSyncInterval, int iSyncDirection, bool bIsPaused)
         {
+            g_InitTime = DateTime.Now;
             g_sPairID = sPairID;
             g_sPairName = sPairName;
             g_sDir1Path = sDirPath1;
@@ -53,7 +55,9 @@ namespace FileSynchronizer
 
         private void G_Files_Info_ObjectsInforReady(object sender)
         {
-            LogPairMessage(g_sPairName, "配对信息初始化完成", true, true, 3);
+            var dt_InitGap = DateTime.Now.Subtract(g_InitTime);
+            int iTotalObjectCount = g_Files_Info.TotalObjectCount();
+            LogPairMessage(g_sPairName, "配对信息初始化完成，花费" + dt_InitGap.TotalSeconds.ToString() + "秒，找到" + iTotalObjectCount.ToString() + "个文件/文件夹", true, true, 3);
             g_ObjectsInforReady = true;
             OnObjectsInforReady();
         }
@@ -67,12 +71,12 @@ namespace FileSynchronizer
         public DataTable AnalysisDirPair(bool IsAnalysisOnly)
         {
             #region Pre-Validation
-            if (!g_Files_Info.ObjectInfoReady())
-            {
-                string str_ObjectInfoNotReadyMessage = "配对信息未完全准备好，稍后将自动重试！";
-                LogPairMessage(g_sPairName, str_ObjectInfoNotReadyMessage, true, true, Global_Settings.DebugMode ? 2 : 1);
-                return null;
-            }
+            //if (!g_Files_Info.ObjectInfoReady())
+            //{
+            //    string str_ObjectInfoNotReadyMessage = "配对信息未完全准备好，稍后将自动重试！";
+            //    LogPairMessage(g_sPairName, str_ObjectInfoNotReadyMessage, true, true, Global_Settings.DebugMode ? 2 : 1);
+            //    return null;
+            //}
 
             string str_StartOprMessage = "开始分析配对（" + g_sPairName + "）" + (Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致此操作不能全部完成，请注意！" : "");
             LogPairMessage(g_sPairName, str_StartOprMessage, true, true, Global_Settings.DebugMode ? 2 : 1);
@@ -100,8 +104,8 @@ namespace FileSynchronizer
                 return null;
             }
             string str_Dir1TableName = g_sPairName + "_DIR1_" + _dir1.Name;
-            DirectoryInfo[] subDir1 = g_Files_Info.GetDirectoryInfos1();
-            FileInfo[] fileInfos1 = g_Files_Info.GetFileInfos1();
+            DirectoryInfo[] subDir1 = FetchDirInformation(c_Dir1_Str);
+            FileInfo[] fileInfos1 = FetchFileInformation(c_Dir1_Str);
             DataTable dt_File1InforDB = Files_InfoDB.GetFileInfor(str_Dir1TableName, out str_OutLogMsg);
 
             //DIR2的子目录和文件信息
@@ -114,8 +118,8 @@ namespace FileSynchronizer
                 return null;
             }
             string str_Dir2TableName = g_sPairName + "_DIR2_" + _dir2.Name;
-            DirectoryInfo[] subDir2 = g_Files_Info.GetDirectoryInfos2();
-            FileInfo[] fileInfos2 = g_Files_Info.GetFileInfos2();
+            DirectoryInfo[] subDir2 = FetchDirInformation(c_Dir2_Str);
+            FileInfo[] fileInfos2 = FetchFileInformation(c_Dir2_Str);
             DataTable dt_File2InforDB = Files_InfoDB.GetFileInfor(str_Dir2TableName, out str_OutLogMsg);
 
             int int_TotalFileFound = subDir1.Length + fileInfos1.Length + subDir2.Length + fileInfos2.Length + dt_File1InforDB.Rows.Count + dt_File2InforDB.Rows.Count;
@@ -892,7 +896,7 @@ namespace FileSynchronizer
         /// 同步文件夹配对
         /// </summary>
         /// <param name="TableFileDiff"></param>
-        public bool SyncDirPair(DataTable TableFileDiff, bool bRealTime = false)
+        public async Task<bool> SyncDirPair(DataTable TableFileDiff, bool bRealTime = false)
         {
             #region Define Varibles
             string str_DebugModeWarning = Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致同步操作无法完成，请注意！" : "";
@@ -1895,6 +1899,54 @@ namespace FileSynchronizer
         public void CancelOperation()
         {
             g_bCancelRequested = true;
+        }
+
+        private DirectoryInfo[] FetchDirInformation(string str_DirString)
+        {
+            DirectoryInfo[] directoryInfos = null;
+            if (str_DirString == c_Dir1_Str)
+            {
+                DirectoryInfo _dir1 = new DirectoryInfo(g_sDir1Path);
+                directoryInfos = g_Files_Info.GetDirectoryInfos1();
+                if (directoryInfos == null || directoryInfos.Length == 0)
+                {
+                    directoryInfos = _dir1.GetDirectories("*", SearchOption.AllDirectories);
+                }
+            }
+            else if (str_DirString == c_Dir2_Str)
+            {
+                DirectoryInfo _dir2 = new DirectoryInfo(g_sDir2Path);
+                directoryInfos = g_Files_Info.GetDirectoryInfos2();
+                if (directoryInfos == null || directoryInfos.Length == 0)
+                {
+                    directoryInfos = _dir2.GetDirectories("*", SearchOption.AllDirectories);
+                }
+            }
+            return directoryInfos;
+        }
+
+        private FileInfo[] FetchFileInformation(string str_DirString)
+        {
+            FileInfo[] fileInfos = null;
+            if (str_DirString == c_Dir1_Str)
+            {
+                DirectoryInfo _dir1 = new DirectoryInfo(g_sDir1Path);
+                fileInfos = g_Files_Info.GetFileInfos1();
+                if (fileInfos == null || fileInfos.Length == 0)
+                {
+                    fileInfos = _dir1.GetFiles("*", SearchOption.AllDirectories);
+                }
+            }
+            else if (str_DirString == c_Dir2_Str)
+            {
+                DirectoryInfo _dir2 = new DirectoryInfo(g_sDir2Path);
+                fileInfos = g_Files_Info.GetFileInfos2();
+                if (fileInfos == null || fileInfos.Length == 0)
+                {
+                    fileInfos = _dir2.GetFiles("*", SearchOption.AllDirectories);
+                }
+            }
+            return fileInfos;
         }
         #endregion
 

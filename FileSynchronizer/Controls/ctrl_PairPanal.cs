@@ -99,6 +99,7 @@ namespace FileSynchronizer
                 LogPairMessage("Initilized done, do first Sync", true, true, true);
                 DoAnalysisSyncDirPair(false);
             }
+            OnObjectsInforReady();
         }
 
         private void Dir_Pair_Helper_PairStatusChange(object sender, PairStatus pairStatus)
@@ -293,51 +294,64 @@ namespace FileSynchronizer
         {
             try
             {
-                //在特定时候检查任务是否被取消
-                if (gTokenSource.IsCancellationRequested) { return; }
-
-                //更新最后同步时间
-                UpdateLastSyncTime(DateTime.Now, false, g_iAutoSyncInterval);
-                OnOperationStarted();
-                ResetSyncLabels();
-
-                //Thread.Sleep(5000);
-                while (!Dir_Pair_Helper.ObjectsInforReadyIndc)
+                lock (this)
                 {
-                    string str_ObjectInfoNotReadyMessage = "配对信息未完全准备好，稍后将自动重试！";
-                    LogPairMessage(str_ObjectInfoNotReadyMessage, true, true);
-                    Thread.Sleep(1000);
-                }
+                    //在特定时候检查任务是否被取消
+                    if (gTokenSource.IsCancellationRequested) { return; }
 
-                //在特定时候检查任务是否被取消
-                if (gTokenSource.IsCancellationRequested) { return; }
-                string str_ErrorMsg = String.Empty;
-                if (!Files_InfoDB.RevertUnfinishedSyncDetail(g_sPairName, Global_Settings.DebugMode, out str_ErrorMsg))
-                {
-                    LogPairMessage(str_ErrorMsg, true, true);
-                }
+                    //更新最后同步时间
+                    UpdateLastSyncTime(DateTime.Now, false, g_iAutoSyncInterval);
+                    OnOperationStarted();
+                    ResetSyncLabels();
 
-                //在特定时候检查任务是否被取消
-                if (gTokenSource.IsCancellationRequested) { return; }
-                bool IsAnalysisOnly = (bool)bIsAnalysisOnly;
-                DataTable dataTableFileDiff = Dir_Pair_Helper.AnalysisDirPair(IsAnalysisOnly);
+                    //int iRetryWait = 1;
+                    //while (!Dir_Pair_Helper.ObjectsInforReadyIndc)
+                    //{
+                    //    if (iRetryWait > c_MAX_RetryWaitInfor)
+                    //    {
+                    //        string str_ObjectInfoNotReadyMessage = "配对信息未完全准备好并且超过最大重试次数，稍后请手动尝试！";
+                    //        LogPairMessage(str_ObjectInfoNotReadyMessage, true, true);
+                    //        return;
+                    //    }
+                    //    else
+                    //    {
+                    //        string str_ObjectInfoNotReadyMessage = "配对信息未完全准备好，稍后将自动重试！";
+                    //        LogPairMessage(str_ObjectInfoNotReadyMessage, true, true);
+                    //        Thread.Sleep(1000);
+                    //        iRetryWait++;
+                    //    }
+                    //}
 
-                //在特定时候检查任务是否被取消
-                if (gTokenSource.IsCancellationRequested) { return; }
-                if (!IsAnalysisOnly && dataTableFileDiff != null)
-                {
-                    int int_TotalChngCount = dataTableFileDiff.Rows.Count;
-                    SetSyncCount(int_TotalChngCount);
-                    if (int_TotalChngCount > 0)
+                    //在特定时候检查任务是否被取消
+                    if (gTokenSource.IsCancellationRequested) { return; }
+                    string str_ErrorMsg = String.Empty;
+                    if (!Files_InfoDB.RevertUnfinishedSyncDetail(g_sPairName, Global_Settings.DebugMode, out str_ErrorMsg))
                     {
-                        //配对有差异，线程暂停500毫秒之后开始同步
-                        Thread.Sleep(500);
-                        Dir_Pair_Helper.SyncDirPair(dataTableFileDiff);
+                        LogPairMessage(str_ErrorMsg, true, true);
                     }
-                }
 
-                //更新最后同步时间
-                UpdateLastSyncTime(DateTime.Now, true, g_iAutoSyncInterval);
+                    //在特定时候检查任务是否被取消
+                    if (gTokenSource.IsCancellationRequested) { return; }
+                    bool IsAnalysisOnly = (bool)bIsAnalysisOnly;
+                    DataTable dataTableFileDiff = Dir_Pair_Helper.AnalysisDirPair(IsAnalysisOnly);
+
+                    //在特定时候检查任务是否被取消
+                    if (gTokenSource.IsCancellationRequested) { return; }
+                    if (!IsAnalysisOnly && dataTableFileDiff != null)
+                    {
+                        int int_TotalChngCount = dataTableFileDiff.Rows.Count;
+                        SetSyncCount(int_TotalChngCount);
+                        if (int_TotalChngCount > 0)
+                        {
+                            //配对有差异，线程暂停500毫秒之后开始同步
+                            Thread.Sleep(500);
+                            Dir_Pair_Helper.SyncDirPair(dataTableFileDiff);
+                        }
+                    }
+
+                    //更新最后同步时间
+                    UpdateLastSyncTime(DateTime.Now, true, g_iAutoSyncInterval);
+                }
             }
             catch (Exception ex)
             {
@@ -920,7 +934,7 @@ namespace FileSynchronizer
 
             if (dt_fileDiff != null && dt_fileDiff.Rows.Count > 0)
             {
-                return Dir_Pair_Helper.SyncDirPair(dt_fileDiff, true);
+                return Dir_Pair_Helper.SyncDirPair(dt_fileDiff, true).Result;
             }
             else
             {
@@ -936,6 +950,8 @@ namespace FileSynchronizer
         public event OperationStartedHandler OperationStarted;
         public delegate void FileWatcherInitDoneHandler(object sender);
         public event FileWatcherInitDoneHandler FileWatcherInitDone;
+        public delegate void ObjectsInforReadyHandler(object sender);
+        public event ObjectsInforReadyHandler ObjectsInforReady;
 
         protected virtual void OnOperationDone()
         {
@@ -958,6 +974,14 @@ namespace FileSynchronizer
             if (FileWatcherInitDone != null)
             {
                 FileWatcherInitDone(this);
+            }
+        }
+
+        protected virtual void OnObjectsInforReady()
+        {
+            if (ObjectsInforReady != null)
+            {
+                ObjectsInforReady(this);
             }
         }
         #endregion

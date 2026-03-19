@@ -22,6 +22,7 @@ namespace FileSynchronizer
         public const string c_Dir2_Str = @"DIR2";
         public const Int32 c_WaitFileClose_Int = 5000;
         public const Int32 c_Timer_Interval = 30000;
+        public const Int32 c_MAX_RetryWaitInfor = 10;
 
         public enum PairStatus
         {

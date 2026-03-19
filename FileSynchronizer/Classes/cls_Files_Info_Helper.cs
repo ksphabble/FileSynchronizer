@@ -72,21 +72,25 @@ namespace FileSynchronizer
         #region 私有方法
         private async Task LoadObjects()
         {
-            Thread thread1 = new Thread(new ParameterizedThreadStart(LoadObjects1));
-            thread1.Start(2);
-            Thread thread2 = new Thread(new ParameterizedThreadStart(LoadObjects2));
-            thread2.Start(2);
-
-            bool bObjectInfoReady = false;
-            while (!bObjectInfoReady)
+            lock (this)
             {
-                bObjectInfoReady = ObjectInfoReady();
-                if (bObjectInfoReady)
+                Thread thread1 = new Thread(new ParameterizedThreadStart(LoadObjects1));
+                thread1.IsBackground = true;
+                thread1.Start(2);
+                Thread thread2 = new Thread(new ParameterizedThreadStart(LoadObjects2));
+                thread2.IsBackground = true;
+                thread2.Start(2);
+
+                bool bObjectInfoReady = false;
+                while (!bObjectInfoReady)
                 {
-                    break;
+                    bObjectInfoReady = ObjectInfoReady();
+                    if (bObjectInfoReady)
+                    {
+                        break;
+                    }
                 }
             }
-
             OnObjectsInforReady();
         }
 
@@ -123,12 +127,14 @@ namespace FileSynchronizer
                 int i_Type = (int)iType;
                 if (i_Type == 0 || i_Type == 2)
                 {
-                    DirectoryInfo[] diTemp = g_dir1.GetDirectories("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    //DirectoryInfo[] diTemp = g_dir1.GetDirectories("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    DirectoryInfo[] diTemp = g_dir1.GetDirectories("*", SearchOption.AllDirectories);
                     g_subDir1 = diTemp;
                 }
                 if (i_Type == 1 || i_Type == 2)
                 {
-                    FileInfo[] fiTemp = g_dir1.GetFiles("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    //FileInfo[] fiTemp = g_dir1.GetFiles("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    FileInfo[] fiTemp = g_dir1.GetFiles("*", SearchOption.AllDirectories);
                     g_fileInfos1 = fiTemp;
                 }
             }
@@ -145,12 +151,14 @@ namespace FileSynchronizer
                 int i_Type = (int)iType;
                 if (i_Type == 0 || i_Type == 2)
                 {
-                    DirectoryInfo[] diTemp = g_dir2.GetDirectories("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    //DirectoryInfo[] diTemp = g_dir2.GetDirectories("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    DirectoryInfo[] diTemp = g_dir2.GetDirectories("*", SearchOption.AllDirectories);
                     g_subDir2 = diTemp;
                 }
                 if (i_Type == 1 || i_Type == 2)
                 {
-                    FileInfo[] fiTemp = g_dir2.GetFiles("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    //FileInfo[] fiTemp = g_dir2.GetFiles("*", SearchOption.AllDirectories).Where(d => !d.FullName.Contains(Local_Utilities.c_FSBackup_Str)).ToArray();
+                    FileInfo[] fiTemp = g_dir2.GetFiles("*", SearchOption.AllDirectories);
                     g_fileInfos2 = fiTemp;
                 }
             }
@@ -231,6 +239,18 @@ namespace FileSynchronizer
             bool bFile1Null = g_fileInfos1 == null;
             bool bFile2Null = g_fileInfos2 == null;
             return !(bDir1Null || bDir2Null || bFile1Null || bFile2Null);
+        }
+
+        public int TotalObjectCount()
+        {
+            if (!ObjectInfoReady())
+            {
+                return 0;
+            }
+            else
+            {
+                return g_subDir1.Length + g_subDir2.Length + g_fileInfos1.Length + g_fileInfos2.Length;
+            }
         }
         #endregion
     }
