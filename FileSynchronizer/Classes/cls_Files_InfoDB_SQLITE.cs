@@ -28,7 +28,8 @@ namespace FileSynchronizer
         {
             if (dbconn_SQLITE == null)
             {
-                dbconn_SQLITE = new SQLiteConnection(GetConnStrFromCPU());
+                dbconn_SQLITE = new SQLiteConnection();
+                dbconn_SQLITE.ConnectionString = GetConnStrFromCPU();
             }
             if (dbconn_SQLITE.State != ConnectionState.Open)
             {
@@ -796,9 +797,9 @@ namespace FileSynchronizer
             return bl_Result;
         }
 
-        public static bool DelFileInforSoft(string str_TableName, string str_FileID, string str_PairID, out string OutMsg)
+        public static bool DelFileInforSoft(string str_TableName, string str_FileID, string str_PairID, out string str_OutMsg)
         {
-            OutMsg = String.Empty;
+            str_OutMsg = String.Empty;
             str_TableName = "[" + str_TableName + "]";
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
             string sql_upd = _SQLBuilder.SQL_DelFileInforSoft(str_TableName, str_FileID, str_PairID);
@@ -811,7 +812,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                OutMsg = ex.Message;
+                str_OutMsg = ex.Message;
                 return false;
             }
         }
@@ -978,6 +979,69 @@ namespace FileSynchronizer
             {
                 str_OutMsg = ex.Message;
                 return null;
+            }
+        }
+
+        public static string[] GetFileIDs(string str_TableName, string str_FullPath, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            str_TableName = "[" + str_TableName + "]";
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_enq = _SQLBuilder.SQL_GetFileIDs(str_TableName, str_FullPath);
+
+            List<string> list_Output = new List<string> { };
+
+            try
+            {
+                SQLiteCommand cmd = new SQLiteCommand(sql_enq, dbconn_SQLITE);
+                cmd.CommandTimeout = 600;
+                SQLiteDataReader dr = cmd.ExecuteReader();
+                bool bl_HasNextRecord = true;
+
+                while (bl_HasNextRecord)
+                {
+                    bl_HasNextRecord = dr.Read();
+                    if (bl_HasNextRecord)
+                    {
+                        list_Output.Add(dr[0].ToString() + "|" + dr[1].ToString() + "|" + dr[2].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                str_OutMsg = ex.Message;
+                return null;
+            }
+
+            return list_Output.ToArray();
+        }
+
+        public static bool RenameFileOrDir(string str_TableName, string str_ParentDirPath, string str_OldName, string str_NewName, bool bl_IsFile, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (String.IsNullOrEmpty(str_TableName) || String.IsNullOrEmpty(str_OldName) || String.IsNullOrEmpty(str_NewName))
+            {
+                return false;
+            }
+
+            str_ParentDirPath = str_ParentDirPath.Replace("'", "''");
+            str_OldName = str_OldName.Replace("'", "''");
+            str_NewName = str_NewName.Replace("'", "''");
+
+            str_TableName = "[" + str_TableName + "]";
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_upd = _SQLBuilder.SQL_RenameFileOrDir(str_TableName, str_ParentDirPath, str_OldName, str_NewName, bl_IsFile);
+
+            try
+            {
+                SQLiteCommand cmd = new SQLiteCommand(sql_upd, dbconn_SQLITE);
+                int row = cmd.ExecuteNonQuery();
+                return row > 0;
+            }
+            catch (Exception ex)
+            {
+                str_OutMsg = ex.Message;
+                return false;
             }
         }
         #endregion

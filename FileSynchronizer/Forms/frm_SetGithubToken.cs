@@ -19,7 +19,7 @@ namespace FileSynchronizer.Forms
 
         private void frm_SetGithubToken_Load(object sender, EventArgs e)
         {
-            txtGithubToken.Text = cls_Global_Settings.GithubToken;
+            txtGithubToken.Text = Global_Settings.GithubToken;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -28,8 +28,8 @@ namespace FileSynchronizer.Forms
 
             if (MessageBox.Show("Github Token为Github设置，不是开发人员请勿触碰，否则造成的问题概不负责，确定？", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                cls_Global_Settings.GithubToken = txtGithubToken.Text;
-                cls_Global_Settings.SaveInfoToDB();
+                Global_Settings.GithubToken = txtGithubToken.Text;
+                Global_Settings.SaveInfoToDB();
                 label2.Visible = true;
             }
         }

@@ -229,11 +229,11 @@ namespace FileSynchronizer
             string sql_out = String.Empty;
             if (m_DBType.Equals(DATABASE_TYPE.ACCESS))
             {
-                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval<>0 and (DateDiff(""n"",LastSyncDT,now)>AutoSyncInterval or LastSyncDT is null) and IsPaused=false";
+                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval>0 and (DateDiff(""n"",LastSyncDT,now)>AutoSyncInterval or LastSyncDT is null) and IsPaused=false";
             }
             else if (m_DBType.Equals(DATABASE_TYPE.SQLITE))
             {
-                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval<>0 and ((strftime('%s',datetime('now','localtime'))-strftime('%s',LastSyncDT))/60>=AutoSyncInterval or LastSyncDT is null) and IsPaused=false;";
+                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval>0 and ((strftime('%s',datetime('now','localtime'))-strftime('%s',LastSyncDT))/60>=AutoSyncInterval or LastSyncDT is null) and IsPaused=false;";
             }
             return sql_out;
         }
@@ -325,7 +325,7 @@ namespace FileSynchronizer
 
         public string SQL_UpdFileInfor(string str_TableName, string str_FileName, string str_FilePath, string str_FileSize, string str_FileMD5, string str_FileLastModDate, string str_PairID)
         {
-            string sql_out = @"update " + str_TableName + " set FilePath = '" + str_FilePath + "' ";
+            string sql_out = @"update " + str_TableName + @" set FilePath = '" + str_FilePath + @"' ";
             if (!String.IsNullOrEmpty(str_FileSize))
             {
                 sql_out += @",FileSize = " + str_FileSize;
@@ -344,7 +344,9 @@ namespace FileSynchronizer
 
         public string SQL_DelFileInforSoft(string str_TableName, string str_FileID, string str_PairID)
         {
-            string sql_out = @"Update " + str_TableName + @" set FileStatus='DL' where PAIRID=" + str_PairID + @" and PK_FileID=" + str_FileID;
+            string sql_out = @"Update " + str_TableName + @" set FileStatus='DL' where PAIRID=" + str_PairID + @" and (PK_FileID=" + str_FileID;
+            sql_out += @" or PK_FileID in (Select PK_FileID from " + str_TableName + @" where PAIRID=" + str_PairID + @" and FilePath=(Select FilePath from " + str_TableName;
+            sql_out += @" where PAIRID=" + str_PairID + @" and FileName='~' and PK_FileID=" + str_FileID + @")))";
             return sql_out;
         }
 
@@ -388,6 +390,26 @@ namespace FileSynchronizer
             if (!String.IsNullOrEmpty(str_PairName))
             {
                 sql_out += @" and PAIRNAME='" + str_PairName + "'";
+            }
+            return sql_out;
+        }
+
+        public string SQL_GetFileIDs(string str_TableName, string str_FullPath)
+        {
+            string sql_out = @"Select PK_FileID,FilePath,FileName from " + str_TableName + @" where (FileName='~' and FilePath='" + str_FullPath + @"') or (FilePath||'\'||FileName='" + str_FullPath + @"')";
+            return sql_out;
+        }
+
+        public string SQL_RenameFileOrDir(string str_TableName, string str_ParentDirPath, string str_OldName, string str_NewName, bool bl_IsFile)
+        {
+            string sql_out = @"Update " + str_TableName + @" set ";
+            if (bl_IsFile)
+            {
+                sql_out += @"FileName = '" + str_NewName + @"' where FilePath = '" + str_ParentDirPath + @"' and FileName = '" + str_OldName + @"'";
+            }
+            else
+            {
+                sql_out += @"FilePath = '" + str_NewName + @"' where FilePath = '" + str_OldName + @"'";
             }
             return sql_out;
         }

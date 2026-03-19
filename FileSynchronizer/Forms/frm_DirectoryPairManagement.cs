@@ -56,7 +56,7 @@ namespace FileSynchronizer
             }
 
             int int_SyncDirection = comboBox1.SelectedIndex < 0 ? 0 : comboBox1.SelectedIndex;
-            if (cls_Files_InfoDB.AddDirPair(txtBoxPairName.Text, txtBoxDir1.Text, txtBoxDir2.Text, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, int_SyncDirection.ToString()))
+            if (Files_InfoDB.AddDirPair(txtBoxPairName.Text, txtBoxDir1.Text, txtBoxDir2.Text, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, int_SyncDirection.ToString()))
             {
                 list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "添加配对(" + txtBoxPairName.Text + ")，目录1(" + txtBoxDir1.Text + ")，目录2(" + txtBoxDir2.Text + ")");
                 RefreshDirPair();
@@ -70,7 +70,7 @@ namespace FileSynchronizer
             {
                 _DirPairDataTable.Reset();
             }
-            _DirPairDataTable = cls_Files_InfoDB.GetDirPairInfor(String.Empty);
+            _DirPairDataTable = Files_InfoDB.GetDirPairInfor(String.Empty);
             if (_DirPairDataTable == null)
             {
                 MessageBox.Show("获取配对发生错误，可能是数据库被占用，请稍后再试或者点击刷新");
@@ -120,7 +120,7 @@ namespace FileSynchronizer
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
 
-            cls_Files_InfoDB.DelDirPair(str_PairName, str_PairDir1, str_PairDir2);
+            Files_InfoDB.DelDirPair(str_PairName, str_PairDir1, str_PairDir2);
             list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "删除配对(" + txtBoxPairName.Text + ")");
             RefreshDirPair();
             bl_RefreshListRequired = true;
@@ -143,7 +143,7 @@ namespace FileSynchronizer
             }
 
             string str_outputMsg = String.Empty;
-            cls_Files_InfoDB.UpdatePairInfor(str_PairID, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, comboBox1.SelectedIndex.ToString(), out str_outputMsg);
+            Files_InfoDB.UpdatePairInfor(str_PairID, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, comboBox1.SelectedIndex.ToString(), out str_outputMsg);
             list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "更改配对(" + txtBoxPairName.Text + ")");
             if (!String.IsNullOrEmpty(str_outputMsg))
             {
@@ -215,7 +215,7 @@ namespace FileSynchronizer
 
             try
             {
-                FileHelper.DeleteDirectoryOrFile(str_PairDir1BK, true);
+                FileHelper.xDelete(str_PairDir1BK, true);
 
                 //DirectoryInfo directoryInfo1 = new DirectoryInfo(str_PairDir1BK);
                 //if (directoryInfo1.Exists)
@@ -243,7 +243,7 @@ namespace FileSynchronizer
 
             try
             {
-                FileHelper.DeleteDirectoryOrFile(str_PairDir2BK, true);
+                FileHelper.xDelete(str_PairDir2BK, true);
 
                 //DirectoryInfo directoryInfo2 = new DirectoryInfo(str_PairDir2BK);
                 //if (directoryInfo2.Exists)

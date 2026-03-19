@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace FileSynchronizer
@@ -11,6 +12,7 @@ namespace FileSynchronizer
         private static bool bl_LogToCache;
         public static bool LogToCache { get => bl_LogToCache; set => bl_LogToCache = value; }
         static string str_CacheMsg;
+        static ReaderWriterLockSlim LogWriteLock = new ReaderWriterLockSlim();
 
         /// <summary>
         /// 初始化日志文件
@@ -58,23 +60,32 @@ namespace FileSynchronizer
             //fs_GlobalStream.FlushAsync();
             //fs_GlobalStream.Close();
 
-            if (bl_LogToCache)
+            try
             {
-                str_CacheMsg += str_Message;
-                if (str_CacheMsg.Length > 600)
+                if (bl_LogToCache)
                 {
-                    LogMsgFromCacheToFile();
+                    str_CacheMsg += str_Message;
+                    if (str_CacheMsg.Length > 600)
+                    {
+                        LogMsgFromCacheToFile();
+                    }
+                    else
+                    {
+                        str_CacheMsg += "\n";
+                    }
                 }
                 else
                 {
-                    str_CacheMsg += "\n";
+                    LogWriteLock.EnterWriteLock();
+                    StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
+                    wr.WriteLine(str_Message);
+                    wr.Close();
+                    LogWriteLock.ExitWriteLock();
                 }
             }
-            else
+            catch (Exception)
             {
-                StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
-                wr.WriteLine(str_Message);
-                wr.Close();
+                throw;
             }
         }
 
@@ -108,6 +119,7 @@ namespace FileSynchronizer
         {
             try
             {
+                LogWriteLock.EnterWriteLock();
                 if (!String.IsNullOrEmpty(str_CacheMsg))
                 {
                     StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
@@ -120,6 +132,10 @@ namespace FileSynchronizer
             {
                 MessageBox.Show(ex.ToString(), "Error when logging to file");
                 return;
+            }
+            finally
+            {
+                LogWriteLock.ExitWriteLock();
             }
         }
 

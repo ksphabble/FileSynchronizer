@@ -28,408 +28,401 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frm_FileSynchronizer));
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPageMain = new System.Windows.Forms.TabPage();
-            this.TxtProgramLog = new System.Windows.Forms.RichTextBox();
-            this.btnSync = new System.Windows.Forms.Button();
-            this.btnAnalysis = new System.Windows.Forms.Button();
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.NotifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.MenuItemShowMain = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemSync = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemSyncAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.MenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnClearLog = new System.Windows.Forms.Button();
-            this.PgmMenu = new System.Windows.Forms.MenuStrip();
-            this.MenuItemPGM = new System.Windows.Forms.ToolStripMenuItem();
-            this.全局设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.管理同步文件夹对ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.更新日志ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.关于ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.项目Github主页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.检查更新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.btnStopOpr = new System.Windows.Forms.Button();
-            this.btnSyncAll = new System.Windows.Forms.Button();
-            this.btnPauseSync = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.btnTest = new System.Windows.Forms.Button();
-            this.btnOpenPairLog = new System.Windows.Forms.Button();
-            this.timerAutoUpdate = new System.Windows.Forms.Timer(this.components);
-            this.tabControl1.SuspendLayout();
-            this.tabPageMain.SuspendLayout();
-            this.NotifyMenu.SuspendLayout();
-            this.PgmMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.SuspendLayout();
+            tabControl1 = new System.Windows.Forms.TabControl();
+            tabPageMain = new System.Windows.Forms.TabPage();
+            TxtProgramLog = new System.Windows.Forms.RichTextBox();
+            btnSync = new System.Windows.Forms.Button();
+            btnAnalysis = new System.Windows.Forms.Button();
+            notifyIcon1 = new System.Windows.Forms.NotifyIcon(components);
+            NotifyMenu = new System.Windows.Forms.ContextMenuStrip(components);
+            MenuItemShowMain = new System.Windows.Forms.ToolStripMenuItem();
+            MenuItemSync = new System.Windows.Forms.ToolStripMenuItem();
+            MenuItemSyncAll = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            MenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
+            btnClearLog = new System.Windows.Forms.Button();
+            PgmMenu = new System.Windows.Forms.MenuStrip();
+            MenuItemPGM = new System.Windows.Forms.ToolStripMenuItem();
+            全局设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            管理同步文件夹对ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            MenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
+            更新日志ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            关于ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            项目Github主页ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            检查更新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            btnStopOpr = new System.Windows.Forms.Button();
+            btnSyncAll = new System.Windows.Forms.Button();
+            btnPauseSync = new System.Windows.Forms.Button();
+            dataGridView1 = new System.Windows.Forms.DataGridView();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            panel1 = new System.Windows.Forms.Panel();
+            btnTest = new System.Windows.Forms.Button();
+            btnOpenPairLog = new System.Windows.Forms.Button();
+            timerAutoUpdate = new System.Windows.Forms.Timer(components);
+            tabControl1.SuspendLayout();
+            tabPageMain.SuspendLayout();
+            NotifyMenu.SuspendLayout();
+            PgmMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            groupBox1.SuspendLayout();
+            panel1.SuspendLayout();
+            SuspendLayout();
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPageMain);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tabControl1.Location = new System.Drawing.Point(0, 162);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1240, 443);
-            this.tabControl1.TabIndex = 3;
-            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
+            tabControl1.Controls.Add(tabPageMain);
+            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 134);
+            tabControl1.Location = new System.Drawing.Point(0, 230);
+            tabControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new System.Drawing.Size(1055, 411);
+            tabControl1.TabIndex = 3;
+            tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
             // 
             // tabPageMain
             // 
-            this.tabPageMain.Controls.Add(this.TxtProgramLog);
-            this.tabPageMain.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tabPageMain.Location = new System.Drawing.Point(4, 24);
-            this.tabPageMain.Name = "tabPageMain";
-            this.tabPageMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMain.Size = new System.Drawing.Size(1232, 415);
-            this.tabPageMain.TabIndex = 0;
-            this.tabPageMain.Text = "程序日志";
-            this.tabPageMain.UseVisualStyleBackColor = true;
+            tabPageMain.Controls.Add(TxtProgramLog);
+            tabPageMain.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 134);
+            tabPageMain.Location = new System.Drawing.Point(4, 24);
+            tabPageMain.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            tabPageMain.Name = "tabPageMain";
+            tabPageMain.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            tabPageMain.Size = new System.Drawing.Size(1047, 383);
+            tabPageMain.TabIndex = 0;
+            tabPageMain.Text = "程序日志";
+            tabPageMain.UseVisualStyleBackColor = true;
             // 
             // TxtProgramLog
             // 
-            this.TxtProgramLog.BackColor = System.Drawing.SystemColors.Info;
-            this.TxtProgramLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TxtProgramLog.Location = new System.Drawing.Point(3, 3);
-            this.TxtProgramLog.Name = "TxtProgramLog";
-            this.TxtProgramLog.ReadOnly = true;
-            this.TxtProgramLog.Size = new System.Drawing.Size(1226, 409);
-            this.TxtProgramLog.TabIndex = 0;
-            this.TxtProgramLog.TabStop = false;
-            this.TxtProgramLog.Text = "";
+            TxtProgramLog.BackColor = System.Drawing.SystemColors.Info;
+            TxtProgramLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            TxtProgramLog.Location = new System.Drawing.Point(3, 4);
+            TxtProgramLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            TxtProgramLog.Name = "TxtProgramLog";
+            TxtProgramLog.ReadOnly = true;
+            TxtProgramLog.Size = new System.Drawing.Size(1041, 375);
+            TxtProgramLog.TabIndex = 0;
+            TxtProgramLog.TabStop = false;
+            TxtProgramLog.Text = "";
             // 
             // btnSync
             // 
-            this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSync.Location = new System.Drawing.Point(224, 639);
-            this.btnSync.Name = "btnSync";
-            this.btnSync.Size = new System.Drawing.Size(100, 30);
-            this.btnSync.TabIndex = 4;
-            this.btnSync.Text = "同步当前配对";
-            this.btnSync.UseVisualStyleBackColor = true;
-            this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
+            btnSync.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnSync.Location = new System.Drawing.Point(240, 679);
+            btnSync.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnSync.Name = "btnSync";
+            btnSync.Size = new System.Drawing.Size(109, 34);
+            btnSync.TabIndex = 4;
+            btnSync.Text = "同步当前配对";
+            btnSync.UseVisualStyleBackColor = true;
+            btnSync.Click += btnSync_Click;
             // 
             // btnAnalysis
             // 
-            this.btnAnalysis.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnAnalysis.Location = new System.Drawing.Point(648, 639);
-            this.btnAnalysis.Name = "btnAnalysis";
-            this.btnAnalysis.Size = new System.Drawing.Size(100, 30);
-            this.btnAnalysis.TabIndex = 5;
-            this.btnAnalysis.Text = "分析当前配对";
-            this.btnAnalysis.UseVisualStyleBackColor = true;
-            this.btnAnalysis.Click += new System.EventHandler(this.btnAnalysis_Click);
+            btnAnalysis.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnAnalysis.Location = new System.Drawing.Point(701, 679);
+            btnAnalysis.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnAnalysis.Name = "btnAnalysis";
+            btnAnalysis.Size = new System.Drawing.Size(109, 34);
+            btnAnalysis.TabIndex = 5;
+            btnAnalysis.Text = "分析当前配对";
+            btnAnalysis.UseVisualStyleBackColor = true;
+            btnAnalysis.Click += btnAnalysis_Click;
             // 
             // notifyIcon1
             // 
-            this.notifyIcon1.ContextMenuStrip = this.NotifyMenu;
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "FileSynchronizer";
-            this.notifyIcon1.Visible = true;
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            notifyIcon1.ContextMenuStrip = NotifyMenu;
+            notifyIcon1.Icon = (System.Drawing.Icon)resources.GetObject("notifyIcon1.Icon");
+            notifyIcon1.Text = "FileSynchronizer";
+            notifyIcon1.Visible = true;
+            notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
             // 
             // NotifyMenu
             // 
-            this.NotifyMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.NotifyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemShowMain,
-            this.MenuItemSync,
-            this.MenuItemSyncAll,
-            this.toolStripSeparator1,
-            this.MenuItemExit});
-            this.NotifyMenu.Name = "NotifyMenu";
-            this.NotifyMenu.Size = new System.Drawing.Size(137, 98);
+            NotifyMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            NotifyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { MenuItemShowMain, MenuItemSync, MenuItemSyncAll, toolStripSeparator1, MenuItemExit });
+            NotifyMenu.Name = "NotifyMenu";
+            NotifyMenu.Size = new System.Drawing.Size(137, 98);
             // 
             // MenuItemShowMain
             // 
-            this.MenuItemShowMain.Name = "MenuItemShowMain";
-            this.MenuItemShowMain.Size = new System.Drawing.Size(136, 22);
-            this.MenuItemShowMain.Text = "显示主界面";
-            this.MenuItemShowMain.Click += new System.EventHandler(this.MenuItemShowMain_Click);
-            this.MenuItemShowMain.MouseEnter += new System.EventHandler(this.MenuItemOther_MouseEnter);
+            MenuItemShowMain.Name = "MenuItemShowMain";
+            MenuItemShowMain.Size = new System.Drawing.Size(136, 22);
+            MenuItemShowMain.Text = "显示主界面";
+            MenuItemShowMain.Click += MenuItemShowMain_Click;
+            MenuItemShowMain.MouseEnter += MenuItemOther_MouseEnter;
             // 
             // MenuItemSync
             // 
-            this.MenuItemSync.Name = "MenuItemSync";
-            this.MenuItemSync.Size = new System.Drawing.Size(136, 22);
-            this.MenuItemSync.Text = "同步";
-            this.MenuItemSync.MouseEnter += new System.EventHandler(this.MenuItemSync_MouseEnter);
+            MenuItemSync.Name = "MenuItemSync";
+            MenuItemSync.Size = new System.Drawing.Size(136, 22);
+            MenuItemSync.Text = "同步";
+            MenuItemSync.MouseEnter += MenuItemSync_MouseEnter;
             // 
             // MenuItemSyncAll
             // 
-            this.MenuItemSyncAll.Name = "MenuItemSyncAll";
-            this.MenuItemSyncAll.Size = new System.Drawing.Size(136, 22);
-            this.MenuItemSyncAll.Text = "同步所有";
-            this.MenuItemSyncAll.Click += new System.EventHandler(this.MenuItemSyncAll_Click);
-            this.MenuItemSyncAll.MouseEnter += new System.EventHandler(this.MenuItemOther_MouseEnter);
+            MenuItemSyncAll.Name = "MenuItemSyncAll";
+            MenuItemSyncAll.Size = new System.Drawing.Size(136, 22);
+            MenuItemSyncAll.Text = "同步所有";
+            MenuItemSyncAll.Click += MenuItemSyncAll_Click;
+            MenuItemSyncAll.MouseEnter += MenuItemOther_MouseEnter;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
             // 
             // MenuItemExit
             // 
-            this.MenuItemExit.Name = "MenuItemExit";
-            this.MenuItemExit.Size = new System.Drawing.Size(136, 22);
-            this.MenuItemExit.Text = "退出程序";
-            this.MenuItemExit.Click += new System.EventHandler(this.MenuItemExit_Click);
+            MenuItemExit.Name = "MenuItemExit";
+            MenuItemExit.Size = new System.Drawing.Size(136, 22);
+            MenuItemExit.Text = "退出程序";
+            MenuItemExit.Click += MenuItemExit_Click;
             // 
             // btnClearLog
             // 
-            this.btnClearLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnClearLog.Location = new System.Drawing.Point(12, 639);
-            this.btnClearLog.Name = "btnClearLog";
-            this.btnClearLog.Size = new System.Drawing.Size(100, 30);
-            this.btnClearLog.TabIndex = 17;
-            this.btnClearLog.Text = "清空日志";
-            this.btnClearLog.UseVisualStyleBackColor = true;
-            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
+            btnClearLog.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnClearLog.Location = new System.Drawing.Point(10, 679);
+            btnClearLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnClearLog.Name = "btnClearLog";
+            btnClearLog.Size = new System.Drawing.Size(109, 34);
+            btnClearLog.TabIndex = 17;
+            btnClearLog.Text = "清空日志";
+            btnClearLog.UseVisualStyleBackColor = true;
+            btnClearLog.Click += btnClearLog_Click;
             // 
             // PgmMenu
             // 
-            this.PgmMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.PgmMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemPGM,
-            this.MenuItemHelp});
-            this.PgmMenu.Location = new System.Drawing.Point(0, 0);
-            this.PgmMenu.Name = "PgmMenu";
-            this.PgmMenu.Size = new System.Drawing.Size(1264, 25);
-            this.PgmMenu.TabIndex = 18;
-            this.PgmMenu.Text = "PgmMenu";
+            PgmMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            PgmMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { MenuItemPGM, MenuItemHelp });
+            PgmMenu.Location = new System.Drawing.Point(0, 0);
+            PgmMenu.Name = "PgmMenu";
+            PgmMenu.Padding = new System.Windows.Forms.Padding(7, 3, 0, 3);
+            PgmMenu.Size = new System.Drawing.Size(1076, 27);
+            PgmMenu.TabIndex = 18;
+            PgmMenu.Text = "PgmMenu";
             // 
             // MenuItemPGM
             // 
-            this.MenuItemPGM.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.全局设置ToolStripMenuItem,
-            this.管理同步文件夹对ToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.退出ToolStripMenuItem});
-            this.MenuItemPGM.Name = "MenuItemPGM";
-            this.MenuItemPGM.Size = new System.Drawing.Size(44, 21);
-            this.MenuItemPGM.Text = "程序";
+            MenuItemPGM.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { 全局设置ToolStripMenuItem, 管理同步文件夹对ToolStripMenuItem, toolStripSeparator2, 退出ToolStripMenuItem });
+            MenuItemPGM.Name = "MenuItemPGM";
+            MenuItemPGM.Size = new System.Drawing.Size(44, 21);
+            MenuItemPGM.Text = "程序";
             // 
             // 全局设置ToolStripMenuItem
             // 
-            this.全局设置ToolStripMenuItem.Name = "全局设置ToolStripMenuItem";
-            this.全局设置ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.全局设置ToolStripMenuItem.Text = "全局设置";
-            this.全局设置ToolStripMenuItem.Click += new System.EventHandler(this.全局设置ToolStripMenuItem_Click);
+            全局设置ToolStripMenuItem.Name = "全局设置ToolStripMenuItem";
+            全局设置ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            全局设置ToolStripMenuItem.Text = "全局设置";
+            全局设置ToolStripMenuItem.Click += 全局设置ToolStripMenuItem_Click;
             // 
             // 管理同步文件夹对ToolStripMenuItem
             // 
-            this.管理同步文件夹对ToolStripMenuItem.Name = "管理同步文件夹对ToolStripMenuItem";
-            this.管理同步文件夹对ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.管理同步文件夹对ToolStripMenuItem.Text = "管理目录配对";
-            this.管理同步文件夹对ToolStripMenuItem.Click += new System.EventHandler(this.管理同步文件夹对ToolStripMenuItem_Click);
+            管理同步文件夹对ToolStripMenuItem.Name = "管理同步文件夹对ToolStripMenuItem";
+            管理同步文件夹对ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            管理同步文件夹对ToolStripMenuItem.Text = "管理目录配对";
+            管理同步文件夹对ToolStripMenuItem.Click += 管理同步文件夹对ToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
             // 
             // 退出ToolStripMenuItem
             // 
-            this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.退出ToolStripMenuItem.Text = "退出";
-            this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
+            退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
+            退出ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            退出ToolStripMenuItem.Text = "退出";
+            退出ToolStripMenuItem.Click += 退出ToolStripMenuItem_Click;
             // 
             // MenuItemHelp
             // 
-            this.MenuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.更新日志ToolStripMenuItem,
-            this.关于ToolStripMenuItem1,
-            this.项目Github主页ToolStripMenuItem,
-            this.检查更新ToolStripMenuItem});
-            this.MenuItemHelp.Name = "MenuItemHelp";
-            this.MenuItemHelp.Size = new System.Drawing.Size(44, 21);
-            this.MenuItemHelp.Text = "帮助";
+            MenuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { 更新日志ToolStripMenuItem, 关于ToolStripMenuItem1, 项目Github主页ToolStripMenuItem, 检查更新ToolStripMenuItem });
+            MenuItemHelp.Name = "MenuItemHelp";
+            MenuItemHelp.Size = new System.Drawing.Size(44, 21);
+            MenuItemHelp.Text = "帮助";
             // 
             // 更新日志ToolStripMenuItem
             // 
-            this.更新日志ToolStripMenuItem.Name = "更新日志ToolStripMenuItem";
-            this.更新日志ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.更新日志ToolStripMenuItem.Text = "更新日志";
-            this.更新日志ToolStripMenuItem.Click += new System.EventHandler(this.更新日志ToolStripMenuItem_Click);
+            更新日志ToolStripMenuItem.Name = "更新日志ToolStripMenuItem";
+            更新日志ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            更新日志ToolStripMenuItem.Text = "更新日志";
+            更新日志ToolStripMenuItem.Click += 更新日志ToolStripMenuItem_Click;
             // 
             // 关于ToolStripMenuItem1
             // 
-            this.关于ToolStripMenuItem1.Name = "关于ToolStripMenuItem1";
-            this.关于ToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.关于ToolStripMenuItem1.Text = "关于";
-            this.关于ToolStripMenuItem1.Click += new System.EventHandler(this.关于ToolStripMenuItem1_Click);
+            关于ToolStripMenuItem1.Name = "关于ToolStripMenuItem1";
+            关于ToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            关于ToolStripMenuItem1.Text = "关于";
+            关于ToolStripMenuItem1.Click += 关于ToolStripMenuItem1_Click;
             // 
             // 项目Github主页ToolStripMenuItem
             // 
-            this.项目Github主页ToolStripMenuItem.Name = "项目Github主页ToolStripMenuItem";
-            this.项目Github主页ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.项目Github主页ToolStripMenuItem.Text = "项目Github主页";
-            this.项目Github主页ToolStripMenuItem.Click += new System.EventHandler(this.项目Github主页ToolStripMenuItem_Click);
+            项目Github主页ToolStripMenuItem.Name = "项目Github主页ToolStripMenuItem";
+            项目Github主页ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            项目Github主页ToolStripMenuItem.Text = "项目Github主页";
+            项目Github主页ToolStripMenuItem.Click += 项目Github主页ToolStripMenuItem_Click;
             // 
             // 检查更新ToolStripMenuItem
             // 
-            this.检查更新ToolStripMenuItem.Name = "检查更新ToolStripMenuItem";
-            this.检查更新ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.检查更新ToolStripMenuItem.Text = "检查更新";
-            this.检查更新ToolStripMenuItem.Click += new System.EventHandler(this.检查更新ToolStripMenuItem_Click);
-            // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 30000;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            检查更新ToolStripMenuItem.Name = "检查更新ToolStripMenuItem";
+            检查更新ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            检查更新ToolStripMenuItem.Text = "检查更新";
+            检查更新ToolStripMenuItem.Click += 检查更新ToolStripMenuItem_Click;
             // 
             // btnStopOpr
             // 
-            this.btnStopOpr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnStopOpr.Location = new System.Drawing.Point(436, 639);
-            this.btnStopOpr.Name = "btnStopOpr";
-            this.btnStopOpr.Size = new System.Drawing.Size(100, 30);
-            this.btnStopOpr.TabIndex = 20;
-            this.btnStopOpr.Text = "停止所有操作";
-            this.btnStopOpr.UseVisualStyleBackColor = true;
-            this.btnStopOpr.Click += new System.EventHandler(this.btnStopOpr_Click);
+            btnStopOpr.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnStopOpr.Location = new System.Drawing.Point(471, 679);
+            btnStopOpr.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnStopOpr.Name = "btnStopOpr";
+            btnStopOpr.Size = new System.Drawing.Size(109, 34);
+            btnStopOpr.TabIndex = 20;
+            btnStopOpr.Text = "停止所有操作";
+            btnStopOpr.UseVisualStyleBackColor = true;
+            btnStopOpr.Click += btnStopOpr_Click;
             // 
             // btnSyncAll
             // 
-            this.btnSyncAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSyncAll.Location = new System.Drawing.Point(330, 639);
-            this.btnSyncAll.Name = "btnSyncAll";
-            this.btnSyncAll.Size = new System.Drawing.Size(100, 30);
-            this.btnSyncAll.TabIndex = 21;
-            this.btnSyncAll.Text = "同步所有配对";
-            this.btnSyncAll.UseVisualStyleBackColor = true;
-            this.btnSyncAll.Click += new System.EventHandler(this.btnSyncAll_Click);
+            btnSyncAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnSyncAll.Location = new System.Drawing.Point(355, 679);
+            btnSyncAll.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnSyncAll.Name = "btnSyncAll";
+            btnSyncAll.Size = new System.Drawing.Size(109, 34);
+            btnSyncAll.TabIndex = 21;
+            btnSyncAll.Text = "同步所有配对";
+            btnSyncAll.UseVisualStyleBackColor = true;
+            btnSyncAll.Click += btnSyncAll_Click;
             // 
             // btnPauseSync
             // 
-            this.btnPauseSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPauseSync.Location = new System.Drawing.Point(542, 639);
-            this.btnPauseSync.Name = "btnPauseSync";
-            this.btnPauseSync.Size = new System.Drawing.Size(100, 30);
-            this.btnPauseSync.TabIndex = 23;
-            this.btnPauseSync.Text = "暂停自动同步";
-            this.btnPauseSync.UseVisualStyleBackColor = true;
-            this.btnPauseSync.Click += new System.EventHandler(this.btnPauseSync_Click);
+            btnPauseSync.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnPauseSync.Location = new System.Drawing.Point(586, 679);
+            btnPauseSync.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnPauseSync.Name = "btnPauseSync";
+            btnPauseSync.Size = new System.Drawing.Size(109, 34);
+            btnPauseSync.TabIndex = 23;
+            btnPauseSync.Text = "暂停自动同步";
+            btnPauseSync.UseVisualStyleBackColor = true;
+            btnPauseSync.Click += btnPauseSync_Click;
             // 
             // dataGridView1
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeColumns = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 17);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1234, 142);
-            this.dataGridView1.TabIndex = 1;
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            this.dataGridView1.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDoubleClick);
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.AllowUserToResizeColumns = false;
+            dataGridView1.AllowUserToResizeRows = false;
+            dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
+            dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            dataGridView1.Location = new System.Drawing.Point(3, 20);
+            dataGridView1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            dataGridView1.MultiSelect = false;
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.ReadOnly = true;
+            dataGridView1.RowHeadersVisible = false;
+            dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            dataGridView1.RowTemplate.Height = 23;
+            dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.Size = new System.Drawing.Size(1049, 206);
+            dataGridView1.TabIndex = 1;
+            dataGridView1.CellClick += dataGridView1_CellClick;
+            dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.dataGridView1);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox1.Location = new System.Drawing.Point(0, 0);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1240, 162);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "配对总览";
+            groupBox1.Controls.Add(dataGridView1);
+            groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            groupBox1.Location = new System.Drawing.Point(0, 0);
+            groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            groupBox1.Size = new System.Drawing.Size(1055, 230);
+            groupBox1.TabIndex = 2;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "配对总览";
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.tabControl1);
-            this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Location = new System.Drawing.Point(12, 28);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1240, 605);
-            this.panel1.TabIndex = 24;
+            panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            panel1.Controls.Add(tabControl1);
+            panel1.Controls.Add(groupBox1);
+            panel1.Location = new System.Drawing.Point(10, 30);
+            panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(1055, 641);
+            panel1.TabIndex = 24;
             // 
             // btnTest
             // 
-            this.btnTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnTest.Location = new System.Drawing.Point(754, 639);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(100, 30);
-            this.btnTest.TabIndex = 25;
-            this.btnTest.Text = "测试按钮";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            btnTest.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnTest.Location = new System.Drawing.Point(816, 679);
+            btnTest.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnTest.Name = "btnTest";
+            btnTest.Size = new System.Drawing.Size(109, 34);
+            btnTest.TabIndex = 25;
+            btnTest.Text = "测试按钮";
+            btnTest.UseVisualStyleBackColor = true;
+            btnTest.Click += btnTest_Click;
             // 
             // btnOpenPairLog
             // 
-            this.btnOpenPairLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOpenPairLog.Location = new System.Drawing.Point(118, 639);
-            this.btnOpenPairLog.Name = "btnOpenPairLog";
-            this.btnOpenPairLog.Size = new System.Drawing.Size(100, 30);
-            this.btnOpenPairLog.TabIndex = 26;
-            this.btnOpenPairLog.Text = "打开日志";
-            this.btnOpenPairLog.UseVisualStyleBackColor = true;
-            this.btnOpenPairLog.Click += new System.EventHandler(this.btnOpenPairLog_Click);
+            btnOpenPairLog.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnOpenPairLog.Location = new System.Drawing.Point(125, 679);
+            btnOpenPairLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnOpenPairLog.Name = "btnOpenPairLog";
+            btnOpenPairLog.Size = new System.Drawing.Size(109, 34);
+            btnOpenPairLog.TabIndex = 26;
+            btnOpenPairLog.Text = "打开日志";
+            btnOpenPairLog.UseVisualStyleBackColor = true;
+            btnOpenPairLog.Click += btnOpenPairLog_Click;
             // 
             // timerAutoUpdate
             // 
-            this.timerAutoUpdate.Tick += new System.EventHandler(this.timerAutoUpdate_Tick);
+            timerAutoUpdate.Tick += timerAutoUpdate_Tick;
             // 
             // frm_FileSynchronizer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1264, 681);
-            this.Controls.Add(this.btnOpenPairLog);
-            this.Controls.Add(this.btnTest);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.btnPauseSync);
-            this.Controls.Add(this.btnSyncAll);
-            this.Controls.Add(this.btnStopOpr);
-            this.Controls.Add(this.PgmMenu);
-            this.Controls.Add(this.btnClearLog);
-            this.Controls.Add(this.btnAnalysis);
-            this.Controls.Add(this.btnSync);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.PgmMenu;
-            this.MinimumSize = new System.Drawing.Size(1280, 720);
-            this.Name = "frm_FileSynchronizer";
-            this.Text = "FileSynchronizer";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FileSynchronizer_FormClosing);
-            this.Load += new System.EventHandler(this.frmFileSynchronizer_Load);
-            this.SizeChanged += new System.EventHandler(this.FileSynchronizer_SizeChanged);
-            this.tabControl1.ResumeLayout(false);
-            this.tabPageMain.ResumeLayout(false);
-            this.NotifyMenu.ResumeLayout(false);
-            this.PgmMenu.ResumeLayout(false);
-            this.PgmMenu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.SystemColors.Window;
+            ClientSize = new System.Drawing.Size(1076, 732);
+            Controls.Add(btnOpenPairLog);
+            Controls.Add(btnTest);
+            Controls.Add(panel1);
+            Controls.Add(btnPauseSync);
+            Controls.Add(btnSyncAll);
+            Controls.Add(btnStopOpr);
+            Controls.Add(PgmMenu);
+            Controls.Add(btnClearLog);
+            Controls.Add(btnAnalysis);
+            Controls.Add(btnSync);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = PgmMenu;
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            MinimumSize = new System.Drawing.Size(1092, 771);
+            Name = "frm_FileSynchronizer";
+            Text = "FileSynchronizer";
+            FormClosing += FileSynchronizer_FormClosing;
+            Load += frmFileSynchronizer_Load;
+            SizeChanged += FileSynchronizer_SizeChanged;
+            tabControl1.ResumeLayout(false);
+            tabPageMain.ResumeLayout(false);
+            NotifyMenu.ResumeLayout(false);
+            PgmMenu.ResumeLayout(false);
+            PgmMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            groupBox1.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -454,7 +447,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItemHelp;
         private System.Windows.Forms.ToolStripMenuItem MenuItemShowMain;
         private System.Windows.Forms.ToolStripMenuItem 关于ToolStripMenuItem1;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem 更新日志ToolStripMenuItem;
         private System.Windows.Forms.Button btnStopOpr;
         private System.Windows.Forms.Button btnSyncAll;

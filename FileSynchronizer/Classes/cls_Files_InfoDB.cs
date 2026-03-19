@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Windows.Forms;
 using static System.Net.WebRequestMethods;
-using static FileSynchronizer.cls_Common_Constants;
+using static FileSynchronizer.Local_Utilities;
 
 namespace FileSynchronizer
 {
     /// <summary>
     /// 数据库总入口，能够给根据当前数据库类型调用对应的数据库方法
     /// </summary>
-    public static class cls_Files_InfoDB
+    public static class Files_InfoDB
     {
         #region Variables
         private static cls_SQLBuilder.DATABASE_TYPE m_DBType;
@@ -861,6 +862,40 @@ namespace FileSynchronizer
 
             str_OutMsg = str_OutMsg + "清理完成" + (i_RevertedCount > 0 ? "，请按需手动处理上述未完成的同步任务" : String.Empty);
             return i_RevertedCount == 0;
+        }
+
+        public static string[] GetFileIDs(string str_TableName, string str_FullPath, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.GetFileIDs(str_TableName, str_FullPath, out str_OutMsg);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.GetFileIDs(str_TableName, str_FullPath, out str_OutMsg);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static bool RenameFileOrDir(string str_TableName, string str_ParentDirPath, string str_OldName, string str_NewName, bool bl_IsFile, out string str_OutMsg)
+        {
+            str_OutMsg = String.Empty;
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.RenameFileOrDir(str_TableName, str_ParentDirPath, str_OldName, str_NewName, bl_IsFile, out str_OutMsg);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.RenameFileOrDir(str_TableName, str_ParentDirPath, str_OldName, str_NewName, bl_IsFile, out str_OutMsg);
+            }
+            else
+            {
+                return false;
+            }
         }
         #endregion
     }

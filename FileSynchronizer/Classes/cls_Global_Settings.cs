@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FileSynchronizer
 {
-    public static class cls_Global_Settings
+    public static class Global_Settings
     {
         #region Variables
         private static GlobalSettingHelper globalSettingHelper;
@@ -26,6 +26,7 @@ namespace FileSynchronizer
         @"MaxKeepBackup|int|5",
         @"AutoCheckUpdateInterval|int|7",
         @"GithubToken|string|",
+        @"DevelopMode|bool|false",
         };
 
         #region Program Common Variables
@@ -44,13 +45,14 @@ namespace FileSynchronizer
         public static int MaxKeepBackup;
         public static int AutoCheckUpdateInterval;
         public static string GithubToken;
+        public static bool DevelopMode;
         #endregion
         #endregion
 
         #region Settings Methods
         public static void Init_Settings()
         {
-            dicGlobalSettings = cls_Files_InfoDB.SelectAllGlobalSettingsDic();
+            dicGlobalSettings = Files_InfoDB.SelectAllGlobalSettingsDic();
 
             if (globalSettingHelper == null)
             {
@@ -70,7 +72,7 @@ namespace FileSynchronizer
                 {
                     SaveInfoToDB(strVarName, obj_SettingValue.ToString());
                 }
-                typeof(cls_Global_Settings).GetField(strVarName).SetValue(null, obj_SettingValue);
+                typeof(Global_Settings).GetField(strVarName).SetValue(null, obj_SettingValue);
             }
         }
 
@@ -82,7 +84,7 @@ namespace FileSynchronizer
             for (int i = 0; i < listGlobalSettings.Length; i++)
             {
                 string strVarName = listGlobalSettings[i].Split('|')[0];
-                string str_Value = typeof(cls_Global_Settings).GetField(strVarName).GetValue(null).ToString();
+                string str_Value = typeof(Global_Settings).GetField(strVarName).GetValue(null).ToString();
 
                 SaveInfoToDB(strVarName, str_Value);
             }
@@ -94,7 +96,7 @@ namespace FileSynchronizer
             dicGlobalSettings.TryGetValue(SettingName, out str_Value);
             if (String.IsNullOrEmpty(str_Value) || !str_Value.Equals(SettingValue, StringComparison.OrdinalIgnoreCase))
             {
-                return cls_Files_InfoDB.AddorUpdGlobalSetting(SettingName, SettingValue, true);
+                return Files_InfoDB.AddorUpdGlobalSetting(SettingName, SettingValue, true);
             }
             return true;
         }

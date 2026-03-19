@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -120,7 +120,15 @@
   <data name="richTextBox1.Text" xml:space="preserve">
     <value>By Habble, 此工具是我从2022年开始利用业余时间写出来的，主要是因为其他第三方同步工具都需要付费，而我自己刚好有同步需求，所以有了这个工具，图个方便，非盈利性质，如果想要实际支持一下，可以联系我的微信号：ksphabble
 如果使用过程中出现BUG或者有好的建议，请在GITHUB上反馈或者联系邮箱：ksphabble@hotmail.com
-------------------- （以下是更新日志，我就直接把从2022年开始所有的都贴上来吧） -------------------
+--------------- （以下是更新日志，我就直接把从2022年开始所有的都贴上来吧） ---------------
+版本：3.0.0.1
+日期：2026-3-19
+改动：
+1.	重要更新！实装实时同步功能，在配对管理器里面把自动同步间隔时间设置为0即可使用
+2.	从这个版本开始程序将升级为基于“.NET 8.0“运行库，最低系统要求WIN7，以适应后续的.NET发展
+3.	整体性能的提升，现在程序将会在后台预加载配对目录里的文件/子目录信息，以此提升同步时的性能，尤其针对文件夹内容多的配对效果非常好
+4.	用户体验优化与问题修复
+
 版本：2.2.0.5
 日期：2025-7-20
 改动：

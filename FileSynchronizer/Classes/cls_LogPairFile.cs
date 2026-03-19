@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,6 +13,7 @@ namespace FileSynchronizer
     {
         private string str_LogFile = String.Empty;
         private string str_FileName = String.Empty;
+        ReaderWriterLockSlim LogWriteLock = new ReaderWriterLockSlim();
 
         /// <summary>
         /// 创建一个新的配对日志记录类
@@ -48,9 +50,21 @@ namespace FileSynchronizer
         /// <param name="Message">日志消息</param>
         public void LogMessage(string Message)
         {
-            StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
-            wr.WriteLine(Message);
-            wr.Close();
+            try
+            {
+                LogWriteLock.EnterWriteLock();
+                StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
+                wr.WriteLine(Message);
+                wr.Close();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                LogWriteLock.ExitWriteLock();
+            }
         }
 
         public bool IsLogFileInUse()

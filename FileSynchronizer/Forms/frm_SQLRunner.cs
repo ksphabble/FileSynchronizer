@@ -24,7 +24,7 @@ namespace FileSynchronizer.Forms
 
         private void PrintAllTables()
         {
-            string[] arr_TableNames = cls_Files_InfoDB.GetAllTableName();
+            string[] arr_TableNames = Files_InfoDB.GetAllTableName();
             if (arr_TableNames != null)
             {
                 txtTableNames.Clear();
@@ -48,7 +48,7 @@ namespace FileSynchronizer.Forms
             if (str_SQL.StartsWith("select ", StringComparison.OrdinalIgnoreCase) && str_SQL.ToLower().Contains(" from "))
             {
                 string str_DataLine = String.Empty;
-                DataTable dt = cls_Files_InfoDB.SQLEnquiry(str_SQL, out str_SQLOutput);
+                DataTable dt = Files_InfoDB.SQLEnquiry(str_SQL, out str_SQLOutput);
                 if (dt != null)
                 {
                     for (int i = 0; i < dt.Columns.Count; i++)
@@ -72,7 +72,7 @@ namespace FileSynchronizer.Forms
             else if ((str_SQL.StartsWith("update ", StringComparison.OrdinalIgnoreCase) && str_SQL.ToLower().Contains(" set ")) ||
                 str_SQL.StartsWith("delete from", StringComparison.OrdinalIgnoreCase))
             {
-                int i_Output = cls_Files_InfoDB.SQLExecutor(str_SQL, out str_SQLOutput);
+                int i_Output = Files_InfoDB.SQLExecutor(str_SQL, out str_SQLOutput);
                 txtOutput.Text += (i_Output.ToString() + "条记录被执行" + str_SQLOutput + "\n");
             }
             else

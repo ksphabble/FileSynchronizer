@@ -30,469 +30,518 @@ namespace FileSynchronizer
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frm_GlobalSettings));
-            this.label18 = new System.Windows.Forms.Label();
-            this.lblPGMVer = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.lblDBVer = new System.Windows.Forms.Label();
-            this.chkboxDebugMode = new System.Windows.Forms.CheckBox();
-            this.chkboxLogMsgToFile = new System.Windows.Forms.CheckBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.btnFixPair = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtboxTraceLevel = new System.Windows.Forms.TextBox();
-            this.chkboxDeleteToBackup = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtboxAutoCheckUpdateInterval = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtboxMaxKeepBackup = new System.Windows.Forms.TextBox();
-            this.chkBoxMinStart = new System.Windows.Forms.CheckBox();
-            this.chkBoxAutoClearLog = new System.Windows.Forms.CheckBox();
-            this.btnSelectLocalTempFolder = new System.Windows.Forms.Button();
-            this.txtboxLocalTempFolder = new System.Windows.Forms.TextBox();
-            this.chkboxUseLocalTemp = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txtboxRetrySyncInterval = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtboxRetrySyncCount = new System.Windows.Forms.TextBox();
-            this.btnClearLogFile = new System.Windows.Forms.Button();
-            this.chkboxAutoRun = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.pnlDebugTools = new System.Windows.Forms.Panel();
-            this.btnSQLRunner = new System.Windows.Forms.Button();
-            this.lblCurrentDB = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.comboxDBMigration = new System.Windows.Forms.ComboBox();
-            this.btnStartDBMigration = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btnSetGithubToken = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.pnlDebugTools.SuspendLayout();
-            this.SuspendLayout();
+            label18 = new System.Windows.Forms.Label();
+            lblPGMVer = new System.Windows.Forms.Label();
+            label17 = new System.Windows.Forms.Label();
+            lblDBVer = new System.Windows.Forms.Label();
+            chkboxDebugMode = new System.Windows.Forms.CheckBox();
+            chkboxLogMsgToFile = new System.Windows.Forms.CheckBox();
+            button3 = new System.Windows.Forms.Button();
+            button2 = new System.Windows.Forms.Button();
+            btnFixPair = new System.Windows.Forms.Button();
+            label1 = new System.Windows.Forms.Label();
+            txtboxTraceLevel = new System.Windows.Forms.TextBox();
+            chkboxDeleteToBackup = new System.Windows.Forms.CheckBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            label6 = new System.Windows.Forms.Label();
+            txtboxAutoCheckUpdateInterval = new System.Windows.Forms.TextBox();
+            label7 = new System.Windows.Forms.Label();
+            txtboxMaxKeepBackup = new System.Windows.Forms.TextBox();
+            chkBoxMinStart = new System.Windows.Forms.CheckBox();
+            chkBoxAutoClearLog = new System.Windows.Forms.CheckBox();
+            btnSelectLocalTempFolder = new System.Windows.Forms.Button();
+            txtboxLocalTempFolder = new System.Windows.Forms.TextBox();
+            chkboxUseLocalTemp = new System.Windows.Forms.CheckBox();
+            label4 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            txtboxRetrySyncInterval = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            txtboxRetrySyncCount = new System.Windows.Forms.TextBox();
+            btnClearLogFile = new System.Windows.Forms.Button();
+            chkboxAutoRun = new System.Windows.Forms.CheckBox();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            pnlDebugTools = new System.Windows.Forms.Panel();
+            chkboxDevelopMode = new System.Windows.Forms.CheckBox();
+            btnSetGithubToken = new System.Windows.Forms.Button();
+            btnSQLRunner = new System.Windows.Forms.Button();
+            lblCurrentDB = new System.Windows.Forms.Label();
+            label5 = new System.Windows.Forms.Label();
+            comboxDBMigration = new System.Windows.Forms.ComboBox();
+            btnStartDBMigration = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            pnlDebugTools.SuspendLayout();
+            SuspendLayout();
             // 
             // label18
             // 
-            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(338, 330);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(77, 12);
-            this.label18.TabIndex = 104;
-            this.label18.Text = "主程序版本：";
+            label18.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            label18.AutoSize = true;
+            label18.Location = new System.Drawing.Point(394, 468);
+            label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label18.Name = "label18";
+            label18.Size = new System.Drawing.Size(80, 17);
+            label18.TabIndex = 104;
+            label18.Text = "主程序版本：";
             // 
             // lblPGMVer
             // 
-            this.lblPGMVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPGMVer.AutoSize = true;
-            this.lblPGMVer.Location = new System.Drawing.Point(421, 330);
-            this.lblPGMVer.Name = "lblPGMVer";
-            this.lblPGMVer.Size = new System.Drawing.Size(71, 12);
-            this.lblPGMVer.TabIndex = 105;
-            this.lblPGMVer.Text = "MainPrgmVer";
+            lblPGMVer.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            lblPGMVer.AutoSize = true;
+            lblPGMVer.Location = new System.Drawing.Point(491, 468);
+            lblPGMVer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblPGMVer.Name = "lblPGMVer";
+            lblPGMVer.Size = new System.Drawing.Size(88, 17);
+            lblPGMVer.TabIndex = 105;
+            lblPGMVer.Text = "MainPrgmVer";
             // 
             // label17
             // 
-            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(338, 354);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(77, 12);
-            this.label17.TabIndex = 102;
-            this.label17.Text = "数据库版本：";
+            label17.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(394, 502);
+            label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(80, 17);
+            label17.TabIndex = 102;
+            label17.Text = "数据库版本：";
             // 
             // lblDBVer
             // 
-            this.lblDBVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDBVer.AutoSize = true;
-            this.lblDBVer.Location = new System.Drawing.Point(421, 354);
-            this.lblDBVer.Name = "lblDBVer";
-            this.lblDBVer.Size = new System.Drawing.Size(71, 12);
-            this.lblDBVer.TabIndex = 103;
-            this.lblDBVer.Text = "DatabaseVer";
+            lblDBVer.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            lblDBVer.AutoSize = true;
+            lblDBVer.Location = new System.Drawing.Point(491, 502);
+            lblDBVer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblDBVer.Name = "lblDBVer";
+            lblDBVer.Size = new System.Drawing.Size(83, 17);
+            lblDBVer.TabIndex = 103;
+            lblDBVer.Text = "DatabaseVer";
             // 
             // chkboxDebugMode
             // 
-            this.chkboxDebugMode.AutoSize = true;
-            this.chkboxDebugMode.Location = new System.Drawing.Point(6, 22);
-            this.chkboxDebugMode.Name = "chkboxDebugMode";
-            this.chkboxDebugMode.Size = new System.Drawing.Size(180, 16);
-            this.chkboxDebugMode.TabIndex = 106;
-            this.chkboxDebugMode.Text = "调试模式（仅开发人员使用）";
-            this.chkboxDebugMode.UseVisualStyleBackColor = true;
+            chkboxDebugMode.AutoSize = true;
+            chkboxDebugMode.Location = new System.Drawing.Point(7, 31);
+            chkboxDebugMode.Margin = new System.Windows.Forms.Padding(4);
+            chkboxDebugMode.Name = "chkboxDebugMode";
+            chkboxDebugMode.Size = new System.Drawing.Size(183, 21);
+            chkboxDebugMode.TabIndex = 106;
+            chkboxDebugMode.Text = "调试模式（仅开发人员使用）";
+            chkboxDebugMode.UseVisualStyleBackColor = true;
             // 
             // chkboxLogMsgToFile
             // 
-            this.chkboxLogMsgToFile.AutoSize = true;
-            this.chkboxLogMsgToFile.Location = new System.Drawing.Point(6, 44);
-            this.chkboxLogMsgToFile.Name = "chkboxLogMsgToFile";
-            this.chkboxLogMsgToFile.Size = new System.Drawing.Size(120, 16);
-            this.chkboxLogMsgToFile.TabIndex = 107;
-            this.chkboxLogMsgToFile.Text = "保存日志到文件：";
-            this.chkboxLogMsgToFile.UseVisualStyleBackColor = true;
+            chkboxLogMsgToFile.AutoSize = true;
+            chkboxLogMsgToFile.Location = new System.Drawing.Point(7, 62);
+            chkboxLogMsgToFile.Margin = new System.Windows.Forms.Padding(4);
+            chkboxLogMsgToFile.Name = "chkboxLogMsgToFile";
+            chkboxLogMsgToFile.Size = new System.Drawing.Size(123, 21);
+            chkboxLogMsgToFile.TabIndex = 107;
+            chkboxLogMsgToFile.Text = "保存日志到文件：";
+            chkboxLogMsgToFile.UseVisualStyleBackColor = true;
             // 
             // button3
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button3.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button3.Location = new System.Drawing.Point(118, 333);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(100, 33);
-            this.button3.TabIndex = 109;
-            this.button3.Text = "关闭";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            button3.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            button3.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            button3.Location = new System.Drawing.Point(138, 472);
+            button3.Margin = new System.Windows.Forms.Padding(4);
+            button3.Name = "button3";
+            button3.Size = new System.Drawing.Size(117, 47);
+            button3.TabIndex = 109;
+            button3.Text = "关闭";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // button2
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(12, 333);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(100, 33);
-            this.button2.TabIndex = 108;
-            this.button2.Text = "保存";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            button2.Location = new System.Drawing.Point(14, 472);
+            button2.Margin = new System.Windows.Forms.Padding(4);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(117, 47);
+            button2.TabIndex = 108;
+            button2.Text = "保存";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // btnFixPair
             // 
-            this.btnFixPair.Location = new System.Drawing.Point(119, 31);
-            this.btnFixPair.Name = "btnFixPair";
-            this.btnFixPair.Size = new System.Drawing.Size(110, 25);
-            this.btnFixPair.TabIndex = 110;
-            this.btnFixPair.Text = "修复文件夹配对";
-            this.btnFixPair.UseVisualStyleBackColor = true;
-            this.btnFixPair.Click += new System.EventHandler(this.btnFixPair_Click);
+            btnFixPair.Location = new System.Drawing.Point(139, 44);
+            btnFixPair.Margin = new System.Windows.Forms.Padding(4);
+            btnFixPair.Name = "btnFixPair";
+            btnFixPair.Size = new System.Drawing.Size(128, 35);
+            btnFixPair.TabIndex = 110;
+            btnFixPair.Text = "修复文件夹配对";
+            btnFixPair.UseVisualStyleBackColor = true;
+            btnFixPair.Click += btnFixPair_Click;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(198, 23);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(239, 12);
-            this.label1.TabIndex = 111;
-            this.label1.Text = "日志等级（1~5，等级越高日志记录越完整）";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(281, 32);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(247, 17);
+            label1.TabIndex = 111;
+            label1.Text = "日志等级（1~5，等级越高日志记录越完整）";
             // 
             // txtboxTraceLevel
             // 
-            this.txtboxTraceLevel.Location = new System.Drawing.Point(443, 20);
-            this.txtboxTraceLevel.Name = "txtboxTraceLevel";
-            this.txtboxTraceLevel.Size = new System.Drawing.Size(20, 21);
-            this.txtboxTraceLevel.TabIndex = 112;
+            txtboxTraceLevel.Location = new System.Drawing.Point(530, 29);
+            txtboxTraceLevel.Margin = new System.Windows.Forms.Padding(4);
+            txtboxTraceLevel.Name = "txtboxTraceLevel";
+            txtboxTraceLevel.Size = new System.Drawing.Size(23, 23);
+            txtboxTraceLevel.TabIndex = 112;
             // 
             // chkboxDeleteToBackup
             // 
-            this.chkboxDeleteToBackup.AutoSize = true;
-            this.chkboxDeleteToBackup.Location = new System.Drawing.Point(6, 69);
-            this.chkboxDeleteToBackup.Name = "chkboxDeleteToBackup";
-            this.chkboxDeleteToBackup.Size = new System.Drawing.Size(348, 16);
-            this.chkboxDeleteToBackup.TabIndex = 113;
-            this.chkboxDeleteToBackup.Text = "删除文件到\"_FSBackup\"目录 (隐藏目录)，最大保留备份数量";
-            this.chkboxDeleteToBackup.UseVisualStyleBackColor = true;
+            chkboxDeleteToBackup.AutoSize = true;
+            chkboxDeleteToBackup.Location = new System.Drawing.Point(7, 98);
+            chkboxDeleteToBackup.Margin = new System.Windows.Forms.Padding(4);
+            chkboxDeleteToBackup.Name = "chkboxDeleteToBackup";
+            chkboxDeleteToBackup.Size = new System.Drawing.Size(350, 21);
+            chkboxDeleteToBackup.TabIndex = 113;
+            chkboxDeleteToBackup.Text = "删除文件到\"_FSBackup\"目录 (隐藏目录)，最大保留备份数量";
+            chkboxDeleteToBackup.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.txtboxAutoCheckUpdateInterval);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.txtboxMaxKeepBackup);
-            this.groupBox1.Controls.Add(this.chkBoxMinStart);
-            this.groupBox1.Controls.Add(this.chkBoxAutoClearLog);
-            this.groupBox1.Controls.Add(this.btnSelectLocalTempFolder);
-            this.groupBox1.Controls.Add(this.txtboxLocalTempFolder);
-            this.groupBox1.Controls.Add(this.chkboxUseLocalTemp);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.txtboxRetrySyncInterval);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.txtboxRetrySyncCount);
-            this.groupBox1.Controls.Add(this.btnClearLogFile);
-            this.groupBox1.Controls.Add(this.chkboxAutoRun);
-            this.groupBox1.Controls.Add(this.chkboxDeleteToBackup);
-            this.groupBox1.Controls.Add(this.chkboxLogMsgToFile);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(480, 171);
-            this.groupBox1.TabIndex = 114;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "通用设置";
+            groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox1.Controls.Add(label6);
+            groupBox1.Controls.Add(txtboxAutoCheckUpdateInterval);
+            groupBox1.Controls.Add(label7);
+            groupBox1.Controls.Add(txtboxMaxKeepBackup);
+            groupBox1.Controls.Add(chkBoxMinStart);
+            groupBox1.Controls.Add(chkBoxAutoClearLog);
+            groupBox1.Controls.Add(btnSelectLocalTempFolder);
+            groupBox1.Controls.Add(txtboxLocalTempFolder);
+            groupBox1.Controls.Add(chkboxUseLocalTemp);
+            groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(txtboxRetrySyncInterval);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(txtboxRetrySyncCount);
+            groupBox1.Controls.Add(btnClearLogFile);
+            groupBox1.Controls.Add(chkboxAutoRun);
+            groupBox1.Controls.Add(chkboxDeleteToBackup);
+            groupBox1.Controls.Add(chkboxLogMsgToFile);
+            groupBox1.Location = new System.Drawing.Point(14, 17);
+            groupBox1.Margin = new System.Windows.Forms.Padding(4);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new System.Windows.Forms.Padding(4);
+            groupBox1.Size = new System.Drawing.Size(560, 242);
+            groupBox1.TabIndex = 114;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "通用设置";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(180, 148);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(155, 12);
-            this.label6.TabIndex = 132;
-            this.label6.Text = "天（设置为0则不自动检查）";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(210, 210);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(159, 17);
+            label6.TabIndex = 132;
+            label6.Text = "天（设置为0则不自动检查）";
             // 
             // txtboxAutoCheckUpdateInterval
             // 
-            this.txtboxAutoCheckUpdateInterval.Location = new System.Drawing.Point(149, 145);
-            this.txtboxAutoCheckUpdateInterval.Name = "txtboxAutoCheckUpdateInterval";
-            this.txtboxAutoCheckUpdateInterval.Size = new System.Drawing.Size(25, 21);
-            this.txtboxAutoCheckUpdateInterval.TabIndex = 131;
+            txtboxAutoCheckUpdateInterval.Location = new System.Drawing.Point(174, 205);
+            txtboxAutoCheckUpdateInterval.Margin = new System.Windows.Forms.Padding(4);
+            txtboxAutoCheckUpdateInterval.Name = "txtboxAutoCheckUpdateInterval";
+            txtboxAutoCheckUpdateInterval.Size = new System.Drawing.Size(28, 23);
+            txtboxAutoCheckUpdateInterval.TabIndex = 131;
             // 
             // label7
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 148);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(125, 12);
-            this.label7.TabIndex = 130;
-            this.label7.Text = "自动查找程序更新，每";
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(7, 210);
+            label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(128, 17);
+            label7.TabIndex = 130;
+            label7.Text = "自动查找程序更新，每";
             // 
             // txtboxMaxKeepBackup
             // 
-            this.txtboxMaxKeepBackup.Location = new System.Drawing.Point(360, 67);
-            this.txtboxMaxKeepBackup.Name = "txtboxMaxKeepBackup";
-            this.txtboxMaxKeepBackup.Size = new System.Drawing.Size(25, 21);
-            this.txtboxMaxKeepBackup.TabIndex = 129;
+            txtboxMaxKeepBackup.Location = new System.Drawing.Point(420, 95);
+            txtboxMaxKeepBackup.Margin = new System.Windows.Forms.Padding(4);
+            txtboxMaxKeepBackup.Name = "txtboxMaxKeepBackup";
+            txtboxMaxKeepBackup.Size = new System.Drawing.Size(28, 23);
+            txtboxMaxKeepBackup.TabIndex = 129;
             // 
             // chkBoxMinStart
             // 
-            this.chkBoxMinStart.AutoSize = true;
-            this.chkBoxMinStart.Location = new System.Drawing.Point(144, 20);
-            this.chkBoxMinStart.Name = "chkBoxMinStart";
-            this.chkBoxMinStart.Size = new System.Drawing.Size(144, 16);
-            this.chkBoxMinStart.TabIndex = 127;
-            this.chkBoxMinStart.Text = "程序启动时最小化窗口";
-            this.chkBoxMinStart.UseVisualStyleBackColor = true;
+            chkBoxMinStart.AutoSize = true;
+            chkBoxMinStart.Location = new System.Drawing.Point(168, 28);
+            chkBoxMinStart.Margin = new System.Windows.Forms.Padding(4);
+            chkBoxMinStart.Name = "chkBoxMinStart";
+            chkBoxMinStart.Size = new System.Drawing.Size(147, 21);
+            chkBoxMinStart.TabIndex = 127;
+            chkBoxMinStart.Text = "程序启动时最小化窗口";
+            chkBoxMinStart.UseVisualStyleBackColor = true;
             // 
             // chkBoxAutoClearLog
             // 
-            this.chkBoxAutoClearLog.AutoSize = true;
-            this.chkBoxAutoClearLog.Location = new System.Drawing.Point(310, 44);
-            this.chkBoxAutoClearLog.Name = "chkBoxAutoClearLog";
-            this.chkBoxAutoClearLog.Size = new System.Drawing.Size(144, 16);
-            this.chkBoxAutoClearLog.TabIndex = 126;
-            this.chkBoxAutoClearLog.Text = "每日自动清除界面日志";
-            this.chkBoxAutoClearLog.UseVisualStyleBackColor = true;
+            chkBoxAutoClearLog.AutoSize = true;
+            chkBoxAutoClearLog.Location = new System.Drawing.Point(362, 62);
+            chkBoxAutoClearLog.Margin = new System.Windows.Forms.Padding(4);
+            chkBoxAutoClearLog.Name = "chkBoxAutoClearLog";
+            chkBoxAutoClearLog.Size = new System.Drawing.Size(147, 21);
+            chkBoxAutoClearLog.TabIndex = 126;
+            chkBoxAutoClearLog.Text = "每日自动清除界面日志";
+            chkBoxAutoClearLog.UseVisualStyleBackColor = true;
             // 
             // btnSelectLocalTempFolder
             // 
-            this.btnSelectLocalTempFolder.Location = new System.Drawing.Point(443, 91);
-            this.btnSelectLocalTempFolder.Name = "btnSelectLocalTempFolder";
-            this.btnSelectLocalTempFolder.Size = new System.Drawing.Size(31, 21);
-            this.btnSelectLocalTempFolder.TabIndex = 125;
-            this.btnSelectLocalTempFolder.Text = "...";
-            this.btnSelectLocalTempFolder.UseVisualStyleBackColor = true;
-            this.btnSelectLocalTempFolder.Click += new System.EventHandler(this.btnSelectLocalTempFolder_Click);
+            btnSelectLocalTempFolder.Location = new System.Drawing.Point(517, 129);
+            btnSelectLocalTempFolder.Margin = new System.Windows.Forms.Padding(4);
+            btnSelectLocalTempFolder.Name = "btnSelectLocalTempFolder";
+            btnSelectLocalTempFolder.Size = new System.Drawing.Size(36, 30);
+            btnSelectLocalTempFolder.TabIndex = 125;
+            btnSelectLocalTempFolder.Text = "...";
+            btnSelectLocalTempFolder.UseVisualStyleBackColor = true;
+            btnSelectLocalTempFolder.Click += btnSelectLocalTempFolder_Click;
             // 
             // txtboxLocalTempFolder
             // 
-            this.txtboxLocalTempFolder.Location = new System.Drawing.Point(144, 91);
-            this.txtboxLocalTempFolder.Name = "txtboxLocalTempFolder";
-            this.txtboxLocalTempFolder.Size = new System.Drawing.Size(293, 21);
-            this.txtboxLocalTempFolder.TabIndex = 124;
+            txtboxLocalTempFolder.Location = new System.Drawing.Point(168, 129);
+            txtboxLocalTempFolder.Margin = new System.Windows.Forms.Padding(4);
+            txtboxLocalTempFolder.Name = "txtboxLocalTempFolder";
+            txtboxLocalTempFolder.Size = new System.Drawing.Size(341, 23);
+            txtboxLocalTempFolder.TabIndex = 124;
             // 
             // chkboxUseLocalTemp
             // 
-            this.chkboxUseLocalTemp.AutoSize = true;
-            this.chkboxUseLocalTemp.Location = new System.Drawing.Point(6, 95);
-            this.chkboxUseLocalTemp.Name = "chkboxUseLocalTemp";
-            this.chkboxUseLocalTemp.Size = new System.Drawing.Size(120, 16);
-            this.chkboxUseLocalTemp.TabIndex = 123;
-            this.chkboxUseLocalTemp.Text = "使用本地临时目录";
-            this.chkboxUseLocalTemp.UseVisualStyleBackColor = true;
-            this.chkboxUseLocalTemp.CheckedChanged += new System.EventHandler(this.chkboxUseLocalTemp_CheckedChanged);
+            chkboxUseLocalTemp.AutoSize = true;
+            chkboxUseLocalTemp.Location = new System.Drawing.Point(7, 135);
+            chkboxUseLocalTemp.Margin = new System.Windows.Forms.Padding(4);
+            chkboxUseLocalTemp.Name = "chkboxUseLocalTemp";
+            chkboxUseLocalTemp.Size = new System.Drawing.Size(123, 21);
+            chkboxUseLocalTemp.TabIndex = 123;
+            chkboxUseLocalTemp.Text = "使用本地临时目录";
+            chkboxUseLocalTemp.UseVisualStyleBackColor = true;
+            chkboxUseLocalTemp.CheckedChanged += chkboxUseLocalTemp_CheckedChanged;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(282, 121);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 12);
-            this.label4.TabIndex = 121;
-            this.label4.Text = "次";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(329, 171);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(20, 17);
+            label4.TabIndex = 121;
+            label4.Text = "次";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(180, 121);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(65, 12);
-            this.label3.TabIndex = 120;
-            this.label3.Text = "分钟后重试";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(210, 171);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(68, 17);
+            label3.TabIndex = 120;
+            label3.Text = "分钟后重试";
             // 
             // txtboxRetrySyncInterval
             // 
-            this.txtboxRetrySyncInterval.Location = new System.Drawing.Point(149, 118);
-            this.txtboxRetrySyncInterval.Name = "txtboxRetrySyncInterval";
-            this.txtboxRetrySyncInterval.Size = new System.Drawing.Size(25, 21);
-            this.txtboxRetrySyncInterval.TabIndex = 119;
+            txtboxRetrySyncInterval.Location = new System.Drawing.Point(174, 167);
+            txtboxRetrySyncInterval.Margin = new System.Windows.Forms.Padding(4);
+            txtboxRetrySyncInterval.Name = "txtboxRetrySyncInterval";
+            txtboxRetrySyncInterval.Size = new System.Drawing.Size(28, 23);
+            txtboxRetrySyncInterval.TabIndex = 119;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 121);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(137, 12);
-            this.label2.TabIndex = 117;
-            this.label2.Text = "当文件同步失败时，等待";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(7, 171);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(140, 17);
+            label2.TabIndex = 117;
+            label2.Text = "当文件同步失败时，等待";
             // 
             // txtboxRetrySyncCount
             // 
-            this.txtboxRetrySyncCount.Location = new System.Drawing.Point(251, 118);
-            this.txtboxRetrySyncCount.Name = "txtboxRetrySyncCount";
-            this.txtboxRetrySyncCount.Size = new System.Drawing.Size(25, 21);
-            this.txtboxRetrySyncCount.TabIndex = 118;
+            txtboxRetrySyncCount.Location = new System.Drawing.Point(293, 167);
+            txtboxRetrySyncCount.Margin = new System.Windows.Forms.Padding(4);
+            txtboxRetrySyncCount.Name = "txtboxRetrySyncCount";
+            txtboxRetrySyncCount.Size = new System.Drawing.Size(28, 23);
+            txtboxRetrySyncCount.TabIndex = 118;
             // 
             // btnClearLogFile
             // 
-            this.btnClearLogFile.Location = new System.Drawing.Point(184, 39);
-            this.btnClearLogFile.Name = "btnClearLogFile";
-            this.btnClearLogFile.Size = new System.Drawing.Size(120, 25);
-            this.btnClearLogFile.TabIndex = 115;
-            this.btnClearLogFile.Text = "清理日志文件";
-            this.btnClearLogFile.UseVisualStyleBackColor = true;
-            this.btnClearLogFile.Click += new System.EventHandler(this.btnClearLogFile_Click);
+            btnClearLogFile.Location = new System.Drawing.Point(215, 55);
+            btnClearLogFile.Margin = new System.Windows.Forms.Padding(4);
+            btnClearLogFile.Name = "btnClearLogFile";
+            btnClearLogFile.Size = new System.Drawing.Size(140, 35);
+            btnClearLogFile.TabIndex = 115;
+            btnClearLogFile.Text = "清理日志文件";
+            btnClearLogFile.UseVisualStyleBackColor = true;
+            btnClearLogFile.Click += btnClearLogFile_Click;
             // 
             // chkboxAutoRun
             // 
-            this.chkboxAutoRun.AutoSize = true;
-            this.chkboxAutoRun.Location = new System.Drawing.Point(6, 20);
-            this.chkboxAutoRun.Name = "chkboxAutoRun";
-            this.chkboxAutoRun.Size = new System.Drawing.Size(132, 16);
-            this.chkboxAutoRun.TabIndex = 114;
-            this.chkboxAutoRun.Text = "进入系统后自动启动";
-            this.chkboxAutoRun.UseVisualStyleBackColor = true;
+            chkboxAutoRun.AutoSize = true;
+            chkboxAutoRun.Location = new System.Drawing.Point(7, 28);
+            chkboxAutoRun.Margin = new System.Windows.Forms.Padding(4);
+            chkboxAutoRun.Name = "chkboxAutoRun";
+            chkboxAutoRun.Size = new System.Drawing.Size(135, 21);
+            chkboxAutoRun.TabIndex = 114;
+            chkboxAutoRun.Text = "进入系统后自动启动";
+            chkboxAutoRun.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.pnlDebugTools);
-            this.groupBox2.Controls.Add(this.chkboxDebugMode);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.txtboxTraceLevel);
-            this.groupBox2.Location = new System.Drawing.Point(12, 189);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(480, 138);
-            this.groupBox2.TabIndex = 115;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "开发人员设置(!!!请谨慎使用，可能会有未知BUG!!!)";
+            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox2.Controls.Add(pnlDebugTools);
+            groupBox2.Controls.Add(chkboxDebugMode);
+            groupBox2.Controls.Add(label1);
+            groupBox2.Controls.Add(txtboxTraceLevel);
+            groupBox2.Location = new System.Drawing.Point(14, 268);
+            groupBox2.Margin = new System.Windows.Forms.Padding(4);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Padding = new System.Windows.Forms.Padding(4);
+            groupBox2.Size = new System.Drawing.Size(560, 196);
+            groupBox2.TabIndex = 115;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "开发人员设置(!!!请谨慎使用，可能会有未知BUG!!!)";
             // 
             // pnlDebugTools
             // 
-            this.pnlDebugTools.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlDebugTools.Controls.Add(this.btnSetGithubToken);
-            this.pnlDebugTools.Controls.Add(this.btnSQLRunner);
-            this.pnlDebugTools.Controls.Add(this.lblCurrentDB);
-            this.pnlDebugTools.Controls.Add(this.label5);
-            this.pnlDebugTools.Controls.Add(this.comboxDBMigration);
-            this.pnlDebugTools.Controls.Add(this.btnFixPair);
-            this.pnlDebugTools.Controls.Add(this.btnStartDBMigration);
-            this.pnlDebugTools.Controls.Add(this.button1);
-            this.pnlDebugTools.Location = new System.Drawing.Point(6, 47);
-            this.pnlDebugTools.Name = "pnlDebugTools";
-            this.pnlDebugTools.Size = new System.Drawing.Size(468, 85);
-            this.pnlDebugTools.TabIndex = 117;
+            pnlDebugTools.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            pnlDebugTools.Controls.Add(chkboxDevelopMode);
+            pnlDebugTools.Controls.Add(btnSetGithubToken);
+            pnlDebugTools.Controls.Add(btnSQLRunner);
+            pnlDebugTools.Controls.Add(lblCurrentDB);
+            pnlDebugTools.Controls.Add(label5);
+            pnlDebugTools.Controls.Add(comboxDBMigration);
+            pnlDebugTools.Controls.Add(btnFixPair);
+            pnlDebugTools.Controls.Add(btnStartDBMigration);
+            pnlDebugTools.Controls.Add(button1);
+            pnlDebugTools.Location = new System.Drawing.Point(7, 67);
+            pnlDebugTools.Margin = new System.Windows.Forms.Padding(4);
+            pnlDebugTools.Name = "pnlDebugTools";
+            pnlDebugTools.Size = new System.Drawing.Size(546, 120);
+            pnlDebugTools.TabIndex = 117;
             // 
-            // btnSQLRunner
+            // chkboxDevelopMode
             // 
-            this.btnSQLRunner.Location = new System.Drawing.Point(235, 31);
-            this.btnSQLRunner.Name = "btnSQLRunner";
-            this.btnSQLRunner.Size = new System.Drawing.Size(110, 25);
-            this.btnSQLRunner.TabIndex = 122;
-            this.btnSQLRunner.Text = "SQLRunner";
-            this.btnSQLRunner.UseVisualStyleBackColor = true;
-            this.btnSQLRunner.Click += new System.EventHandler(this.btnSQLRunner_Click);
-            // 
-            // lblCurrentDB
-            // 
-            this.lblCurrentDB.AutoSize = true;
-            this.lblCurrentDB.Location = new System.Drawing.Point(3, 9);
-            this.lblCurrentDB.Name = "lblCurrentDB";
-            this.lblCurrentDB.Size = new System.Drawing.Size(77, 12);
-            this.lblCurrentDB.TabIndex = 121;
-            this.lblCurrentDB.Text = "当前数据库：";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(146, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(77, 12);
-            this.label5.TabIndex = 120;
-            this.label5.Text = "数据库迁移至";
-            // 
-            // comboxDBMigration
-            // 
-            this.comboxDBMigration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboxDBMigration.FormattingEnabled = true;
-            this.comboxDBMigration.Items.AddRange(new object[] {
-            "SQLITE",
-            "ACCESS"});
-            this.comboxDBMigration.Location = new System.Drawing.Point(229, 6);
-            this.comboxDBMigration.Name = "comboxDBMigration";
-            this.comboxDBMigration.Size = new System.Drawing.Size(110, 20);
-            this.comboxDBMigration.TabIndex = 119;
-            // 
-            // btnStartDBMigration
-            // 
-            this.btnStartDBMigration.Location = new System.Drawing.Point(345, 3);
-            this.btnStartDBMigration.Name = "btnStartDBMigration";
-            this.btnStartDBMigration.Size = new System.Drawing.Size(120, 25);
-            this.btnStartDBMigration.TabIndex = 117;
-            this.btnStartDBMigration.Text = "开始数据库迁移";
-            this.btnStartDBMigration.UseVisualStyleBackColor = true;
-            this.btnStartDBMigration.Click += new System.EventHandler(this.btnStartDBMigration_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(3, 31);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 25);
-            this.button1.TabIndex = 116;
-            this.button1.Text = "备份数据库";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            chkboxDevelopMode.AutoSize = true;
+            chkboxDevelopMode.Location = new System.Drawing.Point(4, 87);
+            chkboxDevelopMode.Margin = new System.Windows.Forms.Padding(4);
+            chkboxDevelopMode.Name = "chkboxDevelopMode";
+            chkboxDevelopMode.Size = new System.Drawing.Size(231, 21);
+            chkboxDevelopMode.TabIndex = 118;
+            chkboxDevelopMode.Text = "开发者模式（需要重新启动程序生效）";
+            chkboxDevelopMode.UseVisualStyleBackColor = true;
             // 
             // btnSetGithubToken
             // 
-            this.btnSetGithubToken.Location = new System.Drawing.Point(351, 31);
-            this.btnSetGithubToken.Name = "btnSetGithubToken";
-            this.btnSetGithubToken.Size = new System.Drawing.Size(114, 25);
-            this.btnSetGithubToken.TabIndex = 123;
-            this.btnSetGithubToken.Text = "设置Github Token";
-            this.btnSetGithubToken.UseVisualStyleBackColor = true;
-            this.btnSetGithubToken.Click += new System.EventHandler(this.btnSetGithubToken_Click);
+            btnSetGithubToken.Location = new System.Drawing.Point(410, 44);
+            btnSetGithubToken.Margin = new System.Windows.Forms.Padding(4);
+            btnSetGithubToken.Name = "btnSetGithubToken";
+            btnSetGithubToken.Size = new System.Drawing.Size(133, 35);
+            btnSetGithubToken.TabIndex = 123;
+            btnSetGithubToken.Text = "设置Github Token";
+            btnSetGithubToken.UseVisualStyleBackColor = true;
+            btnSetGithubToken.Click += btnSetGithubToken_Click;
+            // 
+            // btnSQLRunner
+            // 
+            btnSQLRunner.Location = new System.Drawing.Point(274, 44);
+            btnSQLRunner.Margin = new System.Windows.Forms.Padding(4);
+            btnSQLRunner.Name = "btnSQLRunner";
+            btnSQLRunner.Size = new System.Drawing.Size(128, 35);
+            btnSQLRunner.TabIndex = 122;
+            btnSQLRunner.Text = "SQLRunner";
+            btnSQLRunner.UseVisualStyleBackColor = true;
+            btnSQLRunner.Click += btnSQLRunner_Click;
+            // 
+            // lblCurrentDB
+            // 
+            lblCurrentDB.AutoSize = true;
+            lblCurrentDB.Location = new System.Drawing.Point(4, 13);
+            lblCurrentDB.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblCurrentDB.Name = "lblCurrentDB";
+            lblCurrentDB.Size = new System.Drawing.Size(80, 17);
+            lblCurrentDB.TabIndex = 121;
+            lblCurrentDB.Text = "当前数据库：";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(170, 13);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(80, 17);
+            label5.TabIndex = 120;
+            label5.Text = "数据库迁移至";
+            // 
+            // comboxDBMigration
+            // 
+            comboxDBMigration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboxDBMigration.FormattingEnabled = true;
+            comboxDBMigration.Items.AddRange(new object[] { "SQLITE", "ACCESS" });
+            comboxDBMigration.Location = new System.Drawing.Point(267, 8);
+            comboxDBMigration.Margin = new System.Windows.Forms.Padding(4);
+            comboxDBMigration.Name = "comboxDBMigration";
+            comboxDBMigration.Size = new System.Drawing.Size(128, 25);
+            comboxDBMigration.TabIndex = 119;
+            // 
+            // btnStartDBMigration
+            // 
+            btnStartDBMigration.Location = new System.Drawing.Point(402, 4);
+            btnStartDBMigration.Margin = new System.Windows.Forms.Padding(4);
+            btnStartDBMigration.Name = "btnStartDBMigration";
+            btnStartDBMigration.Size = new System.Drawing.Size(140, 35);
+            btnStartDBMigration.TabIndex = 117;
+            btnStartDBMigration.Text = "开始数据库迁移";
+            btnStartDBMigration.UseVisualStyleBackColor = true;
+            btnStartDBMigration.Click += btnStartDBMigration_Click;
+            // 
+            // button1
+            // 
+            button1.Location = new System.Drawing.Point(4, 44);
+            button1.Margin = new System.Windows.Forms.Padding(4);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(128, 35);
+            button1.TabIndex = 116;
+            button1.Text = "备份数据库";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // frm_GlobalSettings
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.button3;
-            this.ClientSize = new System.Drawing.Size(504, 375);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.label18);
-            this.Controls.Add(this.lblPGMVer);
-            this.Controls.Add(this.label17);
-            this.Controls.Add(this.lblDBVer);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.Name = "frm_GlobalSettings";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "全局设置";
-            this.Load += new System.EventHandler(this.frm_GlobalSettings_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.pnlDebugTools.ResumeLayout(false);
-            this.pnlDebugTools.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            CancelButton = button3;
+            ClientSize = new System.Drawing.Size(588, 531);
+            Controls.Add(groupBox2);
+            Controls.Add(groupBox1);
+            Controls.Add(button3);
+            Controls.Add(button2);
+            Controls.Add(label18);
+            Controls.Add(lblPGMVer);
+            Controls.Add(label17);
+            Controls.Add(lblDBVer);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(4);
+            MaximizeBox = false;
+            Name = "frm_GlobalSettings";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "全局设置";
+            Load += frm_GlobalSettings_Load;
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            pnlDebugTools.ResumeLayout(false);
+            pnlDebugTools.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -536,5 +585,6 @@ namespace FileSynchronizer
         private System.Windows.Forms.TextBox txtboxAutoCheckUpdateInterval;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button btnSetGithubToken;
+        private System.Windows.Forms.CheckBox chkboxDevelopMode;
     }
 }

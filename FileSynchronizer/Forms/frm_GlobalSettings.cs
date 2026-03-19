@@ -18,14 +18,14 @@ namespace FileSynchronizer
 
         private void frm_GlobalSettings_Load(object sender, EventArgs e)
         {
-            cls_Global_Settings.Init_Settings();
+            Global_Settings.Init_Settings();
             Fill_Setting();
             chkboxLogMsgToFile.Text = "保存日志到文件：" + FileHelper.CalcFileSizeStr(cls_LogProgramFile.LogFileFullName());
-            if (cls_Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.SQLITE)
+            if (Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.SQLITE)
             {
                 lblCurrentDB.Text = lblCurrentDB.Text + @"SQLITE";
             }
-            else if (cls_Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.ACCESS)
+            else if (Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.ACCESS)
             {
                 lblCurrentDB.Text = lblCurrentDB.Text + @"ACCESS";
             }
@@ -37,28 +37,29 @@ namespace FileSynchronizer
 
         private void Fill_Setting()
         {
-            chkboxDebugMode.Checked = cls_Global_Settings.DebugMode;
-            chkboxLogMsgToFile.Checked = cls_Global_Settings.LogMessageToFile;
-            lblDBVer.Text = cls_Global_Settings.DBVersion;
-            txtboxTraceLevel.Text = cls_Global_Settings.TraceLevel.ToString();
-            chkboxDeleteToBackup.Checked = cls_Global_Settings.DelToBackup;
-            chkboxAutoRun.Checked = cls_Global_Settings.AutoRun;
-            txtboxRetrySyncInterval.Text = cls_Global_Settings.RetryIntervalWhenSyncFailed.ToString();
-            txtboxRetrySyncCount.Text = cls_Global_Settings.RetryCountWhenSyncFailed.ToString();
-            chkboxUseLocalTemp.Checked = cls_Global_Settings.UseLocalTemp;
-            txtboxLocalTempFolder.Text = cls_Global_Settings.LocalTempFolder;
-            chkBoxAutoClearLog.Checked = cls_Global_Settings.AutoClearLog;
-            chkBoxMinStart.Checked = cls_Global_Settings.MinWhenStart;
-            txtboxMaxKeepBackup.Text = cls_Global_Settings.MaxKeepBackup.ToString();
-            txtboxAutoCheckUpdateInterval.Text = cls_Global_Settings.AutoCheckUpdateInterval.ToString();
+            chkboxDebugMode.Checked = Global_Settings.DebugMode;
+            chkboxLogMsgToFile.Checked = Global_Settings.LogMessageToFile;
+            lblDBVer.Text = Global_Settings.DBVersion;
+            txtboxTraceLevel.Text = Global_Settings.TraceLevel.ToString();
+            chkboxDeleteToBackup.Checked = Global_Settings.DelToBackup;
+            chkboxAutoRun.Checked = Global_Settings.AutoRun;
+            txtboxRetrySyncInterval.Text = Global_Settings.RetryIntervalWhenSyncFailed.ToString();
+            txtboxRetrySyncCount.Text = Global_Settings.RetryCountWhenSyncFailed.ToString();
+            chkboxUseLocalTemp.Checked = Global_Settings.UseLocalTemp;
+            txtboxLocalTempFolder.Text = Global_Settings.LocalTempFolder;
+            chkBoxAutoClearLog.Checked = Global_Settings.AutoClearLog;
+            chkBoxMinStart.Checked = Global_Settings.MinWhenStart;
+            txtboxMaxKeepBackup.Text = Global_Settings.MaxKeepBackup.ToString();
+            txtboxAutoCheckUpdateInterval.Text = Global_Settings.AutoCheckUpdateInterval.ToString();
+            chkboxDevelopMode.Checked = Global_Settings.DevelopMode;
 
             //调试模式下的功能
-            pnlDebugTools.Visible = cls_Global_Settings.DebugMode;
-            if (cls_Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.ACCESS)
+            pnlDebugTools.Visible = Global_Settings.DebugMode;
+            if (Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.ACCESS)
             {
                 comboxDBMigration.SelectedIndex = 0;
             }
-            else if (cls_Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.SQLITE)
+            else if (Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.SQLITE)
             {
                 comboxDBMigration.SelectedIndex = 1;
             }
@@ -108,22 +109,22 @@ namespace FileSynchronizer
                 return;
             }
 
-            cls_Global_Settings.DebugMode = chkboxDebugMode.Checked;
-            cls_Global_Settings.LogMessageToFile = chkboxLogMsgToFile.Checked;
-            cls_Global_Settings.TraceLevel = int_tempTraceLevel;
-            cls_Global_Settings.DelToBackup = chkboxDeleteToBackup.Checked;
-            cls_Global_Settings.AutoRun = chkboxAutoRun.Checked;
-            cls_Global_Settings.RetryIntervalWhenSyncFailed = int_tempRetrySyncInterval;
-            cls_Global_Settings.RetryCountWhenSyncFailed = int_tempRetrySyncCount;
-            cls_Global_Settings.UseLocalTemp = chkboxUseLocalTemp.Checked;
-            cls_Global_Settings.LocalTempFolder = txtboxLocalTempFolder.Text;
-            cls_Global_Settings.AutoClearLog = chkBoxAutoClearLog.Checked;
-            cls_Global_Settings.MinWhenStart = chkBoxMinStart.Checked;
-            cls_Global_Settings.MaxKeepBackup = int_tempMaxKeepBackup;
-            cls_Global_Settings.AutoCheckUpdateInterval = int_tempAutoCheckUpdateInterval;
+            Global_Settings.DebugMode = chkboxDebugMode.Checked;
+            Global_Settings.LogMessageToFile = chkboxLogMsgToFile.Checked;
+            Global_Settings.TraceLevel = int_tempTraceLevel;
+            Global_Settings.DelToBackup = chkboxDeleteToBackup.Checked;
+            Global_Settings.AutoRun = chkboxAutoRun.Checked;
+            Global_Settings.RetryIntervalWhenSyncFailed = int_tempRetrySyncInterval;
+            Global_Settings.RetryCountWhenSyncFailed = int_tempRetrySyncCount;
+            Global_Settings.UseLocalTemp = chkboxUseLocalTemp.Checked;
+            Global_Settings.LocalTempFolder = txtboxLocalTempFolder.Text;
+            Global_Settings.AutoClearLog = chkBoxAutoClearLog.Checked;
+            Global_Settings.MinWhenStart = chkBoxMinStart.Checked;
+            Global_Settings.MaxKeepBackup = int_tempMaxKeepBackup;
+            Global_Settings.AutoCheckUpdateInterval = int_tempAutoCheckUpdateInterval;
+            Global_Settings.DevelopMode = chkboxDevelopMode.Checked;
 
-
-            cls_Global_Settings.SaveInfoToDB();
+            Global_Settings.SaveInfoToDB();
             MessageBox.Show("信息已保存！", "信息");
             Fill_Setting();
 
@@ -156,7 +157,7 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-            if (cls_Files_InfoDB.BackupDBFile(lblPGMVer.Text))
+            if (Files_InfoDB.BackupDBFile(lblPGMVer.Text))
             {
                 MessageBox.Show("备份数据库成功！", "提示");
             }
@@ -173,7 +174,7 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void btnFixPair_Click(object sender, EventArgs e)
         {
-            cls_Files_InfoDB.FixDirPairStatus();
+            Files_InfoDB.FixDirPairStatus();
             MessageBox.Show("所有文件夹配对已修复！", "信息");
         }
 
@@ -185,7 +186,7 @@ namespace FileSynchronizer
         private void btnClearLogFile_Click(object sender, EventArgs e)
         {
             cls_LogProgramFile.InitLog(true);
-            chkboxLogMsgToFile.Text = "保存日志到文件 (日志文件大小：" + FileHelper.CalcFileSizeStr(cls_LogProgramFile.LogFileFullName()) + ")";
+            chkboxLogMsgToFile.Text = "保存日志到文件：" + FileHelper.CalcFileSizeStr(cls_LogProgramFile.LogFileFullName());
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void btnStartDBMigration_Click(object sender, EventArgs e)
         {
-            if (!cls_Files_InfoDB.BackupDBFile(lblPGMVer.Text))
+            if (!Files_InfoDB.BackupDBFile(lblPGMVer.Text))
             {
                 MessageBox.Show("备份数据库失败，不能继续数据库迁移！", "错误");
                 return;
@@ -207,18 +208,18 @@ namespace FileSynchronizer
             //To SQLITE
             if (comboxDBMigration.SelectedIndex == 0)
             {
-                bl_MigrateResult = cls_Files_InfoDB.DBMigration(cls_SQLBuilder.DATABASE_TYPE.SQLITE, out str_OutMsg);
+                bl_MigrateResult = Files_InfoDB.DBMigration(cls_SQLBuilder.DATABASE_TYPE.SQLITE, out str_OutMsg);
             }
             //To ACCESS
             else if (comboxDBMigration.SelectedIndex == 1)
             {
-                bl_MigrateResult = cls_Files_InfoDB.DBMigration(cls_SQLBuilder.DATABASE_TYPE.ACCESS, out str_OutMsg);
+                bl_MigrateResult = Files_InfoDB.DBMigration(cls_SQLBuilder.DATABASE_TYPE.ACCESS, out str_OutMsg);
             }
 
             if (bl_MigrateResult)
             {
                 MessageBox.Show("数据库迁移成功，程序即将关闭，请重新启动程序以启用新数据库！", "提示");
-                bool bl_DelCurrentDB = cls_Files_InfoDB.DeleteDBFile();
+                bool bl_DelCurrentDB = Files_InfoDB.DeleteDBFile();
                 if (!bl_DelCurrentDB)
                 {
                     MessageBox.Show("删除当前正在使用的数据库失败，请手动删除以启用新数据库！", "提示");
@@ -234,7 +235,7 @@ namespace FileSynchronizer
         private void btnSelectLocalTempFolder_Click(object sender, EventArgs e)
         {
             string str_LocalTempFolder = String.Empty;
-            if (cls_Global_Settings.LocalTempFolder.Equals(@".\_FSTemp"))
+            if (Global_Settings.LocalTempFolder.Equals(@".\_FSTemp"))
             {
                 str_LocalTempFolder = Path.Combine(Application.StartupPath, @"_FSTemp");
                 if (!Directory.Exists(str_LocalTempFolder))
@@ -246,7 +247,7 @@ namespace FileSynchronizer
             }
             else
             {
-                str_LocalTempFolder = cls_Global_Settings.LocalTempFolder;
+                str_LocalTempFolder = Global_Settings.LocalTempFolder;
             }
 
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
@@ -260,7 +261,7 @@ namespace FileSynchronizer
         {
             if (chkboxUseLocalTemp.Checked)
             {
-                string str_LocalTempFolder = cls_Global_Settings.LocalTempFolder;
+                string str_LocalTempFolder = Global_Settings.LocalTempFolder;
                 if (!Directory.Exists(str_LocalTempFolder))
                 {
                     DirectoryInfo _directoryInfo = new DirectoryInfo(str_LocalTempFolder);
@@ -273,7 +274,7 @@ namespace FileSynchronizer
         private void btnSQLRunner_Click(object sender, EventArgs e)
         {
             new frm_SQLRunner().ShowDialog();
-            cls_Global_Settings.Init_Settings();
+            Global_Settings.Init_Settings();
             Fill_Setting();
         }
 
