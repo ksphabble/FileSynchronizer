@@ -322,12 +322,10 @@ namespace FileSynchronizer
         {
             LogProgramMessage("检查自动同步配对", true, true, 5);
             string[] arr_PairInfor = Files_InfoDB.CheckAutoSyncPair();
-            string[] arr_PairNames = new string[arr_PairInfor.Length];
+            if (arr_PairInfor == null) return;
 
-            if (arr_PairInfor.Length == 0)
-            {
-                return;
-            }
+            string[] arr_PairNames = new string[arr_PairInfor.Length];
+            if (arr_PairInfor.Length == 0) return;
 
             for (int i = 0; i < arr_PairInfor.Length; i++)
             {
@@ -344,14 +342,8 @@ namespace FileSynchronizer
         {
             Parallel.ForEach(arr_PairInfor, new ParallelOptions { MaxDegreeOfParallelism = arr_PairInfor.Length }, (item) =>
             {
-                var task = Task.Factory.StartNew(() => DoParallelSyncPair(item));
+                var task = Task.Factory.StartNew(() => DoDirPairOperation(item, false));
             });
-        }
-
-        private void DoParallelSyncPair(string str_PairName)
-        {
-            LogProgramMessage("开始自动同步配对（" + str_PairName + "）", true, true, 1);
-            DoDirPairOperation(str_PairName, false);
         }
 
         /// <summary>
@@ -400,33 +392,36 @@ namespace FileSynchronizer
 
             try
             {
-                //输入的MsgTraceLevel是0，则属于程序顶级日志，直接处理
-                if (MsgTraceLevel == 0)
+                lock (TxtProgramLog)
                 {
-                    if (TxtProgramLog.TextLength > 150000)
+                    //输入的MsgTraceLevel是0，则属于程序顶级日志，直接处理
+                    if (MsgTraceLevel == 0)
                     {
-                        TxtProgramLog.Clear();
+                        if (TxtProgramLog.TextLength > 150000)
+                        {
+                            TxtProgramLog.Clear();
+                        }
+                        TxtProgramLog.AppendText(str_LogMsgChngLine);
+                        TxtProgramLog.ScrollToCaret();
+                        if (!bl_HasWrittenFile)
+                        {
+                            cls_LogProgramFile.LogMessage(str_LogMsgToFile);
+                        }
                     }
-                    TxtProgramLog.AppendText(str_LogMsgChngLine);
-                    TxtProgramLog.ScrollToCaret();
-                    if (!bl_HasWrittenFile)
+                    //输入的MsgTraceLevel > 0，则对比全局变量设置的日志等级做判断处理
+                    else if (MsgTraceLevel > 0 && MsgTraceLevel <= Global_Settings.TraceLevel)
                     {
-                        cls_LogProgramFile.LogMessage(str_LogMsgToFile);
-                    }
-                }
-                //输入的MsgTraceLevel > 0，则对比全局变量设置的日志等级做判断处理
-                else if (MsgTraceLevel > 0 && MsgTraceLevel <= Global_Settings.TraceLevel)
-                {
-                    if (TxtProgramLog.TextLength > 150000)
-                    {
-                        TxtProgramLog.Clear();
-                    }
-                    TxtProgramLog.AppendText(str_LogMsgChngLine);
-                    TxtProgramLog.ScrollToCaret();
+                        if (TxtProgramLog.TextLength > 150000)
+                        {
+                            TxtProgramLog.Clear();
+                        }
+                        TxtProgramLog.AppendText(str_LogMsgChngLine);
+                        TxtProgramLog.ScrollToCaret();
 
-                    if (Global_Settings.LogMessageToFile && !bl_HasWrittenFile)
-                    {
-                        cls_LogProgramFile.LogMessage(str_LogMsgToFile);
+                        if (Global_Settings.LogMessageToFile && !bl_HasWrittenFile)
+                        {
+                            cls_LogProgramFile.LogMessage(str_LogMsgToFile);
+                        }
                     }
                 }
             }
@@ -732,10 +727,10 @@ namespace FileSynchronizer
         private void DoDirPairOperation(string PairName, bool IsAnalysis)
         {
             ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.TabPages[PairName].Controls[0];
-            PairStatus pairStatus;
 
-            lock (CurrentPair)
+            lock (this)
             {
+                PairStatus pairStatus;
                 if (CurrentPair.IsPairBusy(out pairStatus))
                 {
                     string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
@@ -743,6 +738,7 @@ namespace FileSynchronizer
                 }
                 else
                 {
+                    LogProgramMessage("开始同步配对（" + PairName + "）", true, true, 1);
                     CurrentPair.DoAnalysisSyncDirPair(IsAnalysis);
                 }
             }
@@ -980,7 +976,6 @@ namespace FileSynchronizer
                 for (int i = 0; i < str_ManageResult.Length; i++)
                 {
                     LogProgramMessage(str_ManageResult[i], true, false, 1);
-
                 }
                 RebindPairTable(bl_IsForceRefresh);
                 g_Timer.Change(0, c_Timer_Interval);

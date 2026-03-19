@@ -11,7 +11,6 @@ namespace FileSynchronizer
     {
         public string[] arr_Return_Message;
         private List<string> list_Return_Message;
-        const string str_FSBackup = @"_FSBackup";
         DataTable _DirPairDataTable;
         public bool bl_RefreshListRequired;
 
@@ -58,7 +57,7 @@ namespace FileSynchronizer
             int int_SyncDirection = comboBox1.SelectedIndex < 0 ? 0 : comboBox1.SelectedIndex;
             if (Files_InfoDB.AddDirPair(txtBoxPairName.Text, txtBoxDir1.Text, txtBoxDir2.Text, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, int_SyncDirection.ToString()))
             {
-                list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "添加配对(" + txtBoxPairName.Text + ")，目录1(" + txtBoxDir1.Text + ")，目录2(" + txtBoxDir2.Text + ")");
+                list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "添加配对(" + txtBoxPairName.Text + ")，目录1(" + txtBoxDir1.Text + ")，目录2(" + txtBoxDir2.Text + ")");
                 RefreshDirPair();
                 bl_RefreshListRequired = true;
             }
@@ -121,7 +120,7 @@ namespace FileSynchronizer
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
 
             Files_InfoDB.DelDirPair(str_PairName, str_PairDir1, str_PairDir2);
-            list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "删除配对(" + txtBoxPairName.Text + ")");
+            list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "删除配对(" + txtBoxPairName.Text + ")");
             RefreshDirPair();
             bl_RefreshListRequired = true;
         }
@@ -144,10 +143,10 @@ namespace FileSynchronizer
 
             string str_outputMsg = String.Empty;
             Files_InfoDB.UpdatePairInfor(str_PairID, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, comboBox1.SelectedIndex.ToString(), out str_outputMsg);
-            list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "更改配对(" + txtBoxPairName.Text + ")");
+            list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "更改配对(" + txtBoxPairName.Text + ")");
             if (!String.IsNullOrEmpty(str_outputMsg))
             {
-                list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + str_outputMsg);
+                list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + str_outputMsg);
             }
             RefreshDirPair();
             bl_RefreshListRequired = true;
@@ -197,8 +196,8 @@ namespace FileSynchronizer
 
         private void CalcBKSpace(string str_PairDir1, string str_PairDir2)
         {
-            string str_PairDir1BK = Path.Combine(str_PairDir1, str_FSBackup);
-            string str_PairDir2BK = Path.Combine(str_PairDir2, str_FSBackup);
+            string str_PairDir1BK = Path.Combine(str_PairDir1, Local_Utilities.c_FSBackup_Str);
+            string str_PairDir2BK = Path.Combine(str_PairDir2, Local_Utilities.c_FSBackup_Str);
             lblDir1BackupSpace.Text = FileHelper.CalcDirSizeStr(str_PairDir1BK);
             lblDir2BackupSpace.Text = FileHelper.CalcDirSizeStr(str_PairDir2BK);
         }
@@ -211,7 +210,7 @@ namespace FileSynchronizer
 
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
-            string str_PairDir1BK = Path.Combine(str_PairDir1, str_FSBackup);
+            string str_PairDir1BK = Path.Combine(str_PairDir1, Local_Utilities.c_FSBackup_Str);
 
             try
             {
@@ -225,7 +224,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "清除备份目录" + str_PairDir1BK + "出现错误：" + ex.Message);
+                list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "清除备份目录" + str_PairDir1BK + "出现错误：" + ex.Message);
             }
 
             CalcBKSpace(str_PairDir1, str_PairDir2);
@@ -239,7 +238,7 @@ namespace FileSynchronizer
 
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
-            string str_PairDir2BK = Path.Combine(str_PairDir2, str_FSBackup);
+            string str_PairDir2BK = Path.Combine(str_PairDir2, Local_Utilities.c_FSBackup_Str);
 
             try
             {
@@ -253,7 +252,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                list_Return_Message.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " --- " + "清除备份目录" + str_PairDir2BK + "出现错误：" + ex.Message);
+                list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "清除备份目录" + str_PairDir2BK + "出现错误：" + ex.Message);
             }
 
             CalcBKSpace(str_PairDir1, str_PairDir2);

@@ -59,33 +59,35 @@ namespace FileSynchronizer
             //清空缓冲区、关闭流
             //fs_GlobalStream.FlushAsync();
             //fs_GlobalStream.Close();
-
-            try
+            lock (LogWriteLock)
             {
-                if (bl_LogToCache)
+                try
                 {
-                    str_CacheMsg += str_Message;
-                    if (str_CacheMsg.Length > 600)
+                    if (bl_LogToCache)
                     {
-                        LogMsgFromCacheToFile();
+                        str_CacheMsg += str_Message;
+                        if (str_CacheMsg.Length > 600)
+                        {
+                            LogMsgFromCacheToFile();
+                        }
+                        else
+                        {
+                            str_CacheMsg += "\n";
+                        }
                     }
                     else
                     {
-                        str_CacheMsg += "\n";
+                        LogWriteLock.EnterWriteLock();
+                        StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
+                        wr.WriteLine(str_Message);
+                        wr.Close();
+                        LogWriteLock.ExitWriteLock();
                     }
                 }
-                else
+                catch (Exception)
                 {
-                    LogWriteLock.EnterWriteLock();
-                    StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
-                    wr.WriteLine(str_Message);
-                    wr.Close();
-                    LogWriteLock.ExitWriteLock();
+                    throw;
                 }
-            }
-            catch (Exception)
-            {
-                throw;
             }
         }
 

@@ -1829,7 +1829,6 @@ namespace FileSynchronizer
 
             try
             {
-
                 if (IsALwaysLogFile)
                 {
                     g_PairLogFile.LogMessage(str_LogMsgToFile);
@@ -2097,9 +2096,9 @@ namespace FileSynchronizer
                         LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
                     }
 
-                    //string str_OngoingRecMsg = "同步目录: " + str_FilePath + " -A-> " + str_ToPath;
-                    //OnSetOngoingItem(str_OngoingRecMsg);
-                    //LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    string str_OngoingRecMsg = "同步目录: " + str_FilePath + " -A-> " + str_ToPath;
+                    OnSetOngoingItem(str_OngoingRecMsg);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_DirCreDate, str_FileSize, bl_IsSyncFromDir1 ? "1" : "2", "");
                 }
                 else if (int_ObjType.Equals(1))
@@ -2144,11 +2143,11 @@ namespace FileSynchronizer
                         LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
                     }
 
-                    //string str_FromFile = Path.Combine(str_FilePath, str_FileName);
-                    //string str_ToFile = Path.Combine(str_ToPath, str_FileName);
-                    //string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
-                    //OnSetOngoingItem(str_OngoingRecMsg);
-                    //LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    string str_FromFile = Path.Combine(str_FilePath, str_FileName);
+                    string str_ToFile = Path.Combine(str_ToPath, str_FileName);
+                    string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
+                    OnSetOngoingItem(str_OngoingRecMsg);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_FileLastModDate, str_FileSize, bl_IsSyncFromDir1 ? "1" : "2", "");
                 }
             }
@@ -2270,11 +2269,11 @@ namespace FileSynchronizer
                         LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
                     }
 
-                    //string str_FromFile = Path.Combine(str_FilePath, str_FileName);
-                    //string str_ToFile = Path.Combine(str_ToPath, str_FileName);
-                    //string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
-                    //OnSetOngoingItem(str_OngoingRecMsg);
-                    //LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    string str_FromFile = Path.Combine(str_FilePath, str_FileName);
+                    string str_ToFile = Path.Combine(str_ToPath, str_FileName);
+                    string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
+                    OnSetOngoingItem(str_OngoingRecMsg);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_FileLastModDate, str_FileSize, bl_IsSyncFromDir1 ? "3" : "4", "");
                 }
             }
@@ -2381,9 +2380,9 @@ namespace FileSynchronizer
                                 if (bl_IsSyncFromDir1 && (g_iSyncDirection.Equals(0) || g_iSyncDirection.Equals(2)) ||
                                     (!bl_IsSyncFromDir1 && (g_iSyncDirection.Equals(0) || g_iSyncDirection.Equals(4))))
                                 {
-                                    //string str_OngoingRecMsg = "同步" + (_IsFile ? "文件: " : "目录: ") + str_FileFullName + " -X-> " + str_ToFile;
-                                    //OnSetOngoingItem(str_OngoingRecMsg);
-                                    //LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                                    string str_OngoingRecMsg = "同步" + (_IsFile ? "文件: " : "目录: ") + str_FileFullName + " -X-> " + str_ToFile;
+                                    OnSetOngoingItem(str_OngoingRecMsg);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
                                     dt_fileDiff.Rows.Add(_FileName, _FilePath, str_ToPath, "", "", "", bl_IsSyncFromDir1 ? "5" : "6", _ToFileID);
                                 }
                             }

@@ -50,20 +50,23 @@ namespace FileSynchronizer
         /// <param name="Message">日志消息</param>
         public void LogMessage(string Message)
         {
-            try
+            lock (LogWriteLock)
             {
-                LogWriteLock.EnterWriteLock();
-                StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
-                wr.WriteLine(Message);
-                wr.Close();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                LogWriteLock.ExitWriteLock();
+                try
+                {
+                    LogWriteLock.EnterWriteLock();
+                    StreamWriter wr = new StreamWriter(str_LogFile, true, Encoding.UTF8);
+                    wr.WriteLine(Message);
+                    wr.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    LogWriteLock.ExitWriteLock();
+                }
             }
         }
 
