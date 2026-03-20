@@ -295,7 +295,7 @@ namespace FileSynchronizer
         {
             try
             {
-                lock (this)
+                lock (g_Timer)
                 {
                     //LogProgramMessage("Timer Test log", true, true, 0);
                     RebindPairTable();
@@ -728,19 +728,16 @@ namespace FileSynchronizer
         {
             ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.TabPages[PairName].Controls[0];
 
-            lock (this)
+            PairStatus pairStatus;
+            if (CurrentPair.IsPairBusy(out pairStatus))
             {
-                PairStatus pairStatus;
-                if (CurrentPair.IsPairBusy(out pairStatus))
-                {
-                    string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
-                    LogProgramMessage(str_PairStatus, true, true, 1);
-                }
-                else
-                {
-                    LogProgramMessage("开始同步配对（" + PairName + "）", true, true, 1);
-                    CurrentPair.DoAnalysisSyncDirPair(IsAnalysis);
-                }
+                string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
+                LogProgramMessage(str_PairStatus, true, true, 1);
+            }
+            else
+            {
+                LogProgramMessage("开始同步配对（" + PairName + "）", true, true, 1);
+                CurrentPair.DoAnalysisSyncDirPair(IsAnalysis);
             }
         }
 

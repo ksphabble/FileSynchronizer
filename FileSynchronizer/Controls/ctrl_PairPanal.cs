@@ -294,7 +294,7 @@ namespace FileSynchronizer
         {
             try
             {
-                lock (this)
+                lock (Dir_Pair_Helper)
                 {
                     //在特定时候检查任务是否被取消
                     if (gTokenSource.IsCancellationRequested) { return; }
