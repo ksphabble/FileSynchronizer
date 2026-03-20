@@ -553,7 +553,6 @@ namespace FileSynchronizer
                 ctrl_PairPanal PairPanal = new ctrl_PairPanal(str_PairID, str_PairName, str_Dir1Path, str_Dir2Path, str_LastSyncTime, str_FilterRule, int_AutoSyncInterval, int_SyncDirection, bl_IsPaused, Files_InfoDB.DBDateTimeFormat) { Dock = DockStyle.Fill };
                 PairPanal.OperationStarted += PairPanal_OperationStarted;
                 PairPanal.OperationDone += PairPanal_OperationDone;
-                PairPanal.FileWatcherInitDone += PairPanal_FileWatcherInitDone;
                 PairPanal.ObjectsInforReady += PairPanal_ObjectsInforReady;
                 tabPageDirPair.Controls.Add(PairPanal);
                 tabControl1.Controls.Add(tabPageDirPair);
@@ -565,11 +564,9 @@ namespace FileSynchronizer
             }
         }
 
-        private void PairPanal_ObjectsInforReady(object sender)
+        private void PairPanal_ObjectsInforReady(object sender, string InitDoneMsg)
         {
-            ctrl_PairPanal _PairPanal = (ctrl_PairPanal)sender;
-            string sReadyPairName = _PairPanal.PairName;
-            LogProgramMessage("初始化配对获取信息完成 --- " + sReadyPairName, true, true, 1);
+            LogProgramMessage(InitDoneMsg, true, true, 1);
         }
 
         private void PairPanal_OperationStarted(object sender)
@@ -580,12 +577,6 @@ namespace FileSynchronizer
         private void PairPanal_OperationDone(object sender)
         {
             TimerEvent(null);
-        }
-
-        private void PairPanal_FileWatcherInitDone(object sender)
-        {
-            string str_PairName = ((ctrl_PairPanal)sender).PairName;
-            LogProgramMessage("Init File Watchers Done for pair [" + str_PairName + "]", true, true, 4);
         }
 
         private void CreatePairToGridView()
@@ -1017,7 +1008,28 @@ namespace FileSynchronizer
 
         private void 项目Github主页ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(@"https://github.com/ksphabble/FileSynchronizer");
+            try
+            {
+                System.Diagnostics.Process.Start(c_GithubURL);
+            }
+            catch
+            {
+                try
+                {
+                    string sBrowserExe = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), @"Microsoft", @"Edge", @"Application", @"msedge.exe");
+                    System.Diagnostics.Process.Start(sBrowserExe, c_GithubURL);
+                }
+                catch (System.ComponentModel.Win32Exception noBrowser)
+                {
+                    LogProgramMessage("未检测到可用的默认浏览器，请检查系统设置。", true, true, 1);
+                    LogProgramMessage(noBrowser.Message, true, true, 5, true);
+                }
+                catch (Exception ex)
+                {
+                    LogProgramMessage("访问项目Github主页失败！", true, true, 1);
+                    LogProgramMessage(ex.Message, true, true, 5, true);
+                }
+            }
         }
 
         private void 检查更新ToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1,9 +1,9 @@
 ﻿using Common.Components;
 using D2Phap.FileWatcherEx;
+using System;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using static FileSynchronizer.Local_Utilities;
 
 namespace FileSynchronizer
 {
@@ -14,6 +14,7 @@ namespace FileSynchronizer
         private string g_sPairName;
         private string g_sDir1Path;
         private string g_sDir2Path;
+        private string g_sFilterRule;
         private DirectoryInfo g_dir1;
         private DirectoryInfo g_dir2;
         private DirectoryInfo[] g_subDir1;
@@ -23,32 +24,43 @@ namespace FileSynchronizer
         private FileSystemWatcherEx fw_Dir1;
         private FileSystemWatcherEx fw_Dir2;
 
-        public cls_Files_Info_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2)
+        public cls_Files_Info_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2, string sFilterRule)
         {
             g_sPairID = sPairID;
             g_sPairName = sPairName;
             g_sDir1Path = sDirPath1;
             g_sDir2Path = sDirPath2;
+            g_sFilterRule = sFilterRule;
             g_dir1 = new DirectoryInfo(sDirPath1);
             g_dir2 = new DirectoryInfo(sDirPath2);
             InitFileWatchers();
-            var task = Task.Factory.StartNew(() => LoadObjects());
+            Task.Run(() => LoadObjects());
         }
         #endregion
 
         #region 类的事件处理
-        public delegate void FileListChangedHandler(object sender);
-        public event FileListChangedHandler FileListChanged;
+        public delegate void Dir1ObjectChangedHandler(object sender, FileChangedEvent e);
+        public event Dir1ObjectChangedHandler Dir1ObjectChanged;
+        public delegate void Dir2ObjectChangedHandler(object sender, FileChangedEvent e);
+        public event Dir2ObjectChangedHandler Dir2ObjectChanged;
         public delegate void FileWatcherInitDoneHandler(object sender);
         public event FileWatcherInitDoneHandler FileWatcherInitDone;
         public delegate void ObjectsInforReadyHandler(object sender);
         public event ObjectsInforReadyHandler ObjectsInforReady;
 
-        protected virtual void OnFileListChanged()
+        protected virtual void OnDir1ObjectChanged(FileChangedEvent e)
         {
-            if (FileListChanged != null)
+            if (Dir1ObjectChanged != null)
             {
-                FileListChanged(this);
+                Dir1ObjectChanged(this, e);
+            }
+        }
+
+        protected virtual void OnDir2ObjectChanged(FileChangedEvent e)
+        {
+            if (Dir2ObjectChanged != null)
+            {
+                Dir2ObjectChanged(this, e);
             }
         }
 
@@ -70,26 +82,29 @@ namespace FileSynchronizer
         #endregion
 
         #region 私有方法
-        private async Task LoadObjects()
+        private async void LoadObjects()
         {
-            lock (this)
-            {
-                Thread thread1 = new Thread(new ParameterizedThreadStart(LoadObjects1));
-                thread1.IsBackground = true;
-                thread1.Start(2);
-                Thread thread2 = new Thread(new ParameterizedThreadStart(LoadObjects2));
-                thread2.IsBackground = true;
-                thread2.Start(2);
+            //lock (this)
+            //{
+            //Thread thread1 = new Thread(new ParameterizedThreadStart(LoadObjects1));
+            //thread1.IsBackground = true;
+            //thread1.Start(2);
+            //Thread thread2 = new Thread(new ParameterizedThreadStart(LoadObjects2));
+            //thread2.IsBackground = true;
+            //thread2.Start(2);
 
-                bool bObjectInfoReady = false;
-                while (!bObjectInfoReady)
+            await Task.Run(() => LoadObjects1(2));
+            await Task.Run(() => LoadObjects2(2));
+
+            bool bObjectInfoReady = false;
+            while (!bObjectInfoReady)
+            {
+                bObjectInfoReady = ObjectInfoReady();
+                if (bObjectInfoReady)
                 {
-                    bObjectInfoReady = ObjectInfoReady();
-                    if (bObjectInfoReady)
-                    {
-                        break;
-                    }
+                    break;
                 }
+                //}
             }
             OnObjectsInforReady();
         }
@@ -168,46 +183,34 @@ namespace FileSynchronizer
             }
         }
 
-        private void Fw_Dir1_ObjectChanged(object sender, FileChangedEvent e)
+        private async void Fw_Dir1_ObjectChanged(object sender, FileChangedEvent e)
         {
             int i_Type;
+            string str_OutLogMsg = String.Empty;
             string str_FullPath = e.FullPath;
             var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
-            if (str_FullPath.Contains(Local_Utilities.c_FSBackup_Str))
-            {
-                return;
-            }
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+            //Thread thread = new Thread(new ParameterizedThreadStart(LoadObjects1));
+            //thread.IsBackground = true;
+            //thread.Start(i_Type >= 0 ? i_Type : 2);
+            await Task.Run(() => LoadObjects1(i_Type >= 0 ? i_Type : 2));
 
-            if (i_Type == -1)
-            {
-                i_Type = 2;
-            }
-
-            Thread thread = new Thread(new ParameterizedThreadStart(LoadObjects1));
-            thread.Start(i_Type);
-
-            OnFileListChanged();
+            OnDir1ObjectChanged(e);
         }
 
-        private void Fw_Dir2_ObjectChanged(object sender, FileChangedEvent e)
+        private async void Fw_Dir2_ObjectChanged(object sender, FileChangedEvent e)
         {
             int i_Type;
+            string str_OutLogMsg = String.Empty;
             string str_FullPath = e.FullPath;
             var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
-            if (str_FullPath.Contains(Local_Utilities.c_FSBackup_Str))
-            {
-                return;
-            }
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+            //Thread thread = new Thread(new ParameterizedThreadStart(LoadObjects2));
+            //thread.IsBackground = true;
+            //thread.Start(i_Type >= 0 ? i_Type : 2);
+            await Task.Run(() => LoadObjects2(i_Type >= 0 ? i_Type : 2));
 
-            if (i_Type == -1)
-            {
-                i_Type = 2;
-            }
-
-            Thread thread = new Thread(new ParameterizedThreadStart(LoadObjects2));
-            thread.Start(i_Type);
-
-            OnFileListChanged();
+            OnDir2ObjectChanged(e);
         }
         #endregion
 

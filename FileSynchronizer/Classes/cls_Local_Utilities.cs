@@ -18,6 +18,7 @@ namespace FileSynchronizer
         public const string c_ExtMaxDirLengthPrefix_Str = @"\\?\";
         public const string c_TempUpdFileExt_Str = @".tmp";
         public const string c_UpdateURL_Str = @"https://api.github.com/repos/ksphabble/FileSynchronizer/releases/latest";
+        public const string c_GithubURL = @"https://github.com/ksphabble/FileSynchronizer";
         public const string c_Dir1_Str = @"DIR1";
         public const string c_Dir2_Str = @"DIR2";
         public const Int32 c_WaitFileClose_Int = 5000;

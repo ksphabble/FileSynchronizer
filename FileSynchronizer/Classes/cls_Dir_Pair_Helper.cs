@@ -1,4 +1,5 @@
 ﻿using Common.Components;
+using D2Phap.FileWatcherEx;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -49,17 +50,10 @@ namespace FileSynchronizer
             g_iSyncDirection = iSyncDirection;
             g_bIsPaused = bIsPaused;
             g_PairLogFile = new cls_LogPairFile(sPairName, false);
-            g_Files_Info = new cls_Files_Info_Helper(sPairID, sPairName, sDirPath1, sDirPath2);
+            g_Files_Info = new cls_Files_Info_Helper(sPairID, sPairName, sDirPath1, sDirPath2, sFilterRule);
             g_Files_Info.ObjectsInforReady += G_Files_Info_ObjectsInforReady;
-        }
-
-        private void G_Files_Info_ObjectsInforReady(object sender)
-        {
-            var dt_InitGap = DateTime.Now.Subtract(g_InitTime);
-            int iTotalObjectCount = g_Files_Info.TotalObjectCount();
-            LogPairMessage(g_sPairName, "配对信息初始化完成，花费" + dt_InitGap.TotalSeconds.ToString() + "秒，找到" + iTotalObjectCount.ToString() + "个文件/文件夹", true, true, 3);
-            g_ObjectsInforReady = true;
-            OnObjectsInforReady();
+            g_Files_Info.Dir1ObjectChanged += G_Files_Info_Dir1ObjectChanged;
+            g_Files_Info.Dir2ObjectChanged += G_Files_Info_Dir2ObjectChanged;
         }
         #endregion
 
@@ -889,7 +883,7 @@ namespace FileSynchronizer
         /// 同步文件夹配对
         /// </summary>
         /// <param name="TableFileDiff"></param>
-        public async Task<bool> SyncDirPair(DataTable TableFileDiff, bool bRealTime = false)
+        public bool SyncDirPair(DataTable TableFileDiff, bool bRealTime = false)
         {
             #region Define Varibles
             string str_DebugModeWarning = Global_Settings.DevelopMode ? " --- 程序处于开发者模式，会导致同步操作无法完成，请注意！" : "";
@@ -1953,7 +1947,7 @@ namespace FileSynchronizer
         public event Add1SyncHandler Add1Sync;
         public delegate void PairStatusChangeHandler(object sender, PairStatus pairStatus);
         public event PairStatusChangeHandler PairStatusChange;
-        public delegate void ObjectsInforReadyHandler(object sender);
+        public delegate void ObjectsInforReadyHandler(object sender, string InitDoneMsg);
         public event ObjectsInforReadyHandler ObjectsInforReady;
 
         protected virtual void OnLogPairMsg(string LogMessage, bool IsChangeLine, bool IsAddTS)
@@ -1997,11 +1991,11 @@ namespace FileSynchronizer
             }
         }
 
-        protected virtual void OnObjectsInforReady()
+        protected virtual void OnObjectsInforReady(string InitDoneMsg)
         {
             if (ObjectsInforReady != null)
             {
-                ObjectsInforReady(this);
+                ObjectsInforReady(this, InitDoneMsg);
             }
         }
         #endregion
@@ -2014,7 +2008,7 @@ namespace FileSynchronizer
         /// <param name="int_ObjType">对象类型，0是文件夹，1是文件</param>
         /// <param name="str_DirIdx">用于指示操作对象属于此配对的DIR1还是DIR2</param>
         /// <returns>可用于同步方法的DataTable</returns>
-        public DataTable Fw_Object_Created(object obj_AddedItem, int int_ObjType, string str_DirIdx)
+        private DataTable Fw_Object_Created(object obj_AddedItem, int int_ObjType, string str_DirIdx)
         {
             string str_OutLogMsg = String.Empty;
             bool bl_IsSyncFromDir1 = str_DirIdx == c_Dir1_Str;
@@ -2169,7 +2163,7 @@ namespace FileSynchronizer
         /// <param name="int_ObjType">对象类型，1是文件</param>
         /// <param name="str_DirIdx">用于指示操作对象属于此配对的DIR1还是DIR2</param>
         /// <returns>可用于同步方法的DataTable</returns>
-        public DataTable Fw_Object_Changed(object obj_ModifiedItem, int int_ObjType, string str_DirIdx)
+        private DataTable Fw_Object_Changed(object obj_ModifiedItem, int int_ObjType, string str_DirIdx)
         {
             string str_OutLogMsg = String.Empty;
             bool bl_IsSyncFromDir1 = str_DirIdx == c_Dir1_Str;
@@ -2295,7 +2289,7 @@ namespace FileSynchronizer
         /// <param name="int_ObjType">对象类型，0是文件夹，1是文件</param>
         /// <param name="str_DirIdx">用于指示操作对象属于此配对的DIR1还是DIR2</param>
         /// <returns>可用于同步方法的DataTable</returns>
-        public DataTable Fw_Object_Deleted(string str_DeletedItem, int int_ObjType, string str_DirIdx)
+        private DataTable Fw_Object_Deleted(string str_DeletedItem, int int_ObjType, string str_DirIdx)
         {
             string str_OutLogMsg = String.Empty;
             bool bl_IsSyncFromDir1 = str_DirIdx == c_Dir1_Str;
@@ -2409,7 +2403,7 @@ namespace FileSynchronizer
         /// <param name="str_DirIdx">用于指示操作对象属于此配对的DIR1还是DIR2</param>
         /// <param name="str_OldFullPath">重命名前的对象路径</param>
         /// <returns>同步是否成功</returns>
-        public bool Fw_Object_Renamed(object obj_RenamedItem, int int_ObjType, string str_DirIdx, string str_OldFullPath)
+        private bool Fw_Object_Renamed(object obj_RenamedItem, int int_ObjType, string str_DirIdx, string str_OldFullPath)
         {
             string str_OutLogMsg = String.Empty;
             bool bl_IsSyncFromDir1 = str_DirIdx == c_Dir1_Str;
@@ -2564,7 +2558,7 @@ namespace FileSynchronizer
         /// <param name="str_Dir_String">配对的目录索引字符串</param>
         /// <param name="str_OutMissingFileFullName">若有文件丢失，则返回丢失文件的完整路径</param>
         /// <returns></returns>
-        public bool CheckMissingFile(string str_FileFullName, string str_Dir_String, out string str_OutMissingFileFullName)
+        private bool CheckMissingFile(string str_FileFullName, string str_Dir_String, out string str_OutMissingFileFullName)
         {
             str_OutMissingFileFullName = string.Empty;
             bool bRet = false;
@@ -2604,6 +2598,526 @@ namespace FileSynchronizer
             }
 
             return bRet;
+        }
+
+        private void G_Files_Info_ObjectsInforReady(object sender)
+        {
+            var dt_InitGap = DateTime.Now.Subtract(g_InitTime);
+            int iTotalObjectCount = g_Files_Info.TotalObjectCount();
+            string sInitDoneMsg = "配对（" + g_sPairName + "）信息初始化完成，花费" + dt_InitGap.TotalSeconds.ToString() + "秒，找到" + iTotalObjectCount.ToString() + "个文件/文件夹对象";
+            LogPairMessage(g_sPairName, sInitDoneMsg, true, true, 2);
+            if (g_iAutoSyncInterval.Equals(0))
+            {
+                LogPairMessage(g_sPairName, "即将进行程序启动的第一次同步", true, true, 2);
+            }
+            g_ObjectsInforReady = true;
+            OnObjectsInforReady(sInitDoneMsg);
+        }
+
+        private void G_Files_Info_Dir1ObjectChanged(object sender, FileChangedEvent e)
+        {
+            #region 同步间隔为0，做实时同步操作
+            if (g_iAutoSyncInterval.Equals(0))
+            {
+                switch (e.ChangeType)
+                {
+                    case ChangeType.CHANGED:
+                        Fw_Dir1_OnChanged(e); break;
+                    case ChangeType.CREATED:
+                        Fw_Dir1_OnCreated(e); break;
+                    case ChangeType.DELETED:
+                        Fw_Dir1_OnDeleted(e); break;
+                    case ChangeType.RENAMED:
+                        Fw_Dir1_OnRenamed(e); break;
+                    case ChangeType.LOG:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            #endregion
+            #region 同步间隔不为0，做定时同步操作
+            else
+            {
+                return;
+            }
+            #endregion
+        }
+
+        private void G_Files_Info_Dir2ObjectChanged(object sender, FileChangedEvent e)
+        {
+            #region 同步间隔为0，做实时同步操作
+            if (g_iAutoSyncInterval.Equals(0))
+            {
+                switch (e.ChangeType)
+                {
+                    case ChangeType.CHANGED:
+                        Fw_Dir2_OnChanged(e); break;
+                    case ChangeType.CREATED:
+                        Fw_Dir2_OnCreated(e); break;
+                    case ChangeType.DELETED:
+                        Fw_Dir2_OnDeleted(e); break;
+                    case ChangeType.RENAMED:
+                        Fw_Dir2_OnRenamed(e); break;
+                    case ChangeType.LOG:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            #endregion
+            #region 同步间隔不为0，做定时同步操作
+            else
+            {
+                return;
+            }
+            #endregion
+        }
+
+        private async void Fw_Dir1_OnCreated(FileChangedEvent e)
+        {
+            int i_Type;
+            string str_OutLogMsg = String.Empty;
+            string str_FullPath = e.FullPath;
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+            while (FileHelper.IsFileOpenFS(str_FullPath))
+            {
+                string str_PrintMsgF = "Fw_Dir1_OnCreated - File in use! " + str_FullPath;
+                LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 3);
+                Thread.SpinWait(1000);
+            }
+
+            string str_ObjectName = str_FullPath.Replace(g_sDir1Path, "");
+            string str_SyncFileName = str_FullPath.Replace(g_sDir1Path, g_sDir2Path);
+            bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+            bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
+
+            string str_PrintMsgA = "Fw_Dir1_OnCreated - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            string str_PrintMsgB = "Fw_Dir1_OnCreated - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            string str_PrintMsgC = "Fw_Dir1_OnCreated - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+            var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
+            if (bl_Sync_CheckQueueOK && !bl_Are2FilesSame)
+            {
+                Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+                //bool bRealTimeSyncResult = await RealTimeSyncItem(obj_ChangedItem, 0, c_Dir1_Str);
+                bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 0, c_Dir1_Str));
+                if (!bRealTimeSyncResult)
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Failed to Sync", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+                }
+            }
+            else
+            {
+                LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Remove from Queue", true, true, 4);
+                Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir1_OnChanged(FileChangedEvent e)
+        {
+            int i_Type;
+            string str_OutLogMsg = String.Empty;
+            string str_FullPath = e.FullPath;
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+
+            string str_ObjectName = str_FullPath.Replace(g_sDir1Path, "");
+            string str_SyncFileName = str_FullPath.Replace(g_sDir1Path, g_sDir2Path);
+            bool bl_Sync_CheckQueueOKFromAdd = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+            bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
+
+            string str_PrintMsgF = "Fw_Dir1_OnChanged - Check Queue From Add result: " + bl_Sync_CheckQueueOKFromAdd.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 4);
+
+            if (!bl_Sync_CheckQueueOKFromAdd) return;
+
+            var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
+            if (i_Type.Equals(1))
+            {
+                bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+
+                string str_PrintMsgA = "Fw_Dir1_OnChanged - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+                LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+                string str_PrintMsgB = "Fw_Dir1_OnChanged - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+                LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+                string str_PrintMsgC = "Fw_Dir1_OnChanged - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+                LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+                string str_MissingFileName = String.Empty;
+                if (CheckMissingFile(str_FullPath, c_Dir1_Str, out str_MissingFileName))
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Located missing file, route to Rename action", true, true, 4);
+                    FileChangedEvent e2 = e;
+                    e2.OldFullPath = str_MissingFileName;
+                    Fw_Dir1_OnRenamed(e2);
+                    return;
+                }
+
+                if (bl_Sync_CheckQueueOK && !bl_Are2FilesSame)
+                {
+                    Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                    //bool bRealTimeSyncResult = await RealTimeSyncItem(obj_ChangedItem, 1, c_Dir1_Str);
+                    bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 1, c_Dir1_Str));
+                    if (!bRealTimeSyncResult)
+                    {
+                        LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Failed to Sync", true, true, 4);
+                        LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Remove from Queue", true, true, 4);
+                        Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                    }
+                }
+                else
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                }
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir1_OnDeleted(FileChangedEvent e)
+        {
+            string str_OutLogMsg = String.Empty;
+            string str_FullPath = e.FullPath;
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+
+            string str_ObjectName = str_FullPath.Replace(g_sDir1Path, "");
+            bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+
+            string str_PrintMsgA = "Fw_Dir1_OnDeleted - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            string str_PrintMsgB = "Fw_Dir1_OnDeleted - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            string str_PrintMsgC = "Fw_Dir1_OnDeleted - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+            if (bl_Sync_CheckQueueOK)
+            {
+                Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+                bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(str_FullPath, 2, c_Dir1_Str));
+                if (!bRealTimeSyncResult)
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Failed to Sync", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+                }
+            }
+            else
+            {
+                LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Remove from Queue", true, true, 4);
+                Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir1_OnRenamed(FileChangedEvent e)
+        {
+            int i_Type;
+            string str_OutLogMsg = String.Empty;
+            string str_NewFullPath = e.FullPath;
+            string str_OldFullPath = e.OldFullPath;
+            if (CheckFilterRule(g_sFilterRule, str_NewFullPath, out str_OutLogMsg)) return;
+
+            string str_ObjectName = str_NewFullPath.Replace(g_sDir1Path, "");
+            var obj_ChangedItem = FileHelper.ObjFromFullPath(str_NewFullPath, out i_Type);
+            bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+
+            string str_PrintMsgA = "Fw_Dir1_OnRenamed - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            string str_PrintMsgB = "Fw_Dir1_OnRenamed - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            string str_PrintMsgC = "Fw_Dir1_OnRenamed - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+            if (bl_Sync_CheckQueueOK)
+            {
+                Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 3, c_Dir1_Str, str_OldFullPath));
+                if (!bRealTimeSyncResult)
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Failed to Sync", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                }
+            }
+            else
+            {
+                LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Remove from Queue", true, true, 4);
+                Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir2_OnCreated(FileChangedEvent e)
+        {
+            int i_Type;
+            string str_OutLogMsg = String.Empty;
+            string str_FullPath = e.FullPath;
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+            while (FileHelper.IsFileOpenFS(str_FullPath))
+            {
+                string str_PrintMsgF = "Fw_Dir2_OnCreated - File in use! " + str_FullPath;
+                LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 3);
+                Thread.SpinWait(1000);
+            }
+
+            string str_ObjectName = str_FullPath.Replace(g_sDir2Path, "");
+            string str_SyncFileName = str_FullPath.Replace(g_sDir2Path, g_sDir1Path);
+            bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+            bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
+
+            string str_PrintMsgA = "Fw_Dir2_OnCreated - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            string str_PrintMsgB = "Fw_Dir2_OnCreated - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            string str_PrintMsgC = "Fw_Dir2_OnCreated - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+            var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
+            if (bl_Sync_CheckQueueOK && !bl_Are2FilesSame)
+            {
+                Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+                bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 0, c_Dir2_Str));
+                if (!bRealTimeSyncResult)
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Failed to Sync", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+                }
+            }
+            else
+            {
+                LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Remove from Queue", true, true, 4);
+                Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir2_OnChanged(FileChangedEvent e)
+        {
+            int i_Type;
+            string str_OutLogMsg = String.Empty;
+            string str_FullPath = e.FullPath;
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+
+            string str_ObjectName = str_FullPath.Replace(g_sDir2Path, "");
+            string str_SyncFileName = str_FullPath.Replace(g_sDir2Path, g_sDir1Path);
+            bool bl_Sync_CheckQueueOKFromAdd = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+            bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
+
+            string str_PrintMsgF = "Fw_Dir2_OnChanged - Check Queue From Add result: " + bl_Sync_CheckQueueOKFromAdd.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 4);
+
+            if (!bl_Sync_CheckQueueOKFromAdd) return;
+
+            var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
+            if (i_Type.Equals(1))
+            {
+                bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+
+                string str_PrintMsgA = "Fw_Dir2_OnChanged - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+                LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+                string str_PrintMsgB = "Fw_Dir2_OnChanged - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+                LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+                string str_PrintMsgC = "Fw_Dir2_OnChanged - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+                LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+                string str_MissingFileName = String.Empty;
+                if (CheckMissingFile(str_FullPath, c_Dir2_Str, out str_MissingFileName))
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Located missing file, route to Rename action", true, true, 4);
+                    FileChangedEvent e2 = e;
+                    e2.OldFullPath = str_MissingFileName;
+                    Fw_Dir2_OnRenamed(e2);
+                    return;
+                }
+
+                if (bl_Sync_CheckQueueOK && !bl_Are2FilesSame)
+                {
+                    Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                    bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 1, c_Dir2_Str));
+                    if (!bRealTimeSyncResult)
+                    {
+                        LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Failed to Sync", true, true, 4);
+                        LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Remove from Queue", true, true, 4);
+                        Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                    }
+                }
+                else
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                }
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir2_OnDeleted(FileChangedEvent e)
+        {
+            string str_OutLogMsg = String.Empty;
+            string str_FullPath = e.FullPath;
+            if (CheckFilterRule(g_sFilterRule, str_FullPath, out str_OutLogMsg)) return;
+
+            string str_ObjectName = str_FullPath.Replace(g_sDir2Path, "");
+            bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+
+            string str_PrintMsgA = "Fw_Dir2_OnDeleted - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            string str_PrintMsgB = "Fw_Dir2_OnDeleted - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            string str_PrintMsgC = "Fw_Dir2_OnDeleted - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+            if (bl_Sync_CheckQueueOK)
+            {
+                Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+                bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(str_FullPath, 2, c_Dir2_Str));
+                if (!bRealTimeSyncResult)
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Failed to Sync", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+                }
+            }
+            else
+            {
+                LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Remove from Queue", true, true, 4);
+                Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async void Fw_Dir2_OnRenamed(FileChangedEvent e)
+        {
+            int i_Type;
+            string str_OutLogMsg = String.Empty;
+            string str_NewFullPath = e.FullPath;
+            string str_OldFullPath = e.OldFullPath;
+            if (CheckFilterRule(g_sFilterRule, str_NewFullPath, out str_OutLogMsg)) return;
+
+            string str_ObjectName = str_NewFullPath.Replace(g_sDir2Path, "");
+            var obj_ChangedItem = FileHelper.ObjFromFullPath(str_NewFullPath, out i_Type);
+            bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+
+            string str_PrintMsgA = "Fw_Dir2_OnRenamed - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            string str_PrintMsgB = "Fw_Dir2_OnRenamed - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            string str_PrintMsgC = "Fw_Dir2_OnRenamed - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+
+            if (bl_Sync_CheckQueueOK)
+            {
+                Sync_Queue_Helper.Fw_Sync_AddQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 3, c_Dir2_Str, str_OldFullPath));
+                if (!bRealTimeSyncResult)
+                {
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Failed to Sync", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Remove from Queue", true, true, 4);
+                    Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+                }
+            }
+            else
+            {
+                LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Remove from Queue", true, true, 4);
+                Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
+            }
+
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+        }
+
+        private async Task<bool> RealTimeSyncItem(object obj_SyncItem, int int_Action, string str_DirIdx, string str_OldFullPath = "")
+        {
+            if (obj_SyncItem == null) return false;
+            DataTable dt_fileDiff = new DataTable();
+
+            //文件夹操作，只有新增/修改/重命名
+            if (obj_SyncItem.GetType() == typeof(DirectoryInfo))
+            {
+                //int_Action=0 --- 新增
+                if (int_Action.Equals(0))
+                {
+                    dt_fileDiff = Fw_Object_Created(obj_SyncItem, 0, str_DirIdx);
+                }
+                //int_Action=1 --- 修改
+                else if (int_Action.Equals(1))
+                {
+                    dt_fileDiff = Fw_Object_Changed(obj_SyncItem, 0, str_DirIdx);
+                }
+                //int_Action=3 --- 重命名是唯一不需要返回DataTable再同步的
+                else if (int_Action.Equals(3))
+                {
+                    return Fw_Object_Renamed(obj_SyncItem, 0, str_DirIdx, str_OldFullPath);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            //文件操作，只有新增/修改/重命名
+            else if (obj_SyncItem.GetType() == typeof(FileInfo))
+            {
+                //int_Action=0 --- 新增
+                if (int_Action.Equals(0))
+                {
+                    dt_fileDiff = Fw_Object_Created(obj_SyncItem, 1, str_DirIdx);
+                }
+                //int_Action=1 --- 修改
+                else if (int_Action.Equals(1))
+                {
+                    dt_fileDiff = Fw_Object_Changed(obj_SyncItem, 1, str_DirIdx);
+                }
+                //int_Action=3 --- 重命名是唯一不需要返回DataTable再同步的
+                else if (int_Action.Equals(3))
+                {
+                    return Fw_Object_Renamed(obj_SyncItem, 1, str_DirIdx, str_OldFullPath);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            //路径操作，只有删除
+            else if (obj_SyncItem.GetType() == typeof(String))
+            {
+                //int_Action=2 --- 删除
+                if (int_Action.Equals(2))
+                {
+                    dt_fileDiff = Fw_Object_Deleted(obj_SyncItem.ToString(), 1, str_DirIdx);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (dt_fileDiff != null && dt_fileDiff.Rows.Count > 0)
+            {
+                bool bSyncResult = await Task.Run(() => SyncDirPair(dt_fileDiff, true));
+                return bSyncResult;
+            }
+            else
+            {
+                return false;
+            }
         }
         #endregion
     }
