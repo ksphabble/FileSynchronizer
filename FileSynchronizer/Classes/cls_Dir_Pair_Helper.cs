@@ -71,15 +71,8 @@ namespace FileSynchronizer
         public DataTable AnalysisDirPair(bool IsAnalysisOnly)
         {
             #region Pre-Validation
-            //if (!g_Files_Info.ObjectInfoReady())
-            //{
-            //    string str_ObjectInfoNotReadyMessage = "配对信息未完全准备好，稍后将自动重试！";
-            //    LogPairMessage(g_sPairName, str_ObjectInfoNotReadyMessage, true, true, Global_Settings.DebugMode ? 2 : 1);
-            //    return null;
-            //}
-
-            string str_StartOprMessage = "开始分析配对（" + g_sPairName + "）" + (Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致此操作不能全部完成，请注意！" : "");
-            LogPairMessage(g_sPairName, str_StartOprMessage, true, true, Global_Settings.DebugMode ? 2 : 1);
+            string str_StartOprMessage = "开始分析配对（" + g_sPairName + "）" + (Global_Settings.DevelopMode ? " --- 程序处于开发者模式，会导致此操作不能全部完成，请注意！" : "");
+            LogPairMessage(g_sPairName, str_StartOprMessage, true, true, 1);
             #endregion
 
             #region Define Varibles
@@ -899,11 +892,11 @@ namespace FileSynchronizer
         public async Task<bool> SyncDirPair(DataTable TableFileDiff, bool bRealTime = false)
         {
             #region Define Varibles
-            string str_DebugModeWarning = Global_Settings.DebugMode ? " --- 程序处于调试模式，会导致同步操作无法完成，请注意！" : "";
+            string str_DebugModeWarning = Global_Settings.DevelopMode ? " --- 程序处于开发者模式，会导致同步操作无法完成，请注意！" : "";
             string str_StartOprMessage = (bRealTime ? "" : ("开始同步配对（" + g_sPairName + "）")) + str_DebugModeWarning;
             if (!String.IsNullOrEmpty(str_StartOprMessage))
             {
-                LogPairMessage(g_sPairName, str_StartOprMessage, true, true, Global_Settings.DebugMode ? 2 : 1);
+                LogPairMessage(g_sPairName, str_StartOprMessage, true, true, 1);
             }
             g_bCancelRequested = false; 
             OnPairStatusChange(PairStatus.SYNC);
@@ -1386,7 +1379,7 @@ namespace FileSynchronizer
                             LogPairMessage(g_sPairName, str_ExceptionFile + str_DatabaseErrorMsg, true, true, 3, true);
                         }
                         //调试模式下强制同步成功
-                        if (Global_Settings.DebugMode)
+                        if (Global_Settings.DevelopMode)
                         {
                             bl_SyncRecordDone = true;
                         }

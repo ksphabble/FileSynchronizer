@@ -325,7 +325,7 @@ namespace FileSynchronizer
                     //在特定时候检查任务是否被取消
                     if (gTokenSource.IsCancellationRequested) { return; }
                     string str_ErrorMsg = String.Empty;
-                    if (!Files_InfoDB.RevertUnfinishedSyncDetail(g_sPairName, Global_Settings.DebugMode, out str_ErrorMsg))
+                    if (!Files_InfoDB.RevertUnfinishedSyncDetail(g_sPairName, Global_Settings.DevelopMode, out str_ErrorMsg))
                     {
                         LogPairMessage(str_ErrorMsg, true, true);
                     }

@@ -40,10 +40,10 @@ namespace FileSynchronizer
             InitProgramUpdater();
             SetTimerAutoUpdate();
             //调整调试模式功能
-            DebugModeFunction(true);
+            DevelopModeFunction(true);
             RebindPairTable();
 
-            if (!Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, Global_Settings.DebugMode, out str_ErrorMsg))
+            if (!Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, Global_Settings.DevelopMode, out str_ErrorMsg))
             {
                 LogProgramMessage(str_ErrorMsg, true, true, 1);
             }
@@ -767,19 +767,24 @@ namespace FileSynchronizer
             }
         }
 
-        private void DebugModeFunction(bool bIsCallFromMain)
+        private void DevelopModeFunction(bool bIsCallFromMain)
         {
             if (Global_Settings.DebugMode)
             {
                 LogProgramMessage(@"程序处于调试模式，请注意对功能的影响！", true, true, 1);
             }
 
-            btnAnalysis.Visible = Global_Settings.DebugMode;
-            btnTest.Visible = Global_Settings.DebugMode;
+            if (Global_Settings.DevelopMode)
+            {
+                LogProgramMessage(@"程序处于开发者模式，请注意对功能的影响！", true, true, 1);
+            }
+
+            btnAnalysis.Visible = Global_Settings.DevelopMode;
+            btnTest.Visible = Global_Settings.DevelopMode;
             //检查更新ToolStripMenuItem.Visible = cls_Global_Settings.DebugMode;
 
             //调试模式功能：把程序版本降一级
-            if (Global_Settings.DebugMode)
+            if (Global_Settings.DevelopMode)
             {
                 int i_PrevRevision = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Revision - 1;
                 g_sMainProgramVersion = g_sMainProgramVersion.Substring(0, g_sMainProgramVersion.Length - 1) + i_PrevRevision.ToString();
@@ -792,7 +797,7 @@ namespace FileSynchronizer
 
             if (g_ProgramUpdater != null)
             {
-                g_ProgramUpdater.SetDebugMode(Global_Settings.DebugMode);
+                g_ProgramUpdater.SetDevelopMode(Global_Settings.DevelopMode);
                 g_ProgramUpdater.SetMainPgmVer(g_sMainProgramVersion);
                 if (!bIsCallFromMain)
                 {
@@ -805,7 +810,7 @@ namespace FileSynchronizer
         {
             if (g_ProgramUpdater == null)
             {
-                g_ProgramUpdater = new IFormUpdater(c_ProgramTitle, g_sMainProgramVersion, c_UpdateURL_Str, ProgramUpdateSource.GITHUB, Global_Settings.DebugMode);
+                g_ProgramUpdater = new IFormUpdater(c_ProgramTitle, g_sMainProgramVersion, c_UpdateURL_Str, ProgramUpdateSource.GITHUB, Global_Settings.DevelopMode);
                 g_ProgramUpdater.SetGithubToken(Global_Settings.GithubToken);
             }
         }
@@ -985,16 +990,16 @@ namespace FileSynchronizer
 
         private void 全局设置ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool bPrevDebugMode = Global_Settings.DebugMode;
+            bool bPrevDevelopMode = Global_Settings.DevelopMode;
             g_Timer.Change(Timeout.Infinite, Timeout.Infinite);
             new frm_GlobalSettings(g_sMainProgramVersion).ShowDialog();
 
             SetTimerAutoUpdate();
 
-            if (bPrevDebugMode != Global_Settings.DebugMode)
+            if (bPrevDevelopMode != Global_Settings.DevelopMode)
             {
                 //调整调试模式功能
-                DebugModeFunction(false);
+                DevelopModeFunction(false);
             }
 
             g_Timer.Change(0, c_Timer_Interval);
