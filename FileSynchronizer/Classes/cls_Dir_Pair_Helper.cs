@@ -66,7 +66,7 @@ namespace FileSynchronizer
         {
             #region Pre-Validation
             string str_StartOprMessage = "开始分析配对（" + g_sPairName + "）" + (Global_Settings.DevelopMode ? " --- 程序处于开发者模式，会导致此操作不能全部完成，请注意！" : "");
-            LogPairMessage(g_sPairName, str_StartOprMessage, true, true, 1);
+            LogPairMessage(g_sPairName, str_StartOprMessage, true, true, GetTraceLevel(1));
             #endregion
 
             #region Define Varibles
@@ -74,39 +74,40 @@ namespace FileSynchronizer
             OnPairStatusChange(PairStatus.ANALYSIS);
             string str_OutLogMsg = String.Empty;
             DateTime dt_DirLastSyncTime;
-            bool bl_LastSyncStatus = DateTime.TryParse(g_sDirLastSyncTime, out dt_DirLastSyncTime);
-            if (!bl_LastSyncStatus)
+            bool bLastSyncStatus = DateTime.TryParse(g_sDirLastSyncTime, out dt_DirLastSyncTime);
+            if (!bLastSyncStatus)
             {
-                LogPairMessage(g_sPairName, "没有找到上次同步时间，首次分析同步需时较长，请耐心等待", true, true, 1);
+                LogPairMessage(g_sPairName, "没有找到上次同步时间，首次分析同步需时较长，请耐心等待", true, true, GetTraceLevel(1));
                 dt_DirLastSyncTime = DateTime.MinValue;
             }
 
             //DIR1的子目录和文件信息
-            LogPairMessage(g_sPairName, "开始获取DIR1（" + g_sDir1Path + "）的目录和文件信息", true, true, 2);
-            DirectoryInfo _dir1 = new DirectoryInfo(g_sDir1Path);
+            LogPairMessage(g_sPairName, "开始获取DIR1（" + g_sDir1Path + "）的目录和文件信息", true, true, GetTraceLevel(2));
             //检查DIR1根目录是否存在，若不存在，则提示出错并停止分析
-            if (bl_LastSyncStatus && !_dir1.Exists)
+            if (bLastSyncStatus && !Directory.Exists(g_sDir1Path))
             {
-                LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录1可能出现问题，请检查，若目录内容为空，请忽略此提示", true, true, 1);
+                LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录1可能出现问题，请检查，若目录内容为空，请忽略此提示", true, true, GetTraceLevel(1));
+                OnPairStatusChange(PairStatus.FREE);
                 return null;
             }
-            string str_Dir1TableName = g_sPairName + "_DIR1_" + _dir1.Name;
-            DirectoryInfo[] subDir1 = FetchDirInformation(c_Dir1_Str);
-            FileInfo[] fileInfos1 = FetchFileInformation(c_Dir1_Str);
+
+            string str_Dir1TableName = String.Join("_", g_sPairName, c_Dir1_Str, FileHelper.GetObjectNameFromPath(g_sDir1Path));
+            DirectoryInfo[] subDir1 = g_Files_Info.FetchDirectoryInfos1();
+            FileInfo[] fileInfos1 = g_Files_Info.FetchFileInfos1();
             DataTable dt_File1InforDB = Files_InfoDB.GetFileInfor(str_Dir1TableName, out str_OutLogMsg);
 
             //DIR2的子目录和文件信息
-            LogPairMessage(g_sPairName, "开始获取DIR2（" + g_sDir2Path + "）的目录和文件信息", true, true, 2);
-            DirectoryInfo _dir2 = new DirectoryInfo(g_sDir2Path);
+            LogPairMessage(g_sPairName, "开始获取DIR2（" + g_sDir2Path + "）的目录和文件信息", true, true, GetTraceLevel(2));
             //检查DIR2根目录是否存在，若不存在，则提示出错并停止分析
-            if (bl_LastSyncStatus && !_dir2.Exists)
+            if (bLastSyncStatus && !Directory.Exists(g_sDir2Path))
             {
-                LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录2可能出现问题，请检查，若目录内容为空，请忽略此提示", true, true, 1);
+                LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录2可能出现问题，请检查，若目录内容为空，请忽略此提示", true, true, GetTraceLevel(1));
+                OnPairStatusChange(PairStatus.FREE);
                 return null;
             }
-            string str_Dir2TableName = g_sPairName + "_DIR2_" + _dir2.Name;
-            DirectoryInfo[] subDir2 = FetchDirInformation(c_Dir2_Str);
-            FileInfo[] fileInfos2 = FetchFileInformation(c_Dir2_Str);
+            string str_Dir2TableName = String.Join("_", g_sPairName, c_Dir2_Str, FileHelper.GetObjectNameFromPath(g_sDir2Path));
+            DirectoryInfo[] subDir2 = g_Files_Info.FetchDirectoryInfos2();
+            FileInfo[] fileInfos2 = g_Files_Info.FetchFileInfos2();
             DataTable dt_File2InforDB = Files_InfoDB.GetFileInfor(str_Dir2TableName, out str_OutLogMsg);
 
             int int_TotalFileFound = subDir1.Length + fileInfos1.Length + subDir2.Length + fileInfos2.Length + dt_File1InforDB.Rows.Count + dt_File2InforDB.Rows.Count;
@@ -120,8 +121,8 @@ namespace FileSynchronizer
             string str_FileMD5 = String.Empty;
             string str_FileID = String.Empty;
             string str_Where = String.Empty;
-            bool bl_ExceptionFound = false;
-            int i_SleepInterval = 20;
+            bool bExceptionFound = false;
+            int iSleepInterval = 20;
             #endregion
 
             #region 分析目录和文件至数据库
@@ -144,13 +145,13 @@ namespace FileSynchronizer
                     if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgA);
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
                             string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                         }
 
                         OnAdd1Analysis(int_TotalFileFound);
@@ -163,7 +164,7 @@ namespace FileSynchronizer
                     if (dt_File1InforDB.Select(str_Where).Length > 0)
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-ExistsInDB-ExcludeDIR:" + str_FileFullName;
-                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgB);
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(i_SleepInterval);
@@ -171,35 +172,35 @@ namespace FileSynchronizer
                     }
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-AddDIR:" + str_FilePath;
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgAddItem);
                     if (!Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_DirCreDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "Step-1-AddFileInfor:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
-                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-Add 1 analysis done count", true, true, 4);
+                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-Add 1 analysis done count", true, true, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("PathTooLongException"))
                     {
-                        LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
                         str_OutLogMsg = "Step-1-Exception:" + ex.Message;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
             }
 
@@ -221,13 +222,13 @@ namespace FileSynchronizer
                     if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgA);
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
                             string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                         }
 
                         OnAdd1Analysis(int_TotalFileFound);
@@ -240,7 +241,7 @@ namespace FileSynchronizer
                     if (dt_File1InforDB.Select(str_Where).Length > 0)
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-ExistsInDB-ExcludeFile:" + str_FileFullName;
-                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgB);
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(50);
@@ -249,58 +250,58 @@ namespace FileSynchronizer
 
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-CalculatingFileMD5:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgCalcMD5);
                     str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, IsAnalysisOnly, out str_OutLogMsg);
-                    LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, 4);
+                    LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, GetTraceLevel(4));
 
                     if (String.IsNullOrEmpty(str_FileMD5))
                     {
                         if (str_OutLogMsg.Contains("PathTooLongException"))
                         {
-                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
                         else
                         {
                             str_OutLogMsg = "Step-2-ExceptionA:" + str_OutLogMsg;
-                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
-                        Thread.Sleep(i_SleepInterval);
+                        Thread.Sleep(iSleepInterval);
                         continue;
                     }
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-AddFile:" + str_FileFullName;
                     OnSetOngoingItem(str_LogMsgAddItem);
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "Step-2-AddFileInfor:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
-                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-Add 1 analysis done count", true, true, 4);
+                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-Add 1 analysis done count", true, true, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("PathTooLongException"))
                     {
-                        LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
                         str_OutLogMsg = "Step-2-ExceptionB:" + ex.Message;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
             }
 
@@ -318,20 +319,20 @@ namespace FileSynchronizer
                 //检查DIR1根目录是否存在，若不存在，则提示出错并停止同步
                 if (!Directory.Exists(g_sDir1Path))
                 {
-                    bl_ExceptionFound = true;
+                    bExceptionFound = true;
                     break;
                 }
 
                 if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
                 {
                     string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-" + str_OutLogMsg + "-SoftDeleteItem:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgA);
                     if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                     {
-                        LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgA, true, true, 4);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
-                        Thread.Sleep(i_SleepInterval);
+                        LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgA, true, true, GetTraceLevel(4));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+                        Thread.Sleep(iSleepInterval);
                     }
                     OnAdd1Analysis(int_TotalFileFound);
                     continue;
@@ -342,7 +343,7 @@ namespace FileSynchronizer
                     //检查DIR1根目录是否存在，若不存在，则提示出错并停止同步
                     if (!Directory.Exists(g_sDir1Path))
                     {
-                        bl_ExceptionFound = true;
+                        bExceptionFound = true;
                         break;
                     }
                     else
@@ -351,12 +352,12 @@ namespace FileSynchronizer
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-SoftDeleteDIR:" + str_FilePath;
                             OnSetOngoingItem(str_LogMsgAddItem);
-                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
-                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, 4);
-                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
-                                Thread.Sleep(i_SleepInterval);
+                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, GetTraceLevel(4));
+                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+                                Thread.Sleep(iSleepInterval);
                             }
                         }
                         else
@@ -371,7 +372,7 @@ namespace FileSynchronizer
                     //检查DIR1根目录是否存在，若不存在，则提示出错并停止同步
                     if (!Directory.Exists(g_sDir1Path))
                     {
-                        bl_ExceptionFound = true;
+                        bExceptionFound = true;
                         break;
                     }
                     else
@@ -380,12 +381,12 @@ namespace FileSynchronizer
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-SoftDeleteFile:" + str_FileFullName;
                             OnSetOngoingItem(str_LogMsgAddItem);
-                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
-                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, 4);
-                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
-                                Thread.Sleep(i_SleepInterval);
+                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, GetTraceLevel(4));
+                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+                                Thread.Sleep(iSleepInterval);
                             }
                         }
                         else
@@ -396,10 +397,10 @@ namespace FileSynchronizer
                     }
                 }
 
-                LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-Add 1 analysis done count", true, true, 4);
+                LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-Add 1 analysis done count", true, true, GetTraceLevel(4));
                 OnAdd1Analysis(int_TotalFileFound);
             }
-            LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录1（" + g_sDir1Path + "）分析完成", true, true, 2);
+            LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录1（" + g_sDir1Path + "）分析完成", true, true, GetTraceLevel(2));
 
             //从目录2的子目录分析至数据库
             foreach (DirectoryInfo directoryInfo in subDir2)
@@ -420,13 +421,13 @@ namespace FileSynchronizer
                     if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgA);
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
                             string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                         }
 
                         OnAdd1Analysis(int_TotalFileFound);
@@ -439,7 +440,7 @@ namespace FileSynchronizer
                     if (dt_File2InforDB.Select(str_Where).Length > 0)
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-ExistsInDB-ExcludeDIR:" + str_FileFullName;
-                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgB);
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(50);
@@ -447,35 +448,35 @@ namespace FileSynchronizer
                     }
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-AddDIR:" + str_FilePath;
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgAddItem);
                     if (!Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_DirCreDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "Step-4-AddFileInfor:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
-                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-Add 1 analysis done count", true, true, 4);
+                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-Add 1 analysis done count", true, true, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("PathTooLongException"))
                     {
-                        LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
                         str_OutLogMsg = "Step-4-Exception:" + ex.Message;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
             }
 
@@ -497,13 +498,13 @@ namespace FileSynchronizer
                     if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgA);
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
                             string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                            LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                         }
 
                         OnAdd1Analysis(int_TotalFileFound);
@@ -516,7 +517,7 @@ namespace FileSynchronizer
                     if (dt_File2InforDB.Select(str_Where).Length > 0)
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-ExistsInDB-ExcludeFile:" + str_FileFullName;
-                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                         OnSetOngoingItem(str_LogMsgB);
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(50);
@@ -525,58 +526,58 @@ namespace FileSynchronizer
 
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-CalculatingFileMD5:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgCalcMD5);
                     str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, IsAnalysisOnly, out str_OutLogMsg);
-                    LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, 4);
+                    LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, GetTraceLevel(4));
 
                     if (String.IsNullOrEmpty(str_FileMD5))
                     {
                         if (str_OutLogMsg.Contains("PathTooLongException"))
                         {
-                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
                         else
                         {
                             str_OutLogMsg = "Step-5-ExceptionA:" + str_OutLogMsg;
-                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
-                        Thread.Sleep(i_SleepInterval);
+                        Thread.Sleep(iSleepInterval);
                         continue;
                     }
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-AddFile:" + str_FileFullName;
                     OnSetOngoingItem(str_LogMsgAddItem);
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "Step-5-AddFileInfor:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
-                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-Add 1 analysis done count", true, true, 4);
+                        LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-Add 1 analysis done count", true, true, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("PathTooLongException"))
                     {
-                        LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                     }
                     else
                     {
                         str_OutLogMsg = "Step-5-ExceptionB:" + ex.Message;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
-                    Thread.Sleep(i_SleepInterval);
+                    Thread.Sleep(iSleepInterval);
                 }
             }
 
@@ -594,20 +595,20 @@ namespace FileSynchronizer
                 //检查DIR2根目录是否存在，若不存在，则提示出错并停止同步
                 if (!Directory.Exists(g_sDir2Path))
                 {
-                    bl_ExceptionFound = true;
+                    bExceptionFound = true;
                     break;
                 }
 
                 if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
                 {
                     string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-" + str_OutLogMsg + "-SoftDeleteItem:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgA);
                     if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                     {
-                        LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgA, true, true, 4);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
-                        Thread.Sleep(i_SleepInterval);
+                        LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgA, true, true, GetTraceLevel(4));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+                        Thread.Sleep(iSleepInterval);
                     }
                     OnAdd1Analysis(int_TotalFileFound);
                     continue;
@@ -618,7 +619,7 @@ namespace FileSynchronizer
                     //检查DIR2根目录是否存在，若不存在，则提示出错并停止同步
                     if (!Directory.Exists(g_sDir2Path))
                     {
-                        bl_ExceptionFound = true;
+                        bExceptionFound = true;
                         break;
                     }
                     else
@@ -627,12 +628,12 @@ namespace FileSynchronizer
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-SoftDeleteDIR:" + str_FilePath;
                             OnSetOngoingItem(str_LogMsgAddItem);
-                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
-                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, 4);
-                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
-                                Thread.Sleep(i_SleepInterval);
+                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, GetTraceLevel(4));
+                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+                                Thread.Sleep(iSleepInterval);
                             }
                         }
                         else
@@ -647,7 +648,7 @@ namespace FileSynchronizer
                     //检查DIR2根目录是否存在，若不存在，则提示出错并停止同步
                     if (!Directory.Exists(g_sDir2Path))
                     {
-                        bl_ExceptionFound = true;
+                        bExceptionFound = true;
                         break;
                     }
                     else
@@ -656,12 +657,12 @@ namespace FileSynchronizer
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-SoftDeleteFile:" + str_FileFullName;
                             OnSetOngoingItem(str_LogMsgAddItem);
-                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                            LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
-                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, 4);
-                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
-                                Thread.Sleep(i_SleepInterval);
+                                LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, GetTraceLevel(4));
+                                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+                                Thread.Sleep(iSleepInterval);
                             }
                         }
                         else
@@ -672,14 +673,14 @@ namespace FileSynchronizer
                     }
                 }
 
-                LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-Add 1 analysis done count", true, true, 4);
+                LogPairMessage(g_sPairName, "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-Add 1 analysis done count", true, true, GetTraceLevel(4));
                 OnAdd1Analysis(int_TotalFileFound);
             }
-            LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录2（" + g_sDir2Path + "）分析完成", true, true, 2);
+            LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录2（" + g_sDir2Path + "）分析完成", true, true, GetTraceLevel(2));
             #endregion
 
             #region 当没有出现错误的时候才继续，获取配对差异
-            if (!bl_ExceptionFound)
+            if (!bExceptionFound)
             {
                 if (!g_bCancelRequested)
                 {
@@ -692,26 +693,26 @@ namespace FileSynchronizer
                     int i_AlertThreshold = Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.SQLITE ? 100000 : 40000;
                     if (int_TotalFileFound > i_AlertThreshold)
                     {
-                        LogPairMessage(g_sPairName, "配对相关的目录和文件数量较多，分析差异需时较长，请耐心等待", true, true, 1);
+                        LogPairMessage(g_sPairName, "配对相关的目录和文件数量较多，分析差异需时较长，请耐心等待", true, true, GetTraceLevel(1));
                     }
-                    LogPairMessage(g_sPairName, "Started getting DIR/FILE difference", true, true, 4);
+                    LogPairMessage(g_sPairName, "Started getting DIR/FILE difference", true, true, GetTraceLevel(4));
                     //DataTable dt_fileDiff = cls_Files_InfoDB.GetFileDiff(str_PairName, str_Dir1Path, str_Dir2Path, int_SyncDirection, out str_OutLogMsg);
                     DataTable dt_File1InforDB_AfterAnalysis = Files_InfoDB.GetFileInfor(str_Dir1TableName, out str_OutLogMsg);
                     if (!String.IsNullOrEmpty(str_OutLogMsg))
                     {
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 1);
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(1));
                     }
                     DataTable dt_File2InforDB_AfterAnalysis = Files_InfoDB.GetFileInfor(str_Dir2TableName, out str_OutLogMsg);
                     if (!String.IsNullOrEmpty(str_OutLogMsg))
                     {
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 1);
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(1));
                     }
                     DataTable dt_fileDiff = Get_File_Diff(g_sPairID, g_sPairName, dt_File1InforDB_AfterAnalysis, dt_File2InforDB_AfterAnalysis, g_sDir1Path, g_sDir2Path, g_iSyncDirection, out str_OutLogMsg);
                     if (!String.IsNullOrEmpty(str_OutLogMsg))
                     {
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 1);
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(1));
                     }
-                    LogPairMessage(g_sPairName, "Started getting DIR/FILE difference --- done", true, true, 4);
+                    LogPairMessage(g_sPairName, "Started getting DIR/FILE difference --- done", true, true, GetTraceLevel(4));
 
                     try
                     {
@@ -731,7 +732,7 @@ namespace FileSynchronizer
                             if (Local_Utilities.CheckFilterRule(g_sFilterRule, str_FromFile, out str_OutLogMsg))
                             {
                                 string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-GetDiff-" + str_OutLogMsg;
-                                LogPairMessage(g_sPairName, str_LogMsgA, true, true, 3);
+                                LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
                                 continue;
                             }
 
@@ -741,12 +742,12 @@ namespace FileSynchronizer
                                 if (str_FileName.Equals(c_DirNameChar_Str))
                                 {
                                     str_LogMsg = "目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                                 else
                                 {
                                     str_LogMsg = "文件: " + str_FromFile + " -A-> " + str_ToFile;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                             }
                             //DIR2中有DIR1中没有的，DIFFTYPE=2，需要从DIR2同步至DIR1
@@ -755,12 +756,12 @@ namespace FileSynchronizer
                                 if (str_FileName.Equals(c_DirNameChar_Str))
                                 {
                                     str_LogMsg = "目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                                 else
                                 {
                                     str_LogMsg = "文件: " + str_ToFile + " <-A- " + str_FromFile;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                             }
                             //DIR1和DIR2都有但是MD5值不同，而且DIR1比DIR2修改时间晚的，DIFFTYPE=3，需要从DIR1同步至DIR2
@@ -770,7 +771,7 @@ namespace FileSynchronizer
                                 if (str_FileName.Equals(c_DirNameChar_Str)) continue;
 
                                 str_LogMsg = "文件: " + str_FromFile + " -U-> " + str_ToFile;
-                                LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                             }
                             //DIR1和DIR2都有但是MD5值不同，而且DIR2比DIR1修改时间晚的，DIFFTYPE=4，需要从DIR2同步至DIR1
                             if (int_FileDiffType == 4)
@@ -779,7 +780,7 @@ namespace FileSynchronizer
                                 if (str_FileName.Equals(c_DirNameChar_Str)) continue;
 
                                 str_LogMsg = "文件: " + str_ToFile + " <-U- " + str_FromFile;
-                                LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                             }
                             //DIR1和DIR2都有而且MD5值相同，但是DIR1中文件状态是'DL'，DIFFTYPE=5，需要从DIR2中删除
                             if (int_FileDiffType == 5)
@@ -787,12 +788,12 @@ namespace FileSynchronizer
                                 if (str_FileName.Equals(c_DirNameChar_Str))
                                 {
                                     str_LogMsg = "目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                                 else
                                 {
                                     str_LogMsg = "文件: " + str_FromFile + " -X-> " + str_ToFile;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                             }
                             //DIR1和DIR2都有而且MD5值相同，但是DIR2中文件状态是'DL'，DIFFTYPE=6，需要从DIR1中删除
@@ -801,26 +802,27 @@ namespace FileSynchronizer
                                 if (str_FileName.Equals(c_DirNameChar_Str))
                                 {
                                     str_LogMsg = "目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                                 else
                                 {
                                     str_LogMsg = "文件: " + str_ToFile + " <-X- " + str_FromFile;
-                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(1));
                                 }
                             }
                             //可能出现文件冲突的项目，不做同步，仅发出提醒，DIFFTYPE=7
                             if (int_FileDiffType == 7)
                             {
                                 str_LogMsg = "文件<" + str_FileName + ">，目录1<" + str_FileFromPath + ">，目录2<" + str_FileToPath + ">可能存在冲突，请检查";
-                                LogPairMessage(g_sPairName, str_LogMsg, true, true, 2);
+                                LogPairMessage(g_sPairName, str_LogMsg, true, true, GetTraceLevel(2));
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogPairMessage(g_sPairName, "获取配对差异出错，操作终止，请查阅配对日志文件获取具体信息", true, true, 1);
-                        LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "获取配对差异出错，操作终止，请查阅配对日志文件获取具体信息", true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
+                        OnPairStatusChange(PairStatus.FREE);
                         return null;
                     }
                     #endregion
@@ -828,7 +830,7 @@ namespace FileSynchronizer
                     DataTable dt_fileDiffExType7 = Create_FileDiff_Empty();
                     if (dt_fileDiff.Rows.Count > 0)
                     {
-                        LogPairMessage(g_sPairName, "去除差异等级为7的记录", true, true, 3);
+                        LogPairMessage(g_sPairName, "去除差异等级为7的记录", true, true, GetTraceLevel(3));
                         DataRow[] dr_Temp = dt_fileDiff.Select("DIFFTYPE<>'7'");
                         if (dr_Temp.Length > 0)
                         {
@@ -847,7 +849,7 @@ namespace FileSynchronizer
                         {
                             str_AnalysisResult += "其中" + dt_fileDiffExType7.Rows.Count.ToString() + "条记录需同步";
                         }
-                        LogPairMessage(g_sPairName, str_AnalysisResult, true, true, 1);
+                        LogPairMessage(g_sPairName, str_AnalysisResult, true, true, GetTraceLevel(1));
 
                         OnPairStatusChange(PairStatus.FREE);
                         OnSetOngoingItem(string.Empty);
@@ -855,7 +857,7 @@ namespace FileSynchronizer
                     }
                     else
                     {
-                        LogPairMessage(g_sPairName, "分析操作被中止", true, true, 1);
+                        LogPairMessage(g_sPairName, "分析操作被中止", true, true, GetTraceLevel(1));
                         OnPairStatusChange(PairStatus.FREE);
                         OnSetOngoingItem(string.Empty);
                         return Create_FileDiff_Empty();
@@ -863,7 +865,7 @@ namespace FileSynchronizer
                 }
                 else
                 {
-                    LogPairMessage(g_sPairName, "分析操作被中止", true, true, 1);
+                    LogPairMessage(g_sPairName, "分析操作被中止", true, true, GetTraceLevel(1));
                     OnPairStatusChange(PairStatus.FREE);
                     OnSetOngoingItem(string.Empty);
                     return Create_FileDiff_Empty();
@@ -871,7 +873,7 @@ namespace FileSynchronizer
             }
             else
             {
-                LogPairMessage(g_sPairName, "分析过程发生异常被中止，可能是因为配对的目录断开连接，请确认后再试", true, true, 1);
+                LogPairMessage(g_sPairName, "分析过程发生异常被中止，可能是因为配对的目录断开连接，请确认后再试", true, true, GetTraceLevel(1));
                 OnPairStatusChange(PairStatus.FREE);
                 OnSetOngoingItem(string.Empty);
                 return Create_FileDiff_Empty();
@@ -890,7 +892,7 @@ namespace FileSynchronizer
             string str_StartOprMessage = (bRealTime ? "" : ("开始同步配对（" + g_sPairName + "）")) + str_DebugModeWarning;
             if (!String.IsNullOrEmpty(str_StartOprMessage))
             {
-                LogPairMessage(g_sPairName, str_StartOprMessage, true, true, 1);
+                LogPairMessage(g_sPairName, str_StartOprMessage, true, true, GetTraceLevel(1));
             }
             g_bCancelRequested = false; 
             OnPairStatusChange(PairStatus.SYNC);
@@ -944,7 +946,7 @@ namespace FileSynchronizer
                             bl_SyncRecordDone = true;
                             FileHelper.xDelete(str_FromFileTemp);
                             string str_LogMsgA = "PAIR-SYNC:" + g_sPairName + "-" + str_OutLogMsg;
-                            LogPairMessage(g_sPairName, str_LogMsgA, true, true, 4);
+                            LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
                             continue;
                         }
                         #endregion
@@ -972,20 +974,20 @@ namespace FileSynchronizer
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
                                 bl_SyncRecordDone = true;
                             }
                             else
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (int_TrySyncCount <= 1)
                                 {
                                     if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                     }
                                 }
 
@@ -1004,13 +1006,13 @@ namespace FileSynchronizer
                                     {
                                         if (!Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 1);
+                                            LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
                                         }
                                         else
                                         {
                                             if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                             }
                                         }
                                     }
@@ -1018,7 +1020,7 @@ namespace FileSynchronizer
                                 else
                                 {
                                     str_OngoingRecMsg = "文件" + (Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                                     bl_SyncRecordDone = true;
                                 }
                             }
@@ -1045,20 +1047,20 @@ namespace FileSynchronizer
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
                                 bl_SyncRecordDone = true;
                             }
                             else
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-A- " + str_FromFile;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (int_TrySyncCount <= 1)
                                 {
                                     if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                     }
                                 }
 
@@ -1076,13 +1078,13 @@ namespace FileSynchronizer
                                     {
                                         if (!Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 1);
+                                            LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
                                         }
                                         else
                                         {
                                             if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                             }
                                         }
                                     }
@@ -1090,7 +1092,7 @@ namespace FileSynchronizer
                                 else
                                 {
                                     str_OngoingRecMsg = "文件" + (Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                                     bl_SyncRecordDone = true;
                                 }
                             }
@@ -1114,13 +1116,13 @@ namespace FileSynchronizer
 
                             str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
                             OnSetOngoingItem(str_OngoingRecMsg);
-                            LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                            LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                             if (int_TrySyncCount <= 1)
                             {
                                 if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                 }
                             }
 
@@ -1143,13 +1145,13 @@ namespace FileSynchronizer
                                 {
                                     if (!Files_InfoDB.UpdFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 1);
+                                        LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
                                     }
                                     else
                                     {
                                         if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                         }
                                     }
                                 }
@@ -1157,7 +1159,7 @@ namespace FileSynchronizer
                             else
                             {
                                 str_OngoingRecMsg = "文件" + (Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                                 bl_SyncRecordDone = true;
                             }
                         }
@@ -1180,12 +1182,12 @@ namespace FileSynchronizer
 
                             str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-U- " + str_FromFile;
                             OnSetOngoingItem(str_OngoingRecMsg);
-                            LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                            LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
                             if (int_TrySyncCount <= 1)
                             {
                                 if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                 }
                             }
 
@@ -1208,13 +1210,13 @@ namespace FileSynchronizer
                                 {
                                     if (!Files_InfoDB.UpdFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 1);
+                                        LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
                                     }
                                     else
                                     {
                                         if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, 3);
+                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
                                         }
                                     }
                                 }
@@ -1222,7 +1224,7 @@ namespace FileSynchronizer
                             else
                             {
                                 str_OngoingRecMsg = "文件" + (Global_Settings.UseLocalTemp ? str_FromFileTemp : str_FromFile) + "不存在，同步失败，请检查文件";
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                                 bl_SyncRecordDone = true;
                             }
                         }
@@ -1233,7 +1235,7 @@ namespace FileSynchronizer
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (Directory.Exists(str_FileToPath))
                                 {
@@ -1256,7 +1258,7 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 3);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1264,7 +1266,7 @@ namespace FileSynchronizer
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_FromFile + " -X-> " + str_ToFile;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (System.IO.File.Exists(str_ToFile))
                                 {
@@ -1287,7 +1289,7 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 3);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1299,7 +1301,7 @@ namespace FileSynchronizer
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (Directory.Exists(str_FileToPath))
                                 {
@@ -1322,7 +1324,7 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 3);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1330,7 +1332,7 @@ namespace FileSynchronizer
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-X- " + str_FromFile;
                                 OnSetOngoingItem(str_OngoingRecMsg);
-                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 3);
+                                LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (System.IO.File.Exists(str_ToFile))
                                 {
@@ -1353,7 +1355,7 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, 3);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1370,7 +1372,7 @@ namespace FileSynchronizer
                         if (!String.IsNullOrEmpty(str_DatabaseErrorMsg))
                         {
                             bExceptionFound = true;
-                            LogPairMessage(g_sPairName, str_ExceptionFile + str_DatabaseErrorMsg, true, true, 3, true);
+                            LogPairMessage(g_sPairName, str_ExceptionFile + str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                         }
                         //调试模式下强制同步成功
                         if (Global_Settings.DevelopMode)
@@ -1388,7 +1390,7 @@ namespace FileSynchronizer
                         {
                             if (int_TrySyncCount >= Global_Settings.RetryCountWhenSyncFailed)
                             {
-                                LogPairMessage(g_sPairName, str_ExceptionFile + "超过最大重试次数", true, true, 1);
+                                LogPairMessage(g_sPairName, str_ExceptionFile + "超过最大重试次数", true, true, GetTraceLevel(1));
                                 //更新同步进度
                                 OnAdd1Sync(int_TotalChngCount);
                                 int_SyncedCount++;
@@ -1397,7 +1399,7 @@ namespace FileSynchronizer
                             }
                             else
                             {
-                                LogPairMessage(g_sPairName, str_ExceptionFile + "等待" + Global_Settings.RetryIntervalWhenSyncFailed.ToString() + "分钟后重试", true, true, 1);
+                                LogPairMessage(g_sPairName, str_ExceptionFile + "等待" + Global_Settings.RetryIntervalWhenSyncFailed.ToString() + "分钟后重试", true, true, GetTraceLevel(1));
                                 Thread.Sleep(Global_Settings.RetryIntervalWhenSyncFailed * 60000);
                             }
                         }
@@ -1408,26 +1410,26 @@ namespace FileSynchronizer
                 {
                     bExceptionFound = true;
                     string str_PrintMsg = str_ExceptionFile + ex.Message;
-                    LogPairMessage(g_sPairName, str_PrintMsg, true, true, 3, true);
+                    LogPairMessage(g_sPairName, str_PrintMsg, true, true, GetTraceLevel(3), true);
                 }
             }
 
             if (!g_bCancelRequested && (bHasUpdDelOnDir1 || bHasUpdDelOnDir2))
             {
                 //彻底删除状态标记为'DL'的文件记录
-                LogPairMessage(g_sPairName, "Hard Delete DIR/FILE records whose status is 'DL'", true, true, 4);
+                LogPairMessage(g_sPairName, "Hard Delete DIR/FILE records whose status is 'DL'", true, true, GetTraceLevel(4));
                 Files_InfoDB.DelFileInforAllHard(str_Dir1TableName, g_sPairID);
                 Files_InfoDB.DelFileInforAllHard(str_Dir2TableName, g_sPairID);
 
                 //根据最大保留的backup数调整
-                LogPairMessage(g_sPairName, "Delete backup DIR according to the Max. count of backup keep", true, true, 4);
+                LogPairMessage(g_sPairName, "Delete backup DIR according to the Max. count of backup keep", true, true, GetTraceLevel(4));
                 if (bHasUpdDelOnDir1)
                 {
                     ClearBackupMaxKeep(g_sDir1Path, out str_ExceptionFile);
                     if (!String.IsNullOrEmpty(str_ExceptionFile))
                     {
                         bExceptionFound = true;
-                        LogPairMessage(g_sPairName, str_ExceptionFile, true, true, 5, true);
+                        LogPairMessage(g_sPairName, str_ExceptionFile, true, true, GetTraceLevel(5), true);
                     }
                 }
                 if (bHasUpdDelOnDir2)
@@ -1436,7 +1438,7 @@ namespace FileSynchronizer
                     if (!String.IsNullOrEmpty(str_ExceptionFile))
                     {
                         bExceptionFound = true;
-                        LogPairMessage(g_sPairName, str_ExceptionFile, true, true, 5, true);
+                        LogPairMessage(g_sPairName, str_ExceptionFile, true, true, GetTraceLevel(5), true);
                     }
                 }
             }
@@ -1445,19 +1447,19 @@ namespace FileSynchronizer
             #region 后期处理
             if (bExceptionFound)
             {
-                LogPairMessage(g_sPairName, "同步过程发生了一些错误！！！检查日志文件", true, true, 1);
+                LogPairMessage(g_sPairName, "同步过程发生了一些错误！！！检查日志文件", true, true, GetTraceLevel(1));
             }
 
             if (!g_bCancelRequested)
             {
                 if (int_SyncedCount.Equals(int_TotalChngCount) && !bRealTime)
                 {
-                    LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）同步完成，共同步了" + int_SyncedCount + "条记录", true, true, 1);
+                    LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）同步完成，共同步了" + int_SyncedCount + "条记录", true, true, GetTraceLevel(1));
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "同步操作被中止", true, true, 1);
+                LogPairMessage(g_sPairName, "同步操作被中止", true, true, GetTraceLevel(1));
             }
 
             OnPairStatusChange(PairStatus.FREE);
@@ -1725,6 +1727,10 @@ namespace FileSynchronizer
             string str_BackupFolder = Path.Combine(str_RootDirPath, c_FSBackup_Str);
             string str_BackupFolder_WithTime = Path.Combine(str_BackupFolder, str_Timestamp);
             string str_TargetFilePath = str_FileFullPath.Replace(str_RootDirPath, str_BackupFolder_WithTime);
+            string str_SyncDate = str_Timestamp.Substring(0, 8);
+            string str_SyncTime = str_Timestamp.Substring(9);
+            string str_BackupFolder_WithDateRT = Path.Combine(str_BackupFolder, str_SyncDate);
+            string str_TargetFilePathRT = str_FileFullPath.Replace(str_RootDirPath, str_BackupFolder_WithDateRT) + "_BK" + str_SyncTime;
 
             if (!Directory.Exists(str_BackupFolder))
             {
@@ -1749,11 +1755,25 @@ namespace FileSynchronizer
 
             if (!bl_IsDirectory)
             {
-                FileHelper.xCopyFile(str_FileFullPath, str_TargetFilePath, true, true);
+                if (g_iAutoSyncInterval == 0 && bRealTime)
+                {
+                    FileHelper.xCopyFile(str_FileFullPath, str_TargetFilePathRT, true, true);
+                }
+                else
+                {
+                    FileHelper.xCopyFile(str_FileFullPath, str_TargetFilePath, true, true);
+                }
             }
             else
             {
-                FileHelper.xCopyDirectory(str_FileFullPath, str_TargetFilePath, true, true);
+                if (g_iAutoSyncInterval == 0 && bRealTime)
+                {
+                    FileHelper.xCopyDirectory(str_FileFullPath, str_TargetFilePathRT, true, true);
+                }
+                else
+                {
+                    FileHelper.xCopyDirectory(str_FileFullPath, str_TargetFilePath, true, true);
+                }
             }
         }
 
@@ -1795,7 +1815,7 @@ namespace FileSynchronizer
             bool bRet = Files_InfoDB.UpdatePairSyncStatus(g_sPairID, strDateTime, SyncSuccessfulIndc, out str_OutLogMsg);
             if (!String.IsNullOrEmpty(str_OutLogMsg))
             {
-                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
             }
             return bRet;
         }
@@ -1806,7 +1826,7 @@ namespace FileSynchronizer
         /// <param name="LogMessage">日志消息</param>
         /// <param name="IsChangeLine">是否换行</param>
         /// <param name="IsAddTS">是否添加时间戳</param>
-        /// <param name="MsgTraceLevel">记录的日志消息等级</param>
+        /// <param name="MsgTraceLevel">记录的日志消息等级（0~5），当设置成-1时仅针对开发者模式或调试模式</param>
         /// <param name="IsALwaysLogFile">是否强制写入日志文件（默认否）</param>
         public void LogPairMessage(string PairName, string LogMessage, bool IsChangeLine, bool IsAddTS, int MsgTraceLevel, bool IsALwaysLogFile = false)
         {
@@ -1823,7 +1843,7 @@ namespace FileSynchronizer
                 }
 
                 //输入的MsgTraceLevel是0，则属于顶级日志，直接处理
-                if (MsgTraceLevel == 0)
+                if (MsgTraceLevel == 0 || (MsgTraceLevel < 0 && (Global_Settings.DevelopMode || Global_Settings.DebugMode)))
                 {
                     //((ctrl_PairPanal)tabControl1.TabPages[PairName].Controls[0]).LogPairMessage(LogMessage, IsChangeLine, IsAddTS);
                     OnLogPairMsg(LogMessage, IsChangeLine, IsAddTS);
@@ -1846,7 +1866,7 @@ namespace FileSynchronizer
             catch (Exception ex)
             {
                 Thread.Sleep(200);
-                LogPairMessage(PairName, ex.Message, true, true, 5, true);
+                LogPairMessage(PairName, ex.Message, true, true, GetTraceLevel(5), true);
             }
         }
 
@@ -1869,7 +1889,7 @@ namespace FileSynchronizer
             bool bRet = Files_InfoDB.PausePairAutoSync(g_sPairID, out WarningMsg);
             if (!bRet)
             {
-                LogPairMessage(g_sPairName, WarningMsg, true, true, 5, true);
+                LogPairMessage(g_sPairName, WarningMsg, true, true, GetTraceLevel(5), true);
             }
             return bRet;
         }
@@ -1885,54 +1905,6 @@ namespace FileSynchronizer
         public void CancelOperation()
         {
             g_bCancelRequested = true;
-        }
-
-        private DirectoryInfo[] FetchDirInformation(string str_DirString)
-        {
-            DirectoryInfo[] directoryInfos = null;
-            if (str_DirString == c_Dir1_Str)
-            {
-                DirectoryInfo _dir1 = new DirectoryInfo(g_sDir1Path);
-                directoryInfos = g_Files_Info.GetDirectoryInfos1();
-                if (directoryInfos == null || directoryInfos.Length == 0)
-                {
-                    directoryInfos = _dir1.GetDirectories("*", SearchOption.AllDirectories);
-                }
-            }
-            else if (str_DirString == c_Dir2_Str)
-            {
-                DirectoryInfo _dir2 = new DirectoryInfo(g_sDir2Path);
-                directoryInfos = g_Files_Info.GetDirectoryInfos2();
-                if (directoryInfos == null || directoryInfos.Length == 0)
-                {
-                    directoryInfos = _dir2.GetDirectories("*", SearchOption.AllDirectories);
-                }
-            }
-            return directoryInfos;
-        }
-
-        private FileInfo[] FetchFileInformation(string str_DirString)
-        {
-            FileInfo[] fileInfos = null;
-            if (str_DirString == c_Dir1_Str)
-            {
-                DirectoryInfo _dir1 = new DirectoryInfo(g_sDir1Path);
-                fileInfos = g_Files_Info.GetFileInfos1();
-                if (fileInfos == null || fileInfos.Length == 0)
-                {
-                    fileInfos = _dir1.GetFiles("*", SearchOption.AllDirectories);
-                }
-            }
-            else if (str_DirString == c_Dir2_Str)
-            {
-                DirectoryInfo _dir2 = new DirectoryInfo(g_sDir2Path);
-                fileInfos = g_Files_Info.GetFileInfos2();
-                if (fileInfos == null || fileInfos.Length == 0)
-                {
-                    fileInfos = _dir2.GetFiles("*", SearchOption.AllDirectories);
-                }
-            }
-            return fileInfos;
         }
         #endregion
 
@@ -2034,28 +2006,28 @@ namespace FileSynchronizer
                 while (FileHelper.IsFileOpenFS(str_FileFullName))
                 {
                     string str_LogMsgW = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-FileOccupied:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgW, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgW, true, true, GetTraceLevel(4));
                     Thread.Sleep(c_WaitFileClose_Int);
                 }
             }
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectCreationDetected:" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgA, true, true, 3);
+            LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
             OnSetOngoingItem(str_LogMsgA);
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中新增了" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, 1);
+            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
             //检查文件是否处于_FSBackup目录或者是处于排除列表
             if (CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
-                LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                 OnSetOngoingItem(str_LogMsgB);
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
                     string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                 }
 
                 return dt_fileDiff;
@@ -2074,18 +2046,18 @@ namespace FileSynchronizer
                     string str_ToPath = str_FilePath.Replace(bl_IsSyncFromDir1 ? g_sDir1Path : g_sDir2Path, bl_IsSyncFromDir1 ? g_sDir2Path : g_sDir1Path);
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-AddDIRInfor:" + str_FilePath;
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgAddItem);
                     if (!Files_InfoDB.AddFileInfor(str_DirTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_DirCreDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-AddDIRInforFailed:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     string str_OngoingRecMsg = "同步目录: " + str_FilePath + " -A-> " + str_ToPath;
                     OnSetOngoingItem(str_OngoingRecMsg);
-                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_DirCreDate, str_FileSize, bl_IsSyncFromDir1 ? "1" : "2", "");
                 }
                 else if (int_ObjType.Equals(1))
@@ -2099,42 +2071,42 @@ namespace FileSynchronizer
 
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-CalculatingFileMD5:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgCalcMD5);
                     string str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, true, out str_OutLogMsg);
-                    LogPairMessage(g_sPairName, " - " + str_FileMD5, true, false, 4);
+                    LogPairMessage(g_sPairName, " - " + str_FileMD5, true, false, GetTraceLevel(4));
 
                     if (String.IsNullOrEmpty(str_FileMD5))
                     {
                         if (str_OutLogMsg.Contains("PathTooLongException"))
                         {
-                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
                         else
                         {
                             str_OutLogMsg = "PAIR-FileWatcher-ExceptionA:" + str_OutLogMsg;
-                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
                         return dt_fileDiff;
                     }
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-AddFileInfor:" + str_FileFullName;
                     OnSetOngoingItem(str_LogMsgAddItem);
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_DirTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-AddFileInforFailed:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     string str_FromFile = Path.Combine(str_FilePath, str_FileName);
                     string str_ToFile = Path.Combine(str_ToPath, str_FileName);
                     string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
                     OnSetOngoingItem(str_OngoingRecMsg);
-                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_FileLastModDate, str_FileSize, bl_IsSyncFromDir1 ? "1" : "2", "");
                 }
             }
@@ -2142,14 +2114,14 @@ namespace FileSynchronizer
             {
                 if (ex.Message.Contains("PathTooLongException"))
                 {
-                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                 }
                 else
                 {
                     str_OutLogMsg = "PAIR-FileWatcher-" + str_DirIdx + "-AddInfor-Exception:" + ex.Message;
-                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                 }
             }
 
@@ -2185,28 +2157,28 @@ namespace FileSynchronizer
                 while (FileHelper.IsFileOpenFS(str_FileFullName))
                 {
                     string str_LogMsgW = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-FileOccupied:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgW, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgW, true, true, GetTraceLevel(4));
                     Thread.Sleep(c_WaitFileClose_Int);
                 }
             }
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectChangeDetected:" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgA, true, true, 3);
+            LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
             OnSetOngoingItem(str_LogMsgA);
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中修改了" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, 1);
+            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
             //检查文件是否处于_FSBackup目录或者是处于排除列表
             if (CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
-                LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                 OnSetOngoingItem(str_LogMsgB);
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
                     string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                 }
 
                 return dt_fileDiff;
@@ -2225,42 +2197,42 @@ namespace FileSynchronizer
 
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-CalculatingFileMD5:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgCalcMD5);
                     string str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, true, out str_OutLogMsg);
-                    LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, 4);
+                    LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, GetTraceLevel(4));
 
                     if (String.IsNullOrEmpty(str_FileMD5))
                     {
                         if (str_OutLogMsg.Contains("PathTooLongException"))
                         {
-                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "文件名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
                         else
                         {
                             str_OutLogMsg = "PAIR-FileWatcher-ExceptionA:" + str_OutLogMsg;
-                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
                         return dt_fileDiff;
                     }
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-UpdateFileInfor:" + str_FileFullName;
                     OnSetOngoingItem(str_LogMsgAddItem);
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_DirTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-UpdateFileInforFailed:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     string str_FromFile = Path.Combine(str_FilePath, str_FileName);
                     string str_ToFile = Path.Combine(str_ToPath, str_FileName);
                     string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
                     OnSetOngoingItem(str_OngoingRecMsg);
-                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_FileLastModDate, str_FileSize, bl_IsSyncFromDir1 ? "3" : "4", "");
                 }
             }
@@ -2268,14 +2240,14 @@ namespace FileSynchronizer
             {
                 if (ex.Message.Contains("PathTooLongException"))
                 {
-                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                 }
                 else
                 {
                     str_OutLogMsg = "PAIR-FileWatcher-" + str_DirIdx + "-ChangeInfor-Exception:" + ex.Message;
-                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                 }
             }
 
@@ -2307,22 +2279,22 @@ namespace FileSynchronizer
             }
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectDeletionDetected:" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgA, true, true, 3);
+            LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
             OnSetOngoingItem(str_LogMsgA);
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中删除了" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, 1);
+            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
             //检查文件是否处于_FSBackup目录或者是处于排除列表
             if (CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
-                LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                 OnSetOngoingItem(str_LogMsgB);
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
                     string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                 }
 
                 return dt_fileDiff;
@@ -2333,7 +2305,7 @@ namespace FileSynchronizer
                 string[] arr_FileIDs = Files_InfoDB.GetFileIDs(str_FromDirTableName, str_FileFullName, out str_OutLogMsg);
                 if (arr_FileIDs == null)
                 {
-                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 4);
+                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(4));
                     return dt_fileDiff;
                 }
                 else
@@ -2346,11 +2318,11 @@ namespace FileSynchronizer
                         bool _IsFile = _FileName != c_DirNameChar_Str;
                         string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-SoftDeleteFileInfor:" + str_FileFullName;
                         OnSetOngoingItem(str_LogMsgAddItem);
-                        LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                        LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                         if (!Files_InfoDB.DelFileInforSoft(str_FromDirTableName, _FileID, g_sPairID, out str_OutLogMsg))
                         {
-                            LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, 4);
-                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                            LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgAddItem, true, true, GetTraceLevel(4));
+                            LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                         }
 
                         string str_ToFile = str_FileFullName.Replace(bl_IsSyncFromDir1 ? g_sDir1Path : g_sDir2Path, bl_IsSyncFromDir1 ? g_sDir2Path : g_sDir1Path);
@@ -2369,7 +2341,7 @@ namespace FileSynchronizer
                                 {
                                     string str_OngoingRecMsg = "同步" + (_IsFile ? "文件: " : "目录: ") + str_FileFullName + " -X-> " + str_ToFile;
                                     OnSetOngoingItem(str_OngoingRecMsg);
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                                     dt_fileDiff.Rows.Add(_FileName, _FilePath, str_ToPath, "", "", "", bl_IsSyncFromDir1 ? "5" : "6", _ToFileID);
                                 }
                             }
@@ -2381,14 +2353,14 @@ namespace FileSynchronizer
             {
                 if (ex.Message.Contains("PathTooLongException"))
                 {
-                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                 }
                 else
                 {
                     str_OutLogMsg = "PAIR-FileWatcher-" + str_DirIdx + "-DeleteInfor-Exception:" + ex.Message;
-                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                 }
             }
 
@@ -2431,28 +2403,28 @@ namespace FileSynchronizer
                 while (FileHelper.IsFileOpenFS(str_FileFullName))
                 {
                     string str_LogMsgW = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-FileOccupied:" + str_FileFullName;
-                    LogPairMessage(g_sPairName, str_LogMsgW, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgW, true, true, GetTraceLevel(4));
                     Thread.Sleep(c_WaitFileClose_Int);
                 }
             }
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectRenameDetected:" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgA, true, true, 3);
+            LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
             OnSetOngoingItem(str_LogMsgA);
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中重命名了" + str_OldFullPath + "至" + str_FileFullName;
-            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, 1);
+            LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
             //检查文件是否处于_FSBackup目录或者是处于排除列表
             if (CheckFilterRule(g_sFilterRule, str_FileFullName, out str_OutLogMsg))
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
-                LogPairMessage(g_sPairName, str_LogMsgB, true, true, 4);
+                LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
                 OnSetOngoingItem(str_LogMsgB);
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
                     string str_LogMsgC_CN = "写入目录信息至数据库失败：" + str_FileFullName + "，路径长度超过系统限制（260个字符）";
-                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, 1);
+                    LogPairMessage(g_sPairName, str_LogMsgC_CN, true, true, GetTraceLevel(1));
                 }
 
                 return false;
@@ -2470,25 +2442,25 @@ namespace FileSynchronizer
                     string str_OldDirPath2 = str_OldDirPath1.Replace(bl_IsSyncFromDir1 ? g_sDir1Path : g_sDir2Path, bl_IsSyncFromDir1 ? g_sDir2Path : g_sDir1Path);
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-RenameDIRInfor:" + str_OldDirPath1 + "-to-" + str_NewDirPath1;
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     OnSetOngoingItem(str_LogMsgAddItem);
                     if (!Files_InfoDB.RenameFileOrDir(str_FromDirTableName, String.Empty, str_OldDirPath1, str_NewDirPath1, false, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-RenameDIRInforFailed-A:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_NewDirPath1, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_NewDirPath1, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     string str_OngoingRecMsg = "同步目录: " + str_NewDirPath1 + " -R-> " + str_NewDirPath2;
                     OnSetOngoingItem(str_OngoingRecMsg);
-                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
 
                     FileHelper.xCopyDirectory(str_OldDirPath2, str_NewDirPath2, true, true);
                     if (!Files_InfoDB.RenameFileOrDir(str_ToDirTableName, String.Empty, str_OldDirPath2, str_NewDirPath2, false, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-RenameDIRInforFailed-B:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_NewDirPath2, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_NewDirPath2, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     OnSetOngoingItem(string.Empty);
@@ -2504,26 +2476,26 @@ namespace FileSynchronizer
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-RenameFileInfor:" + str_OldFullPath + "-to-" + str_FileFullName;
                     OnSetOngoingItem(str_LogMsgAddItem);
-                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, 4);
+                    LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.RenameFileOrDir(str_FromDirTableName, str_ParentDir1, str_OldFileName, str_NewFileName, true, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-RenameFileInforFailed-A:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入文件信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     string str_FromFile2 = Path.Combine(str_ParentDir2, str_OldFileName);
                     string str_ToFile2 = Path.Combine(str_ParentDir2, str_NewFileName);
                     string str_OngoingRecMsg = "同步文件: " + str_FileFullName + " -R-> " + str_ToFile2;
                     OnSetOngoingItem(str_OngoingRecMsg);
-                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, 1);
+                    LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
 
                     FileHelper.xCopyFile(str_FromFile2, str_ToFile2, true, true);
                     if (!Files_InfoDB.RenameFileOrDir(str_ToDirTableName, str_ParentDir2, str_OldFileName, str_NewFileName, true, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-RenameDIRInforFailed-B:" + str_OutLogMsg;
-                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_ToFile2, true, true, 1);
-                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                        LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_ToFile2, true, true, GetTraceLevel(1));
+                        LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
                     OnSetOngoingItem(string.Empty);
@@ -2538,14 +2510,14 @@ namespace FileSynchronizer
             {
                 if (ex.Message.Contains("PathTooLongException"))
                 {
-                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, ex.Message, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "目录名过长，请检查后再试或者缩短路径长度：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(5), true);
                 }
                 else
                 {
                     str_OutLogMsg = "PAIR-FileWatcher-" + str_DirIdx + "-RenameInfor-Exception:" + ex.Message;
-                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, 1);
-                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, 5, true);
+                    LogPairMessage(g_sPairName, "写入目录信息至数据库失败：" + str_FileFullName, true, true, GetTraceLevel(1));
+                    LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                 }
                 return false;
             }
@@ -2605,10 +2577,10 @@ namespace FileSynchronizer
             var dt_InitGap = DateTime.Now.Subtract(g_InitTime);
             int iTotalObjectCount = g_Files_Info.TotalObjectCount();
             string sInitDoneMsg = "配对（" + g_sPairName + "）信息初始化完成，花费" + dt_InitGap.TotalSeconds.ToString() + "秒，找到" + iTotalObjectCount.ToString() + "个文件/文件夹对象";
-            LogPairMessage(g_sPairName, sInitDoneMsg, true, true, 2);
+            LogPairMessage(g_sPairName, sInitDoneMsg, true, true, GetTraceLevel(2));
             if (g_iAutoSyncInterval.Equals(0))
             {
-                LogPairMessage(g_sPairName, "即将进行程序启动的第一次同步", true, true, 2);
+                LogPairMessage(g_sPairName, "即将进行程序启动的第一次同步", true, true, GetTraceLevel(2));
             }
             g_ObjectsInforReady = true;
             OnObjectsInforReady(sInitDoneMsg);
@@ -2683,7 +2655,7 @@ namespace FileSynchronizer
             while (FileHelper.IsFileOpenFS(str_FullPath))
             {
                 string str_PrintMsgF = "Fw_Dir1_OnCreated - File in use! " + str_FullPath;
-                LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 3);
+                LogPairMessage(g_sPairName, str_PrintMsgF, true, true, GetTraceLevel(3));
                 Thread.SpinWait(1000);
             }
 
@@ -2693,11 +2665,11 @@ namespace FileSynchronizer
             bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
 
             string str_PrintMsgA = "Fw_Dir1_OnCreated - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
             string str_PrintMsgB = "Fw_Dir1_OnCreated - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
             string str_PrintMsgC = "Fw_Dir1_OnCreated - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
             var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
             if (bl_Sync_CheckQueueOK && !bl_Are2FilesSame)
@@ -2707,18 +2679,18 @@ namespace FileSynchronizer
                 bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 0, c_Dir1_Str));
                 if (!bRealTimeSyncResult)
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Failed to Sync", true, true, 4);
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Failed to Sync", true, true, GetTraceLevel(4));
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Remove from Queue", true, true, 4);
+                LogPairMessage(g_sPairName, "Fw_Dir1_OnCreated - Remove from Queue", true, true, GetTraceLevel(4));
                 Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir1_OnChanged(FileChangedEvent e)
@@ -2734,7 +2706,7 @@ namespace FileSynchronizer
             bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
 
             string str_PrintMsgF = "Fw_Dir1_OnChanged - Check Queue From Add result: " + bl_Sync_CheckQueueOKFromAdd.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgF, true, true, GetTraceLevel(4));
 
             if (!bl_Sync_CheckQueueOKFromAdd) return;
 
@@ -2744,16 +2716,16 @@ namespace FileSynchronizer
                 bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
 
                 string str_PrintMsgA = "Fw_Dir1_OnChanged - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-                LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+                LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
                 string str_PrintMsgB = "Fw_Dir1_OnChanged - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-                LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+                LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
                 string str_PrintMsgC = "Fw_Dir1_OnChanged - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-                LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+                LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
                 string str_MissingFileName = String.Empty;
                 if (CheckMissingFile(str_FullPath, c_Dir1_Str, out str_MissingFileName))
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Located missing file, route to Rename action", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Located missing file, route to Rename action", true, true, GetTraceLevel(4));
                     FileChangedEvent e2 = e;
                     e2.OldFullPath = str_MissingFileName;
                     Fw_Dir1_OnRenamed(e2);
@@ -2767,20 +2739,20 @@ namespace FileSynchronizer
                     bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 1, c_Dir1_Str));
                     if (!bRealTimeSyncResult)
                     {
-                        LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Failed to Sync", true, true, 4);
-                        LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Remove from Queue", true, true, 4);
+                        LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Failed to Sync", true, true, GetTraceLevel(4));
+                        LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Remove from Queue", true, true, GetTraceLevel(4));
                         Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
                     }
                 }
                 else
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnChanged - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
                 }
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir1_OnDeleted(FileChangedEvent e)
@@ -2793,11 +2765,11 @@ namespace FileSynchronizer
             bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
 
             string str_PrintMsgA = "Fw_Dir1_OnDeleted - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
             string str_PrintMsgB = "Fw_Dir1_OnDeleted - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
             string str_PrintMsgC = "Fw_Dir1_OnDeleted - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
             if (bl_Sync_CheckQueueOK)
             {
@@ -2805,18 +2777,18 @@ namespace FileSynchronizer
                 bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(str_FullPath, 2, c_Dir1_Str));
                 if (!bRealTimeSyncResult)
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Failed to Sync", true, true, 4);
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Failed to Sync", true, true, GetTraceLevel(4));
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Remove from Queue", true, true, 4);
+                LogPairMessage(g_sPairName, "Fw_Dir1_OnDeleted - Remove from Queue", true, true, GetTraceLevel(4));
                 Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir1_OnRenamed(FileChangedEvent e)
@@ -2832,11 +2804,11 @@ namespace FileSynchronizer
             bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
 
             string str_PrintMsgA = "Fw_Dir1_OnRenamed - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
             string str_PrintMsgB = "Fw_Dir1_OnRenamed - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
             string str_PrintMsgC = "Fw_Dir1_OnRenamed - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
             if (bl_Sync_CheckQueueOK)
             {
@@ -2844,18 +2816,18 @@ namespace FileSynchronizer
                 bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 3, c_Dir1_Str, str_OldFullPath));
                 if (!bRealTimeSyncResult)
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Failed to Sync", true, true, 4);
-                    LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Failed to Sync", true, true, GetTraceLevel(4));
+                    LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Remove from Queue", true, true, 4);
+                LogPairMessage(g_sPairName, "Fw_Dir1_OnRenamed - Remove from Queue", true, true, GetTraceLevel(4));
                 Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir2_OnCreated(FileChangedEvent e)
@@ -2867,7 +2839,7 @@ namespace FileSynchronizer
             while (FileHelper.IsFileOpenFS(str_FullPath))
             {
                 string str_PrintMsgF = "Fw_Dir2_OnCreated - File in use! " + str_FullPath;
-                LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 3);
+                LogPairMessage(g_sPairName, str_PrintMsgF, true, true, GetTraceLevel(3));
                 Thread.SpinWait(1000);
             }
 
@@ -2877,11 +2849,11 @@ namespace FileSynchronizer
             bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
 
             string str_PrintMsgA = "Fw_Dir2_OnCreated - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
             string str_PrintMsgB = "Fw_Dir2_OnCreated - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
             string str_PrintMsgC = "Fw_Dir2_OnCreated - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
             var obj_ChangedItem = FileHelper.ObjFromFullPath(str_FullPath, out i_Type);
             if (bl_Sync_CheckQueueOK && !bl_Are2FilesSame)
@@ -2890,18 +2862,18 @@ namespace FileSynchronizer
                 bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 0, c_Dir2_Str));
                 if (!bRealTimeSyncResult)
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Failed to Sync", true, true, 4);
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Failed to Sync", true, true, GetTraceLevel(4));
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Remove from Queue", true, true, 4);
+                LogPairMessage(g_sPairName, "Fw_Dir2_OnCreated - Remove from Queue", true, true, GetTraceLevel(4));
                 Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir2_OnChanged(FileChangedEvent e)
@@ -2917,7 +2889,7 @@ namespace FileSynchronizer
             bool bl_Are2FilesSame = FileHelper.CheckTwoFilesSame(str_FullPath, str_SyncFileName);
 
             string str_PrintMsgF = "Fw_Dir2_OnChanged - Check Queue From Add result: " + bl_Sync_CheckQueueOKFromAdd.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgF, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgF, true, true, GetTraceLevel(4));
 
             if (!bl_Sync_CheckQueueOKFromAdd) return;
 
@@ -2927,16 +2899,16 @@ namespace FileSynchronizer
                 bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
 
                 string str_PrintMsgA = "Fw_Dir2_OnChanged - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-                LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+                LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
                 string str_PrintMsgB = "Fw_Dir2_OnChanged - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-                LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+                LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
                 string str_PrintMsgC = "Fw_Dir2_OnChanged - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-                LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+                LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
                 string str_MissingFileName = String.Empty;
                 if (CheckMissingFile(str_FullPath, c_Dir2_Str, out str_MissingFileName))
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Located missing file, route to Rename action", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Located missing file, route to Rename action", true, true, GetTraceLevel(4));
                     FileChangedEvent e2 = e;
                     e2.OldFullPath = str_MissingFileName;
                     Fw_Dir2_OnRenamed(e2);
@@ -2949,20 +2921,20 @@ namespace FileSynchronizer
                     bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 1, c_Dir2_Str));
                     if (!bRealTimeSyncResult)
                     {
-                        LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Failed to Sync", true, true, 4);
-                        LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Remove from Queue", true, true, 4);
+                        LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Failed to Sync", true, true, GetTraceLevel(4));
+                        LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Remove from Queue", true, true, GetTraceLevel(4));
                         Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
                     }
                 }
                 else
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnChanged - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.ADD, str_ObjectName);
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
                 }
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir2_OnDeleted(FileChangedEvent e)
@@ -2975,11 +2947,11 @@ namespace FileSynchronizer
             bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
 
             string str_PrintMsgA = "Fw_Dir2_OnDeleted - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
             string str_PrintMsgB = "Fw_Dir2_OnDeleted - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
             string str_PrintMsgC = "Fw_Dir2_OnDeleted - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
             if (bl_Sync_CheckQueueOK)
             {
@@ -2987,18 +2959,18 @@ namespace FileSynchronizer
                 bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(str_FullPath, 2, c_Dir2_Str));
                 if (!bRealTimeSyncResult)
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Failed to Sync", true, true, 4);
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Failed to Sync", true, true, GetTraceLevel(4));
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Remove from Queue", true, true, 4);
+                LogPairMessage(g_sPairName, "Fw_Dir2_OnDeleted - Remove from Queue", true, true, GetTraceLevel(4));
                 Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.DELETE, str_ObjectName);
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async void Fw_Dir2_OnRenamed(FileChangedEvent e)
@@ -3014,11 +2986,11 @@ namespace FileSynchronizer
             bool bl_Sync_CheckQueueOK = Sync_Queue_Helper.Fw_Sync_CheckQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
 
             string str_PrintMsgA = "Fw_Dir2_OnRenamed - Check Queue result: " + bl_Sync_CheckQueueOK.ToString();
-            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgA, true, true, GetTraceLevel(4));
             string str_PrintMsgB = "Fw_Dir2_OnRenamed - FwSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_FwSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgB, true, true, GetTraceLevel(4));
             string str_PrintMsgC = "Fw_Dir2_OnRenamed - NmSyncQueue:" + Environment.NewLine + Sync_Queue_Helper.Get_NmSyncQueue_Str();
-            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, 4);
+            LogPairMessage(g_sPairName, str_PrintMsgC, true, true, GetTraceLevel(4));
 
             if (bl_Sync_CheckQueueOK)
             {
@@ -3026,18 +2998,18 @@ namespace FileSynchronizer
                 bool bRealTimeSyncResult = await Task.Run(() => RealTimeSyncItem(obj_ChangedItem, 3, c_Dir2_Str, str_OldFullPath));
                 if (!bRealTimeSyncResult)
                 {
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Failed to Sync", true, true, 4);
-                    LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Remove from Queue", true, true, 4);
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Failed to Sync", true, true, GetTraceLevel(4));
+                    LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Remove from Queue", true, true, GetTraceLevel(4));
                     Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir2_Str, c_Dir1_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
                 }
             }
             else
             {
-                LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Remove from Queue", true, true, 4);
+                LogPairMessage(g_sPairName, "Fw_Dir2_OnRenamed - Remove from Queue", true, true, GetTraceLevel(4));
                 Sync_Queue_Helper.Fw_Sync_DelQueue(g_sPairName, c_Dir1_Str, c_Dir2_Str, Sync_Queue_Helper.SyncAction.UPDATE, str_ObjectName);
             }
 
-            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, 4);
+            LogPairMessage(g_sPairName, "-----------------------------------------------------------------", true, true, GetTraceLevel(4));
         }
 
         private async Task<bool> RealTimeSyncItem(object obj_SyncItem, int int_Action, string str_DirIdx, string str_OldFullPath = "")
@@ -3117,6 +3089,84 @@ namespace FileSynchronizer
             else
             {
                 return false;
+            }
+        }
+        #endregion
+
+        #region v3.0.0.4 可移动设备的处理
+        public void RemovableDriveHandler(string DriveLetter, int ChangeType)
+        {
+            if (ChangeType < 0 || String.IsNullOrEmpty(DriveLetter)) return;
+
+            string sDir1Root = Path.GetPathRoot(g_sDir1Path);
+            string sDir2Root = Path.GetPathRoot(g_sDir2Path);
+
+            if (!(sDir1Root.Equals(DriveLetter) || sDir2Root.Equals(DriveLetter)))
+            {
+                string str_LogMsgU = "RemovableDriveHandler: Drive (" + DriveLetter + ") is not under pair (" + g_sPairName + ") hence no action was taken!";
+                LogPairMessage(g_sPairName, str_LogMsgU, true, true, GetTraceLevel(4));
+                return;
+            }
+
+            try
+            {
+                //仅当可移动设备并且同步间隔为0的时候才启用/关闭监测
+                if (WinformHelper.CheckRemovableDrive(DriveLetter) && g_iAutoSyncInterval == 0)
+                {
+                    //当检测到U盘插入
+                    if (ChangeType == 0)
+                    {
+                        string str_LogMsgA_EN = "RemovableDriveHandler: Drive (" + DriveLetter + ") has been added to system, start monitoring";
+                        LogPairMessage(g_sPairName, str_LogMsgA_EN, true, true, GetTraceLevel(4));
+                        string str_LogMsgA_CN = "可移动设备（" + DriveLetter + "）添加到系统，开始监测并自动同步，请先点击移除设备再拔出！";
+                        LogPairMessage(g_sPairName, str_LogMsgA_CN, true, true, GetTraceLevel(1));
+
+                        g_Files_Info.StartPairMonitoring();
+                    }
+                    //当检测到U盘拔出
+                    else if (ChangeType == 1)
+                    {
+                        string str_LogMsgD_EN = "RemovableDriveHandler: Drive (" + DriveLetter + ") has been removed from system";
+                        LogPairMessage(g_sPairName, str_LogMsgD_EN, true, true, GetTraceLevel(4));
+                        string str_LogMsgD_CN = "可移动设备（" + DriveLetter + "）从系统移除";
+                        LogPairMessage(g_sPairName, str_LogMsgD_CN, true, true, GetTraceLevel(1));
+
+                        g_Files_Info.StopPairMonitoring();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(3));
+            }
+        }
+
+        public void RemoveRemovableDrive(string DriveLetter)
+        {
+            if (String.IsNullOrEmpty(DriveLetter)) return;
+
+            string sDir1Root = Path.GetPathRoot(g_sDir1Path);
+            string sDir2Root = Path.GetPathRoot(g_sDir2Path);
+
+            if (!(sDir1Root.Equals(DriveLetter) || sDir2Root.Equals(DriveLetter)))
+            {
+                string str_LogMsgU = "RemoveRemovableDrive: Drive (" + DriveLetter + ") is not under pair (" + g_sPairName + ") hence no action was taken!";
+                LogPairMessage(g_sPairName, str_LogMsgU, true, true, GetTraceLevel(3));
+                return;
+            }
+
+            try
+            {
+                string str_LogMsgD_EN = "RemoveRemovableDrive: Stop monitoring Drive (" + DriveLetter + ")";
+                LogPairMessage(g_sPairName, str_LogMsgD_EN, true, true, GetTraceLevel(3));
+                string str_LogMsgD_CN = "停止监测可移动设备（" + DriveLetter + "），现在可以安全地移除设备了";
+                LogPairMessage(g_sPairName, str_LogMsgD_CN, true, true, GetTraceLevel(1));
+
+                g_Files_Info.StopPairMonitoring();
+            }
+            catch (Exception ex)
+            {
+                LogPairMessage(g_sPairName, ex.Message, true, true, GetTraceLevel(3));
             }
         }
         #endregion

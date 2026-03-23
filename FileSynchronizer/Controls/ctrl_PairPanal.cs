@@ -2,6 +2,7 @@
 using D2Phap.FileWatcherEx;
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace FileSynchronizer
     public partial class ctrl_PairPanal : UserControl
     {
         #region 控件属性
+        string g_sDir1Path;
+        string g_sDir2Path;
         string g_sPairName;
         string g_sDateTimeFormat;
         DateTime g_dLastSyncTime;
@@ -31,6 +34,7 @@ namespace FileSynchronizer
         CancellationTokenSource gTokenSource;
         TaskFactory gTaskFactory;
         Task gCurrentTask;
+        string c_StopMonitoring = @"停止监控";
         #endregion
 
         #region 构造函数
@@ -45,33 +49,37 @@ namespace FileSynchronizer
             InitializeComponent();
             ResetSyncLabels();
             SetOngoingItem(string.Empty);
+            g_sDir1Path = str_Dir1Path;
+            g_sDir2Path = str_Dir2Path;
             g_sPairName = str_PairName;
             g_iAutoSyncInterval = int_AutoSyncInterval;
-            string str_Direction = String.Empty;
+            string sDirection = String.Empty;
             g_bIspaused = bl_IsPaused;
 
             switch (int_SyncDirection)
             {
                 case 0:
-                case 1: str_Direction = "  <--->  "; break;
+                case 1: sDirection = "  <--->  "; break;
                 case 2:
-                case 3: str_Direction = "  ---->  "; break;
+                case 3: sDirection = "  ---->  "; break;
                 case 4:
-                case 5: str_Direction = "  <----  "; break;
+                case 5: sDirection = "  <----  "; break;
                 default:
                     break;
             }
 
-            lblPairInfor.Text = "配对（" + g_sPairName + "）: " + str_Dir1Path + str_Direction + str_Dir2Path;
+            lblPairInfor.Text = "配对（" + g_sPairName + "）: " + g_sDir1Path + sDirection + g_sDir2Path;
             g_sDateTimeFormat = dateTimeFormat;
             SetSyncTime(LastSyncDT, g_iAutoSyncInterval);
-            Dir_Pair_Helper = new cls_Dir_Pair_Helper(str_PairID, g_sPairName, str_Dir1Path, str_Dir2Path, LastSyncDT, PairStatus.FREE, str_FilterRule, g_iAutoSyncInterval, int_SyncDirection, g_bIspaused);
+            Dir_Pair_Helper = new cls_Dir_Pair_Helper(str_PairID, g_sPairName, g_sDir1Path, g_sDir2Path, LastSyncDT, PairStatus.FREE, str_FilterRule, g_iAutoSyncInterval, int_SyncDirection, g_bIspaused);
             Dir_Pair_Helper.LogPairMsg += Dir_Pair_Helper_LogPairMsg;
             Dir_Pair_Helper.SetOngoingItem += Dir_Pair_Helper_SetOngoingItem;
             Dir_Pair_Helper.Add1Analysis += Dir_Pair_Helper_Add1Analysis;
             Dir_Pair_Helper.Add1Sync += Dir_Pair_Helper_Add1Sync;
             Dir_Pair_Helper.PairStatusChange += Dir_Pair_Helper_PairStatusChange;
             Dir_Pair_Helper.ObjectsInforReady += Dir_Pair_Helper_ObjectsInforReady;
+
+            InitilizeRemovableDrive();
         }
 
         private void Dir_Pair_Helper_ObjectsInforReady(object sender, string InitDoneMsg)
@@ -119,7 +127,7 @@ namespace FileSynchronizer
         /// <param name="i_AutoSyncInterval">同步间隔</param>
         private void SetSyncTime(string str_LastSyncTime, int int_AutoSyncInterval)
         {
-            if(DateTime.TryParse(str_LastSyncTime, out g_dLastSyncTime))
+            if (DateTime.TryParse(str_LastSyncTime, out g_dLastSyncTime))
             {
                 lblLastSyncTime.Text = g_dLastSyncTime.ToString(g_sDateTimeFormat);
 
@@ -420,7 +428,7 @@ namespace FileSynchronizer
         /// <param name="IsPause">是否暂停此配对正在进行的操作，true表示暂停，false表示恢复</param>
         public void PauseResumeOngoingOperation(bool IsPause)
         {
-            
+
         }
 
         /// <summary>
@@ -470,6 +478,50 @@ namespace FileSynchronizer
             {
                 ObjectsInforReady(this, InitDoneMsg);
             }
+        }
+        #endregion
+
+        #region v3.0.0.4 可移动设备的处理
+        public void RemovableDriveHandler(string DriveLetter, int ChangeType)
+        {
+            if (ChangeType < 0 || String.IsNullOrEmpty(DriveLetter)) return;
+
+            InitilizeRemovableDrive();
+
+            if (ChangeType ==0)
+            {
+                Dir_Pair_Helper.RemovableDriveHandler(DriveLetter, ChangeType);
+            }
+            else if (ChangeType == 1)
+            {
+                string str_LogMsgU = "可移动设备（" + DriveLetter + "）从系统移除，将停止监控";
+                Dir_Pair_Helper.LogPairMessage(g_sPairName, str_LogMsgU, true, true, GetTraceLevel(1));
+                Dir_Pair_Helper.RemoveRemovableDrive(DriveLetter);
+                btnStopMonitoringRMD_Click(this, new EventArgs());
+            }
+        }
+
+        public void InitilizeRemovableDrive()
+        {
+            string sDir1Root = Path.GetPathRoot(g_sDir1Path);
+            string sDir2Root = Path.GetPathRoot(g_sDir2Path);
+            bool bEnabled = WinformHelper.CheckRemovableDrive(sDir1Root) || WinformHelper.CheckRemovableDrive(sDir2Root);
+
+            string sDriveLetter = WinformHelper.CheckRemovableDrive(sDir1Root) ? sDir1Root : WinformHelper.CheckRemovableDrive(sDir2Root) ? sDir2Root : String.Empty;
+
+            btnStopMonitoringRMD.Visible = bEnabled;
+            btnStopMonitoringRMD.Enabled = bEnabled;
+            btnStopMonitoringRMD.Text = c_StopMonitoring + sDriveLetter;
+        }
+
+        private void btnStopMonitoringRMD_Click(object sender, EventArgs e)
+        {
+            string sDir1Root = Path.GetPathRoot(g_sDir1Path);
+            string sDir2Root = Path.GetPathRoot(g_sDir2Path);
+            string sDriveLetter = WinformHelper.CheckRemovableDrive(sDir1Root) ? sDir1Root : WinformHelper.CheckRemovableDrive(sDir2Root) ? sDir2Root : String.Empty;
+            Dir_Pair_Helper.RemoveRemovableDrive(sDriveLetter);
+            btnStopMonitoringRMD.Visible = false;
+            btnStopMonitoringRMD.Enabled = false;
         }
         #endregion
     }

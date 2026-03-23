@@ -30,7 +30,7 @@ namespace FileSynchronizer
         private void frmFileSynchronizer_Load(object sender, EventArgs e)
         {
             //检查日志文件
-            if (cls_LogProgramFile.InitLog()) LogProgramMessage("生成日志文件", true, true, 0);
+            if (cls_LogProgramFile.InitLog()) LogProgramMessage("生成日志文件", true, true, GetTraceLevel(0));
             InitLocalDatabase();
 
             this.Text = String.Join("_Ver.", c_ProgramTitle, g_sMainProgramVersion);
@@ -42,10 +42,11 @@ namespace FileSynchronizer
             //调整调试模式功能
             DevelopModeFunction(true);
             RebindPairTable();
+            WinformHelper.LoadDriveList();
 
             if (!Files_InfoDB.RevertUnfinishedSyncDetail(String.Empty, Global_Settings.DevelopMode, out str_ErrorMsg))
             {
-                LogProgramMessage(str_ErrorMsg, true, true, 1);
+                LogProgramMessage(str_ErrorMsg, true, true, GetTraceLevel(1));
             }
             else
             {
@@ -77,7 +78,7 @@ namespace FileSynchronizer
                 DataRow _dr = GetPairInfor(str_PairName);
                 if (_dr == null)
                 {
-                    LogProgramMessage("没有找到配对（" + str_PairName + "）的信息", true, true, 1);
+                    LogProgramMessage("没有找到配对（" + str_PairName + "）的信息", true, true, GetTraceLevel(1));
                     return;
                 }
 
@@ -103,7 +104,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, 4, true);
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(4), true);
             }
         }
 
@@ -119,7 +120,7 @@ namespace FileSynchronizer
             Files_InfoDB.CloseConnection();
             if (!String.IsNullOrEmpty(str_ErrorMsg))
             {
-                LogProgramMessage(str_ErrorMsg, true, true, 0);
+                LogProgramMessage(str_ErrorMsg, true, true, GetTraceLevel(0));
             }
             cls_LogProgramFile.LogMsgFromCacheToFile();
             CleanLocalTempFolder();
@@ -164,7 +165,7 @@ namespace FileSynchronizer
         private void btnAnalysis_Click(object sender, EventArgs e)
         {
             if (tabControl1.SelectedIndex == 0) return;
-            LogProgramMessage("点击分析当前配对按钮", true, true, 3);
+            LogProgramMessage("点击分析当前配对按钮", true, true, GetTraceLevel(3));
 
             string str_PairName = tabControl1.SelectedTab.Name;
             DoDirPairOperation(str_PairName, true);
@@ -178,7 +179,7 @@ namespace FileSynchronizer
         private void btnSync_Click(object sender, EventArgs e)
         {
             if (tabControl1.SelectedIndex == 0) return;
-            LogProgramMessage("点击同步当前配对按钮", true, true, 3);
+            LogProgramMessage("点击同步当前配对按钮", true, true, GetTraceLevel(3));
 
             string str_PairName = tabControl1.SelectedTab.Name;
             DoDirPairOperation(str_PairName, false);
@@ -193,7 +194,7 @@ namespace FileSynchronizer
         {
             if (g_dDirPair == null || g_dDirPair.Rows.Count.Equals(0)) return;
 
-            LogProgramMessage("点击同步所有配对按钮", true, true, 3);
+            LogProgramMessage("点击同步所有配对按钮", true, true, GetTraceLevel(3));
             string[] arr_PairNames = new string[tabControl1.TabCount - 1];
             for (int i = 1; i < tabControl1.TabCount; i++)
             {
@@ -209,7 +210,7 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void btnClearLog_Click(object sender, EventArgs e)
         {
-            LogProgramMessage("点击清空日志按钮", true, true, 3);
+            LogProgramMessage("点击清空日志按钮", true, true, GetTraceLevel(3));
             if (tabControl1.SelectedIndex == 0)
             {
                 TxtProgramLog.Clear();
@@ -227,7 +228,7 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void btnOpenPairLog_Click(object sender, EventArgs e)
         {
-            LogProgramMessage("点击打开日志按钮", true, true, 3);
+            LogProgramMessage("点击打开日志按钮", true, true, GetTraceLevel(3));
             if (tabControl1.SelectedIndex == 0)
             {
                 cls_LogProgramFile.OpenProgramLog();
@@ -250,7 +251,7 @@ namespace FileSynchronizer
                 return;
             }
 
-            LogProgramMessage("点击停止所有操作按钮", true, true, 3);
+            LogProgramMessage("点击停止所有操作按钮", true, true, GetTraceLevel(3));
             StopAllOperations();
         }
 
@@ -262,7 +263,7 @@ namespace FileSynchronizer
         private void btnPauseSync_Click(object sender, EventArgs e)
         {
             if (tabControl1.SelectedIndex == 0) return;
-            LogProgramMessage("点击暂停自动同步按钮", true, true, 3);
+            LogProgramMessage("点击暂停自动同步按钮", true, true, GetTraceLevel(3));
 
             ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.SelectedTab.Controls[0];
             if (CurrentPair.PausePairAutoSync())
@@ -278,7 +279,7 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void btnTest_Click(object sender, EventArgs e)
         {
-            LogProgramMessage("Exexute Ends", true, true, 3);
+            LogProgramMessage("Exexute Ends", true, true, GetTraceLevel(3));
             ClearAllLogs();
             Sync_Queue_Helper.Normal_Sync_ResetQueue(String.Empty);
         }
@@ -287,7 +288,7 @@ namespace FileSynchronizer
         #region 私有方法
         private void StartTimer()
         {
-            LogProgramMessage("计时器开始工作", true, true, 3);
+            LogProgramMessage("计时器开始工作", true, true, GetTraceLevel(3));
             g_Timer = new System.Threading.Timer(TimerEvent, null, 0, c_Timer_Interval);
         }
 
@@ -304,14 +305,14 @@ namespace FileSynchronizer
 
                     if (DateTime.Now >= DateTime.Today.AddMilliseconds(0) && DateTime.Now <= DateTime.Today.AddMilliseconds(c_Timer_Interval) && Global_Settings.AutoClearLog)
                     {
-                        LogProgramMessage("执行每日自动清除界面日志", true, true, 3);
+                        LogProgramMessage("执行每日自动清除界面日志", true, true, GetTraceLevel(3));
                         ClearAllLogs();
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, 5, true);
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(5), true);
             }
         }
 
@@ -320,7 +321,7 @@ namespace FileSynchronizer
         /// </summary>
         private void CheckAutoSyncPair()
         {
-            LogProgramMessage("检查自动同步配对", true, true, 5);
+            LogProgramMessage("检查自动同步配对", true, true, GetTraceLevel(5));
             string[] arr_PairInfor = Files_InfoDB.CheckAutoSyncPair();
             if (arr_PairInfor == null) return;
 
@@ -376,7 +377,7 @@ namespace FileSynchronizer
         /// <param name="LogMessage">日志消息</param>
         /// <param name="IsChangeLine">是否换行</param>
         /// <param name="IsAddTS">是否添加时间戳</param>
-        /// <param name="MsgTraceLevel">记录的日志消息等级</param>
+        /// <param name="MsgTraceLevel">记录的日志消息等级（0~5），当设置成-1时仅针对开发者模式或调试模式</param>
         /// <param name="IsALwaysLogFile">是否强制写入日志文件（默认否）</param>
         private void LogProgramMessage(string LogMessage, bool IsChangeLine, bool IsAddTS, int MsgTraceLevel, bool IsALwaysLogFile = false)
         {
@@ -395,7 +396,7 @@ namespace FileSynchronizer
                 lock (TxtProgramLog)
                 {
                     //输入的MsgTraceLevel是0，则属于程序顶级日志，直接处理
-                    if (MsgTraceLevel == 0)
+                    if (MsgTraceLevel == 0 || (MsgTraceLevel < 0 && (Global_Settings.DevelopMode || Global_Settings.DebugMode)))
                     {
                         if (TxtProgramLog.TextLength > 150000)
                         {
@@ -427,7 +428,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, 5, true);
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(5), true);
             }
         }
 
@@ -447,8 +448,8 @@ namespace FileSynchronizer
                 g_dDirPair = Files_InfoDB.GetDirPairInfor(String.Empty);
                 if (g_dDirPair == null)
                 {
-                    LogProgramMessage("程序发生严重错误，获取配对列表失败！！！", true, true, 1, true);
-                    LogProgramMessage("Failed to Get PAIR table!!!", true, true, 5, true);
+                    LogProgramMessage("程序发生严重错误，获取配对列表失败！！！", true, true, GetTraceLevel(1), true);
+                    LogProgramMessage("Failed to Get PAIR table!!!", true, true, GetTraceLevel(5), true);
                     g_dDirPair = dt_Temp.Copy();
                 }
 
@@ -475,7 +476,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, 5, true);
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(5), true);
                 g_dDirPair = dt_Temp.Copy();
                 return;
             }
@@ -524,7 +525,7 @@ namespace FileSynchronizer
             if (g_dDirPair == null) return;
             if (g_dDirPair.Rows.Count.Equals(0))
             {
-                LogProgramMessage("没有找到任何配对信息，请先到“程序-管理目录配对”窗口添加配对", true, true, 1);
+                LogProgramMessage("没有找到任何配对信息，请先到“程序-管理目录配对”窗口添加配对", true, true, GetTraceLevel(1));
                 return;
             }
 
@@ -566,7 +567,7 @@ namespace FileSynchronizer
 
         private void PairPanal_ObjectsInforReady(object sender, string InitDoneMsg)
         {
-            LogProgramMessage(InitDoneMsg, true, true, 1);
+            LogProgramMessage(InitDoneMsg, true, true, GetTraceLevel(1));
         }
 
         private void PairPanal_OperationStarted(object sender)
@@ -636,7 +637,7 @@ namespace FileSynchronizer
         {
             //检查数据库文件（！！！必须在所有数据库操作之前完成！！！）
             string str_chkDBResult = Files_InfoDB.CheckDBFile();
-            if (!String.IsNullOrEmpty(str_chkDBResult)) LogProgramMessage(str_chkDBResult, true, true, 0);
+            if (!String.IsNullOrEmpty(str_chkDBResult)) LogProgramMessage(str_chkDBResult, true, true, GetTraceLevel(0));
 
             //打开数据库
             Files_InfoDB.OpenConnection();
@@ -652,14 +653,14 @@ namespace FileSynchronizer
                 string str_DBVersion = Files_InfoDB.CheckDBUpgrade(g_sMainProgramVersion);
                 if (!String.IsNullOrEmpty(str_DBVersion))
                 {
-                    LogProgramMessage("数据库已经升级到版本" + str_DBVersion, true, true, 1);
+                    LogProgramMessage("数据库已经升级到版本" + str_DBVersion, true, true, GetTraceLevel(1));
                 }
             }
         }
 
         private void ClearAllLogs()
         {
-            LogProgramMessage("Clear All Logs on main screen", true, true, 5);
+            LogProgramMessage("Clear All Logs on main screen", true, true, GetTraceLevel(5));
 
             TxtProgramLog.Clear();
 
@@ -723,11 +724,11 @@ namespace FileSynchronizer
             if (CurrentPair.IsPairBusy(out pairStatus))
             {
                 string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
-                LogProgramMessage(str_PairStatus, true, true, 1);
+                LogProgramMessage(str_PairStatus, true, true, GetTraceLevel(1));
             }
             else
             {
-                LogProgramMessage("开始同步配对（" + PairName + "）", true, true, 1);
+                LogProgramMessage("开始同步配对（" + PairName + "）", true, true, GetTraceLevel(1));
                 CurrentPair.DoAnalysisSyncDirPair(IsAnalysis);
             }
         }
@@ -736,7 +737,7 @@ namespace FileSynchronizer
         {
             try
             {
-                LogProgramMessage("Stoping all oprating threads", true, true, 4);
+                LogProgramMessage("Stoping all oprating threads", true, true, GetTraceLevel(4));
 
                 //查找正在进行的分析/同步线程并停止
                 for (int i = 1; i < tabControl1.TabCount; i++)
@@ -745,7 +746,7 @@ namespace FileSynchronizer
                     string str_PairName = CurrentPair.PairName;
                     if (CurrentPair.StopOngoingOperation())
                     {
-                        LogProgramMessage("成功停止了配对[" + str_PairName + "]正在进行的操作", true, true, 1);
+                        LogProgramMessage("成功停止了配对[" + str_PairName + "]正在进行的操作", true, true, GetTraceLevel(1));
                     }
                 }
 
@@ -754,7 +755,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, 5);
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(5));
             }
         }
 
@@ -762,12 +763,12 @@ namespace FileSynchronizer
         {
             if (Global_Settings.DebugMode)
             {
-                LogProgramMessage(@"程序处于调试模式，请注意对功能的影响！", true, true, 1);
+                LogProgramMessage(@"程序处于调试模式，请注意对功能的影响！", true, true, GetTraceLevel(1));
             }
 
             if (Global_Settings.DevelopMode)
             {
-                LogProgramMessage(@"程序处于开发者模式，请注意对功能的影响！", true, true, 1);
+                LogProgramMessage(@"程序处于开发者模式，请注意对功能的影响！", true, true, GetTraceLevel(1));
             }
 
             btnAnalysis.Visible = Global_Settings.DevelopMode;
@@ -817,12 +818,12 @@ namespace FileSynchronizer
                 if (bHasNewVesion)
                 {
                     检查更新ToolStripMenuItem.Text = @"检查更新（有新版本可用）";
-                    LogProgramMessage(str_ErrorMsg, true, true, 3);
+                    LogProgramMessage(str_ErrorMsg, true, true, GetTraceLevel(3));
                 }
                 else
                 {
                     检查更新ToolStripMenuItem.Text = @"检查更新";
-                    LogProgramMessage(str_ErrorMsg, true, true, 3);
+                    LogProgramMessage(str_ErrorMsg, true, true, GetTraceLevel(3));
                 }
             }
 
@@ -894,7 +895,7 @@ namespace FileSynchronizer
         #region 右键菜单的方法
         private void MenuItemSyncAll_Click(object sender, EventArgs e)
         {
-            LogProgramMessage("点击程序菜单的同步所有配对选项", true, true, 3);
+            LogProgramMessage("点击程序菜单的同步所有配对选项", true, true, GetTraceLevel(3));
             btnSyncAll.PerformClick();
         }
 
@@ -927,7 +928,7 @@ namespace FileSynchronizer
         private void ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string str_PairName = ((ToolStripMenuItem)sender).Text;
-            LogProgramMessage("点击程序菜单的同步配对选项，目标配对：" + str_PairName, true, true, 3);
+            LogProgramMessage("点击程序菜单的同步配对选项，目标配对：" + str_PairName, true, true, GetTraceLevel(3));
             DoDirPairOperation(str_PairName, false);
         }
 
@@ -968,7 +969,7 @@ namespace FileSynchronizer
                 bool bl_IsForceRefresh = directoryPairManager.bl_RefreshListRequired;
                 for (int i = 0; i < str_ManageResult.Length; i++)
                 {
-                    LogProgramMessage(str_ManageResult[i], true, false, 1);
+                    LogProgramMessage(str_ManageResult[i], true, false, GetTraceLevel(1));
                 }
                 RebindPairTable(bl_IsForceRefresh);
                 g_Timer.Change(0, c_Timer_Interval);
@@ -1021,13 +1022,13 @@ namespace FileSynchronizer
                 }
                 catch (System.ComponentModel.Win32Exception noBrowser)
                 {
-                    LogProgramMessage("未检测到可用的默认浏览器，请检查系统设置。", true, true, 1);
-                    LogProgramMessage(noBrowser.Message, true, true, 5, true);
+                    LogProgramMessage("未检测到可用的默认浏览器，请检查系统设置。", true, true, GetTraceLevel(1));
+                    LogProgramMessage(noBrowser.Message, true, true, GetTraceLevel(5), true);
                 }
                 catch (Exception ex)
                 {
-                    LogProgramMessage("访问项目Github主页失败！", true, true, 1);
-                    LogProgramMessage(ex.Message, true, true, 5, true);
+                    LogProgramMessage("访问项目Github主页失败！", true, true, GetTraceLevel(1));
+                    LogProgramMessage(ex.Message, true, true, GetTraceLevel(5), true);
                 }
             }
         }
@@ -1037,6 +1038,50 @@ namespace FileSynchronizer
             if (g_ProgramUpdater != null)
             {
                 g_ProgramUpdater.Show();
+            }
+        }
+        #endregion
+
+        #region 系统硬件更改的事件处理
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            if (m.Msg != WinformHelper.WmDeviceChange) return;
+
+            try
+            {
+                int iChangeType;
+                string sChangedDriveLetter = WinformHelper.GetChangedDriveLetter(m, out iChangeType);
+
+                if (iChangeType < 0 || String.IsNullOrEmpty(sChangedDriveLetter)) return;
+
+                string sPrintMessage = "检测到分区改变：" + ((iChangeType == 0) ? "插入了" : "拔出了") + sChangedDriveLetter + "盘";
+                LogProgramMessage(sPrintMessage, true, true, GetTraceLevel(1));
+                BoardcastDeviceChange(sChangedDriveLetter, iChangeType);
+            }
+            catch (Exception ex)
+            {
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(3));
+            }
+        }
+
+        private void BoardcastDeviceChange(string ChangedDriveLetter, int ChangeType)
+        {
+            if (g_dDirPair == null || g_dDirPair.Rows.Count.Equals(0)) return;
+
+            try
+            {
+                //查找正在进行的分析/同步线程并停止
+                for (int i = 1; i < tabControl1.TabCount; i++)
+                {
+                    ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.TabPages[i].Controls[0];
+                    CurrentPair.RemovableDriveHandler(ChangedDriveLetter, ChangeType);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(3));
             }
         }
         #endregion

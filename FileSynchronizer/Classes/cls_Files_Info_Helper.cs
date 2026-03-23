@@ -34,7 +34,10 @@ namespace FileSynchronizer
             g_dir1 = new DirectoryInfo(sDirPath1);
             g_dir2 = new DirectoryInfo(sDirPath2);
             InitFileWatchers();
-            Task.Run(() => LoadObjects());
+            if (ValidateBothDrivesExist())
+            {
+                Task.Run(() => LoadObjects());
+            }
         }
         #endregion
 
@@ -212,26 +215,53 @@ namespace FileSynchronizer
 
             OnDir2ObjectChanged(e);
         }
+
+        private bool ValidateBothDrivesExist()
+        {
+            string sDir1Root = Path.GetPathRoot(g_sDir1Path);
+            string sDir2Root = Path.GetPathRoot(g_sDir2Path);
+
+            bool bDriveExists1 = WinformHelper.CheckDriveExists(sDir1Root) || !NetHelper.IsLocalPath(sDir1Root);
+            bool bDriveExists2 = WinformHelper.CheckDriveExists(sDir2Root) || !NetHelper.IsLocalPath(sDir2Root);
+
+            return bDriveExists1 && bDriveExists2;
+        }
         #endregion
 
         #region 公有方法
-        public DirectoryInfo[] GetDirectoryInfos1()
+        public DirectoryInfo[] FetchDirectoryInfos1()
         {
+            if (g_subDir1 == null)
+            {
+                LoadObjects1(0);
+            }
             return g_subDir1;
         }
 
-        public DirectoryInfo[] GetDirectoryInfos2()
+        public DirectoryInfo[] FetchDirectoryInfos2()
         {
+            if (g_subDir2 == null)
+            {
+                LoadObjects2(0);
+            }
             return g_subDir2;
         }
 
-        public FileInfo[] GetFileInfos1()
+        public FileInfo[] FetchFileInfos1()
         {
+            if (g_fileInfos1 == null)
+            {
+                LoadObjects1(1);
+            }
             return g_fileInfos1;
         }
 
-        public FileInfo[] GetFileInfos2()
+        public FileInfo[] FetchFileInfos2()
         {
+            if (g_fileInfos2 == null)
+            {
+                LoadObjects2(1);
+            }
             return g_fileInfos2;
         }
 
@@ -254,6 +284,35 @@ namespace FileSynchronizer
             {
                 return g_subDir1.Length + g_subDir2.Length + g_fileInfos1.Length + g_fileInfos2.Length;
             }
+        }
+
+        public void StopPairMonitoring()
+        {
+            if (fw_Dir1 != null)
+            {
+                fw_Dir1.Stop();
+                g_subDir1 = null;
+                g_fileInfos1 = null;
+            }
+            if (fw_Dir2 != null)
+            {
+                fw_Dir2.Stop();
+                g_subDir2 = null;
+                g_fileInfos2 = null;
+            }
+        }
+
+        public void StartPairMonitoring()
+        {
+            if (fw_Dir1 != null)
+            {
+                fw_Dir1.Start();
+            }
+            if (fw_Dir2 != null)
+            {
+                fw_Dir2.Start();
+            }
+            LoadObjects();
         }
         #endregion
     }

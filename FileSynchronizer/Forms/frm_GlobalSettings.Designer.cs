@@ -60,8 +60,8 @@ namespace FileSynchronizer
             btnClearLogFile = new System.Windows.Forms.Button();
             chkboxAutoRun = new System.Windows.Forms.CheckBox();
             groupBox2 = new System.Windows.Forms.GroupBox();
-            pnlDebugTools = new System.Windows.Forms.Panel();
             chkboxDevelopMode = new System.Windows.Forms.CheckBox();
+            pnlDebugTools = new System.Windows.Forms.Panel();
             btnSetGithubToken = new System.Windows.Forms.Button();
             btnSQLRunner = new System.Windows.Forms.Button();
             lblCurrentDB = new System.Windows.Forms.Label();
@@ -78,7 +78,7 @@ namespace FileSynchronizer
             // 
             label18.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             label18.AutoSize = true;
-            label18.Location = new System.Drawing.Point(394, 468);
+            label18.Location = new System.Drawing.Point(410, 468);
             label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label18.Name = "label18";
             label18.Size = new System.Drawing.Size(80, 17);
@@ -89,7 +89,7 @@ namespace FileSynchronizer
             // 
             lblPGMVer.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             lblPGMVer.AutoSize = true;
-            lblPGMVer.Location = new System.Drawing.Point(491, 468);
+            lblPGMVer.Location = new System.Drawing.Point(507, 468);
             lblPGMVer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblPGMVer.Name = "lblPGMVer";
             lblPGMVer.Size = new System.Drawing.Size(88, 17);
@@ -100,7 +100,7 @@ namespace FileSynchronizer
             // 
             label17.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             label17.AutoSize = true;
-            label17.Location = new System.Drawing.Point(394, 502);
+            label17.Location = new System.Drawing.Point(410, 502);
             label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label17.Name = "label17";
             label17.Size = new System.Drawing.Size(80, 17);
@@ -111,7 +111,7 @@ namespace FileSynchronizer
             // 
             lblDBVer.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             lblDBVer.AutoSize = true;
-            lblDBVer.Location = new System.Drawing.Point(491, 502);
+            lblDBVer.Location = new System.Drawing.Point(507, 502);
             lblDBVer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblDBVer.Name = "lblDBVer";
             lblDBVer.Size = new System.Drawing.Size(83, 17);
@@ -124,9 +124,9 @@ namespace FileSynchronizer
             chkboxDebugMode.Location = new System.Drawing.Point(7, 31);
             chkboxDebugMode.Margin = new System.Windows.Forms.Padding(4);
             chkboxDebugMode.Name = "chkboxDebugMode";
-            chkboxDebugMode.Size = new System.Drawing.Size(183, 21);
+            chkboxDebugMode.Size = new System.Drawing.Size(75, 21);
             chkboxDebugMode.TabIndex = 106;
-            chkboxDebugMode.Text = "调试模式（仅开发人员使用）";
+            chkboxDebugMode.Text = "调试模式";
             chkboxDebugMode.UseVisualStyleBackColor = true;
             // 
             // chkboxLogMsgToFile
@@ -179,7 +179,7 @@ namespace FileSynchronizer
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(281, 32);
+            label1.Location = new System.Drawing.Point(303, 32);
             label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(247, 17);
@@ -188,7 +188,7 @@ namespace FileSynchronizer
             // 
             // txtboxTraceLevel
             // 
-            txtboxTraceLevel.Location = new System.Drawing.Point(530, 29);
+            txtboxTraceLevel.Location = new System.Drawing.Point(546, 29);
             txtboxTraceLevel.Margin = new System.Windows.Forms.Padding(4);
             txtboxTraceLevel.Name = "txtboxTraceLevel";
             txtboxTraceLevel.Size = new System.Drawing.Size(23, 23);
@@ -230,7 +230,7 @@ namespace FileSynchronizer
             groupBox1.Margin = new System.Windows.Forms.Padding(4);
             groupBox1.Name = "groupBox1";
             groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            groupBox1.Size = new System.Drawing.Size(560, 242);
+            groupBox1.Size = new System.Drawing.Size(576, 242);
             groupBox1.TabIndex = 114;
             groupBox1.TabStop = false;
             groupBox1.Text = "通用设置";
@@ -265,7 +265,7 @@ namespace FileSynchronizer
             // 
             // txtboxMaxKeepBackup
             // 
-            txtboxMaxKeepBackup.Location = new System.Drawing.Point(420, 95);
+            txtboxMaxKeepBackup.Location = new System.Drawing.Point(365, 96);
             txtboxMaxKeepBackup.Margin = new System.Windows.Forms.Padding(4);
             txtboxMaxKeepBackup.Name = "txtboxMaxKeepBackup";
             txtboxMaxKeepBackup.Size = new System.Drawing.Size(28, 23);
@@ -285,7 +285,7 @@ namespace FileSynchronizer
             // chkBoxAutoClearLog
             // 
             chkBoxAutoClearLog.AutoSize = true;
-            chkBoxAutoClearLog.Location = new System.Drawing.Point(362, 62);
+            chkBoxAutoClearLog.Location = new System.Drawing.Point(421, 62);
             chkBoxAutoClearLog.Margin = new System.Windows.Forms.Padding(4);
             chkBoxAutoClearLog.Name = "chkBoxAutoClearLog";
             chkBoxAutoClearLog.Size = new System.Drawing.Size(147, 21);
@@ -295,7 +295,7 @@ namespace FileSynchronizer
             // 
             // btnSelectLocalTempFolder
             // 
-            btnSelectLocalTempFolder.Location = new System.Drawing.Point(517, 129);
+            btnSelectLocalTempFolder.Location = new System.Drawing.Point(532, 125);
             btnSelectLocalTempFolder.Margin = new System.Windows.Forms.Padding(4);
             btnSelectLocalTempFolder.Name = "btnSelectLocalTempFolder";
             btnSelectLocalTempFolder.Size = new System.Drawing.Size(36, 30);
@@ -309,7 +309,7 @@ namespace FileSynchronizer
             txtboxLocalTempFolder.Location = new System.Drawing.Point(168, 129);
             txtboxLocalTempFolder.Margin = new System.Windows.Forms.Padding(4);
             txtboxLocalTempFolder.Name = "txtboxLocalTempFolder";
-            txtboxLocalTempFolder.Size = new System.Drawing.Size(341, 23);
+            txtboxLocalTempFolder.Size = new System.Drawing.Size(356, 23);
             txtboxLocalTempFolder.TabIndex = 124;
             // 
             // chkboxUseLocalTemp
@@ -372,7 +372,7 @@ namespace FileSynchronizer
             // 
             // btnClearLogFile
             // 
-            btnClearLogFile.Location = new System.Drawing.Point(215, 55);
+            btnClearLogFile.Location = new System.Drawing.Point(274, 54);
             btnClearLogFile.Margin = new System.Windows.Forms.Padding(4);
             btnClearLogFile.Name = "btnClearLogFile";
             btnClearLogFile.Size = new System.Drawing.Size(140, 35);
@@ -395,23 +395,34 @@ namespace FileSynchronizer
             // groupBox2
             // 
             groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox2.Controls.Add(txtboxTraceLevel);
+            groupBox2.Controls.Add(label1);
+            groupBox2.Controls.Add(chkboxDevelopMode);
             groupBox2.Controls.Add(pnlDebugTools);
             groupBox2.Controls.Add(chkboxDebugMode);
-            groupBox2.Controls.Add(label1);
-            groupBox2.Controls.Add(txtboxTraceLevel);
             groupBox2.Location = new System.Drawing.Point(14, 268);
             groupBox2.Margin = new System.Windows.Forms.Padding(4);
             groupBox2.Name = "groupBox2";
             groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            groupBox2.Size = new System.Drawing.Size(560, 196);
+            groupBox2.Size = new System.Drawing.Size(576, 196);
             groupBox2.TabIndex = 115;
             groupBox2.TabStop = false;
-            groupBox2.Text = "开发人员设置(!!!请谨慎使用，可能会有未知BUG!!!)";
+            groupBox2.Text = "开发人员设置(!!!仅开发人员，请谨慎使用，可能会有未知BUG!!!)";
+            // 
+            // chkboxDevelopMode
+            // 
+            chkboxDevelopMode.AutoSize = true;
+            chkboxDevelopMode.Location = new System.Drawing.Point(84, 31);
+            chkboxDevelopMode.Margin = new System.Windows.Forms.Padding(4);
+            chkboxDevelopMode.Name = "chkboxDevelopMode";
+            chkboxDevelopMode.Size = new System.Drawing.Size(231, 21);
+            chkboxDevelopMode.TabIndex = 118;
+            chkboxDevelopMode.Text = "开发者模式（需要重新启动程序生效）";
+            chkboxDevelopMode.UseVisualStyleBackColor = true;
             // 
             // pnlDebugTools
             // 
             pnlDebugTools.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            pnlDebugTools.Controls.Add(chkboxDevelopMode);
             pnlDebugTools.Controls.Add(btnSetGithubToken);
             pnlDebugTools.Controls.Add(btnSQLRunner);
             pnlDebugTools.Controls.Add(lblCurrentDB);
@@ -423,19 +434,8 @@ namespace FileSynchronizer
             pnlDebugTools.Location = new System.Drawing.Point(7, 67);
             pnlDebugTools.Margin = new System.Windows.Forms.Padding(4);
             pnlDebugTools.Name = "pnlDebugTools";
-            pnlDebugTools.Size = new System.Drawing.Size(546, 120);
+            pnlDebugTools.Size = new System.Drawing.Size(562, 120);
             pnlDebugTools.TabIndex = 117;
-            // 
-            // chkboxDevelopMode
-            // 
-            chkboxDevelopMode.AutoSize = true;
-            chkboxDevelopMode.Location = new System.Drawing.Point(4, 87);
-            chkboxDevelopMode.Margin = new System.Windows.Forms.Padding(4);
-            chkboxDevelopMode.Name = "chkboxDevelopMode";
-            chkboxDevelopMode.Size = new System.Drawing.Size(231, 21);
-            chkboxDevelopMode.TabIndex = 118;
-            chkboxDevelopMode.Text = "开发者模式（需要重新启动程序生效）";
-            chkboxDevelopMode.UseVisualStyleBackColor = true;
             // 
             // btnSetGithubToken
             // 
@@ -517,7 +517,7 @@ namespace FileSynchronizer
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             CancelButton = button3;
-            ClientSize = new System.Drawing.Size(588, 531);
+            ClientSize = new System.Drawing.Size(604, 531);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(button3);

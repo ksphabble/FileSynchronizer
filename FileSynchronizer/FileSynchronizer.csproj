@@ -28,8 +28,8 @@
     <TargetZone>LocalIntranet</TargetZone>
     <NoWin32Manifest>true</NoWin32Manifest>
     <StartupObject>FileSynchronizer.Program</StartupObject>
-    <AssemblyVersion>3.0.0.3</AssemblyVersion>
-    <FileVersion>3.0.0.3</FileVersion>
+    <AssemblyVersion>3.0.0.4</AssemblyVersion>
+    <FileVersion>3.0.0.4</FileVersion>
 	<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">

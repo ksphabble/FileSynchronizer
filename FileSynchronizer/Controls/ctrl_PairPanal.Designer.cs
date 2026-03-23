@@ -46,6 +46,7 @@
             label2 = new System.Windows.Forms.Label();
             lblPairInfor = new System.Windows.Forms.Label();
             pnlPairBasicInfor = new System.Windows.Forms.Panel();
+            btnStopMonitoringRMD = new System.Windows.Forms.Button();
             pnlPairExInfor.SuspendLayout();
             pnlPairBasicInfor.SuspendLayout();
             SuspendLayout();
@@ -263,6 +264,7 @@
             // 
             // pnlPairBasicInfor
             // 
+            pnlPairBasicInfor.Controls.Add(btnStopMonitoringRMD);
             pnlPairBasicInfor.Controls.Add(lblPairInfor);
             pnlPairBasicInfor.Dock = System.Windows.Forms.DockStyle.Top;
             pnlPairBasicInfor.Location = new System.Drawing.Point(0, 0);
@@ -270,6 +272,17 @@
             pnlPairBasicInfor.Name = "pnlPairBasicInfor";
             pnlPairBasicInfor.Size = new System.Drawing.Size(1073, 27);
             pnlPairBasicInfor.TabIndex = 21;
+            // 
+            // btnStopMonitoringRMD
+            // 
+            btnStopMonitoringRMD.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnStopMonitoringRMD.Location = new System.Drawing.Point(940, 1);
+            btnStopMonitoringRMD.Name = "btnStopMonitoringRMD";
+            btnStopMonitoringRMD.Size = new System.Drawing.Size(130, 23);
+            btnStopMonitoringRMD.TabIndex = 3;
+            btnStopMonitoringRMD.Text = "停止监控(%s1)";
+            btnStopMonitoringRMD.UseVisualStyleBackColor = true;
+            btnStopMonitoringRMD.Click += btnStopMonitoringRMD_Click;
             // 
             // ctrl_PairPanal
             // 
@@ -310,5 +323,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lblFileCountSync;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnStopMonitoringRMD;
     }
 }
