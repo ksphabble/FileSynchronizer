@@ -15,6 +15,7 @@ namespace FileSynchronizer
         private string g_sDir1Path;
         private string g_sDir2Path;
         private string g_sFilterRule;
+        private int g_iAutoSyncInterval;
         private DirectoryInfo g_dir1;
         private DirectoryInfo g_dir2;
         private DirectoryInfo[] g_subDir1;
@@ -24,17 +25,18 @@ namespace FileSynchronizer
         private FileSystemWatcherEx fw_Dir1;
         private FileSystemWatcherEx fw_Dir2;
 
-        public cls_Files_Info_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2, string sFilterRule)
+        public cls_Files_Info_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2, string sFilterRule, int iAutoSyncInterval)
         {
             g_sPairID = sPairID;
             g_sPairName = sPairName;
             g_sDir1Path = sDirPath1;
             g_sDir2Path = sDirPath2;
             g_sFilterRule = sFilterRule;
+            g_iAutoSyncInterval = iAutoSyncInterval;
             g_dir1 = new DirectoryInfo(sDirPath1);
             g_dir2 = new DirectoryInfo(sDirPath2);
             InitFileWatchers();
-            if (ValidateBothDrivesExist())
+            if (ValidateBothDrivesExist() && g_iAutoSyncInterval == 0)
             {
                 Task.Run(() => LoadObjects());
             }
@@ -229,36 +231,36 @@ namespace FileSynchronizer
         #endregion
 
         #region 公有方法
-        public DirectoryInfo[] FetchDirectoryInfos1()
+        public DirectoryInfo[] FetchDirectoryInfos1(bool bIsRefresh)
         {
-            if (g_subDir1 == null)
+            if (g_subDir1 == null || bIsRefresh)
             {
                 LoadObjects1(0);
             }
             return g_subDir1;
         }
 
-        public DirectoryInfo[] FetchDirectoryInfos2()
+        public DirectoryInfo[] FetchDirectoryInfos2(bool bIsRefresh)
         {
-            if (g_subDir2 == null)
+            if (g_subDir2 == null || bIsRefresh)
             {
                 LoadObjects2(0);
             }
             return g_subDir2;
         }
 
-        public FileInfo[] FetchFileInfos1()
+        public FileInfo[] FetchFileInfos1(bool bIsRefresh)
         {
-            if (g_fileInfos1 == null)
+            if (g_fileInfos1 == null || bIsRefresh)
             {
                 LoadObjects1(1);
             }
             return g_fileInfos1;
         }
 
-        public FileInfo[] FetchFileInfos2()
+        public FileInfo[] FetchFileInfos2(bool bIsRefresh)
         {
-            if (g_fileInfos2 == null)
+            if (g_fileInfos2 == null || bIsRefresh)
             {
                 LoadObjects2(1);
             }

@@ -314,7 +314,7 @@ namespace FileSynchronizer
                     {
                         //配对有差异，线程暂停500毫秒之后开始同步
                         Thread.Sleep(500);
-                        await Task.Run(() => Dir_Pair_Helper.SyncDirPair(dataTableFileDiff));
+                        await Task.Run(() => Dir_Pair_Helper.SyncDirPair(dataTableFileDiff, false));
                     }
                 }
 
@@ -445,6 +445,14 @@ namespace FileSynchronizer
                 SetSyncTime(lblLastSyncTime.Text, g_iAutoSyncInterval);
             }
             return bRet;
+        }
+
+        /// <summary>
+        /// 刷新配对的文件夹/文件信息
+        /// </summary>
+        public void RefreshFileAndDirInfo()
+        {
+            Dir_Pair_Helper.RefreshFileAndDirInfo();
         }
         #endregion
 

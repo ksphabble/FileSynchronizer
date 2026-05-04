@@ -279,9 +279,10 @@ namespace FileSynchronizer
         /// <param name="e"></param>
         private void btnTest_Click(object sender, EventArgs e)
         {
-            LogProgramMessage("Exexute Ends", true, true, GetTraceLevel(3));
-            ClearAllLogs();
-            Sync_Queue_Helper.Normal_Sync_ResetQueue(String.Empty);
+            LogProgramMessage("点击测试按钮按钮", true, true, GetTraceLevel(3));
+
+            if (tabControl1.SelectedIndex == 0) return;
+            ((ctrl_PairPanal)tabControl1.SelectedTab.Controls[0]).RefreshFileAndDirInfo();
         }
         #endregion
 
@@ -307,6 +308,7 @@ namespace FileSynchronizer
                     {
                         LogProgramMessage("执行每日自动清除界面日志", true, true, GetTraceLevel(3));
                         ClearAllLogs();
+                        RefreshAllFileAndDirInfo();
                     }
                 }
             }
@@ -667,6 +669,16 @@ namespace FileSynchronizer
             for (int i = 1; i < tabControl1.TabCount; i++)
             {
                 ((ctrl_PairPanal)tabControl1.Controls[i].Controls[0]).ClearPairLogs();
+            }
+        }
+
+        private void RefreshAllFileAndDirInfo()
+        {
+            LogProgramMessage("Refresh All File And Dir Info on main screen", true, true, GetTraceLevel(5));
+
+            for (int i = 1; i < tabControl1.TabCount; i++)
+            {
+                ((ctrl_PairPanal)tabControl1.Controls[i].Controls[0]).RefreshFileAndDirInfo();
             }
         }
 

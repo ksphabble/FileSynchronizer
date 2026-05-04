@@ -50,7 +50,7 @@ namespace FileSynchronizer
             g_iSyncDirection = iSyncDirection;
             g_bIsPaused = bIsPaused;
             g_PairLogFile = new cls_LogPairFile(sPairName, false);
-            g_Files_Info = new cls_Files_Info_Helper(sPairID, sPairName, sDirPath1, sDirPath2, sFilterRule);
+            g_Files_Info = new cls_Files_Info_Helper(sPairID, sPairName, sDirPath1, sDirPath2, sFilterRule, g_iAutoSyncInterval);
             g_Files_Info.ObjectsInforReady += G_Files_Info_ObjectsInforReady;
             g_Files_Info.Dir1ObjectChanged += G_Files_Info_Dir1ObjectChanged;
             g_Files_Info.Dir2ObjectChanged += G_Files_Info_Dir2ObjectChanged;
@@ -70,10 +70,11 @@ namespace FileSynchronizer
             #endregion
 
             #region Define Varibles
-            g_bCancelRequested = false; 
+            g_bCancelRequested = false;
             OnPairStatusChange(PairStatus.ANALYSIS);
             string str_OutLogMsg = String.Empty;
             DateTime dt_DirLastSyncTime;
+            bool bFetchFileAndDirInfor = g_iAutoSyncInterval != 0;
             bool bLastSyncStatus = DateTime.TryParse(g_sDirLastSyncTime, out dt_DirLastSyncTime);
             if (!bLastSyncStatus)
             {
@@ -92,8 +93,8 @@ namespace FileSynchronizer
             }
 
             string str_Dir1TableName = String.Join("_", g_sPairName, c_Dir1_Str, FileHelper.GetObjectNameFromPath(g_sDir1Path));
-            DirectoryInfo[] subDir1 = g_Files_Info.FetchDirectoryInfos1();
-            FileInfo[] fileInfos1 = g_Files_Info.FetchFileInfos1();
+            DirectoryInfo[] subDir1 = g_Files_Info.FetchDirectoryInfos1(bFetchFileAndDirInfor);
+            FileInfo[] fileInfos1 = g_Files_Info.FetchFileInfos1(bFetchFileAndDirInfor);
             DataTable dt_File1InforDB = Files_InfoDB.GetFileInfor(str_Dir1TableName, out str_OutLogMsg);
 
             //DIR2的子目录和文件信息
@@ -106,8 +107,8 @@ namespace FileSynchronizer
                 return null;
             }
             string str_Dir2TableName = String.Join("_", g_sPairName, c_Dir2_Str, FileHelper.GetObjectNameFromPath(g_sDir2Path));
-            DirectoryInfo[] subDir2 = g_Files_Info.FetchDirectoryInfos2();
-            FileInfo[] fileInfos2 = g_Files_Info.FetchFileInfos2();
+            DirectoryInfo[] subDir2 = g_Files_Info.FetchDirectoryInfos2(bFetchFileAndDirInfor);
+            FileInfo[] fileInfos2 = g_Files_Info.FetchFileInfos2(bFetchFileAndDirInfor);
             DataTable dt_File2InforDB = Files_InfoDB.GetFileInfor(str_Dir2TableName, out str_OutLogMsg);
 
             int int_TotalFileFound = subDir1.Length + fileInfos1.Length + subDir2.Length + fileInfos2.Length + dt_File1InforDB.Rows.Count + dt_File2InforDB.Rows.Count;
@@ -885,7 +886,7 @@ namespace FileSynchronizer
         /// 同步文件夹配对
         /// </summary>
         /// <param name="TableFileDiff"></param>
-        public bool SyncDirPair(DataTable TableFileDiff, bool bRealTime = false)
+        public bool SyncDirPair(DataTable TableFileDiff, bool bRealTime)
         {
             #region Define Varibles
             string str_DebugModeWarning = Global_Settings.DevelopMode ? " --- 程序处于开发者模式，会导致同步操作无法完成，请注意！" : "";
@@ -1381,8 +1382,11 @@ namespace FileSynchronizer
                         }
                         if (bl_SyncRecordDone)
                         {
-                            //更新同步进度
-                            OnAdd1Sync(int_TotalChngCount);
+                            if (!bRealTime)
+                            {
+                                //更新同步进度
+                                OnAdd1Sync(int_TotalChngCount);
+                            }
                             int_SyncedCount++;
                             Thread.Sleep(100);
                         }
@@ -1391,8 +1395,11 @@ namespace FileSynchronizer
                             if (int_TrySyncCount >= Global_Settings.RetryCountWhenSyncFailed)
                             {
                                 LogPairMessage(g_sPairName, str_ExceptionFile + "超过最大重试次数", true, true, GetTraceLevel(1));
-                                //更新同步进度
-                                OnAdd1Sync(int_TotalChngCount);
+                                if (!bRealTime)
+                                {
+                                    //更新同步进度
+                                    OnAdd1Sync(int_TotalChngCount);
+                                }
                                 int_SyncedCount++;
                                 bl_SyncRecordDone = true;
                                 bExceptionFound = true;
@@ -1905,6 +1912,26 @@ namespace FileSynchronizer
         public void CancelOperation()
         {
             g_bCancelRequested = true;
+        }
+
+        /// <summary>
+        /// 刷新配对的文件夹/文件信息
+        /// </summary>
+        public void RefreshFileAndDirInfo()
+        {
+            string str_LogMsgA = "开始刷新配对" + g_sPairName + "的文件夹/文件信息";
+            LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(2));
+            var dt_InitGapA = DateTime.Now;
+
+            g_Files_Info.FetchDirectoryInfos1(true);
+            g_Files_Info.FetchDirectoryInfos2(true);
+            g_Files_Info.FetchFileInfos1(true);
+            g_Files_Info.FetchFileInfos2(true);
+
+            var dt_InitGapB = DateTime.Now.Subtract(dt_InitGapA);
+            string str_LogMsgB = "刷新配对" + g_sPairName + "的文件夹/文件信息完成，花费" + dt_InitGapB.TotalSeconds.ToString() + "秒";
+            LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(2));
+            OnObjectsInforReady(str_LogMsgB);
         }
         #endregion
 
