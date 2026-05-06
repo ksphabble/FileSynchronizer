@@ -1,9 +1,8 @@
 ﻿using Common.Components;
-using D2Phap.FileWatcherEx;
 using System;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -247,10 +246,59 @@ namespace FileSynchronizer
                         str_LogMsg = str_LogMsg.Substring(str_LogMsg.Length - TxtPairLog.MaxLength + 1);
                     }
 
+                    //WriteTextBox(str_LogMsg);
                     TxtPairLog.AppendText(str_LogMsg);
                     TxtPairLog.ScrollToCaret();
                 }
             }
+        }
+
+        private void WriteTextBox(string LogMessage)
+        {
+            int maxDisplayline = 1000;
+            StringBuilder sb = new StringBuilder();
+            string[] sblineslist = LogMessage.Split(new char[] { '\n' });
+
+            Thread t = new Thread(() =>
+            {
+                try
+                {
+                    for (int i = 0; i < sblineslist.Length; i++)
+                    {
+                        sb.Append(sblineslist[i]);
+
+                        if (i > 0 && i % maxDisplayline == 0)
+                        {
+                            this.Invoke((EventHandler)delegate
+                            {
+                                TxtPairLog.Text += sb.ToString();
+                                sb.Clear();
+                            });
+                            maxDisplayline *= (int)Math.Sqrt(i / maxDisplayline);
+                        }
+                    }
+
+                    if (sb.Length > 0)
+                    {
+                        this.Invoke((EventHandler)delegate
+                        {
+                            TxtPairLog.Text += sb.ToString();
+                            sb.Clear();
+                        });
+                    }
+                    TxtPairLog.ScrollToCaret();
+                }
+                catch (Exception ex)
+                {
+                    this.Invoke((EventHandler)delegate
+                    {
+                        lblBeingSync.Text = "异常错误: " + ex.Message;
+                    });
+                }
+            });
+
+            t.IsBackground = true;
+            t.Start();
         }
 
         /// <summary>

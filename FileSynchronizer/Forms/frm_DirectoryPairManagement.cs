@@ -28,39 +28,51 @@ namespace FileSynchronizer
 
         private void btnNewPair_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(txtBoxDir1.Text))
+            frm_NewPair _NewPair = new frm_NewPair(_DirPairDataTable);
+            _NewPair.StartPosition = FormStartPosition.CenterParent;
+            _NewPair.ShowDialog();
+            if (_NewPair.DialogResult == DialogResult.OK)
             {
-                MessageBox.Show("无法添加：目录1不存在，请确认后重试");
-                return;
-            }
-
-            if (!Directory.Exists(txtBoxDir2.Text))
-            {
-                MessageBox.Show("无法添加：目录2不存在，请确认后重试");
-                return;
-            }
-
-            int int_PairNameChk = _DirPairDataTable.Select("PairName='" + txtBoxPairName.Text + "'").Length;
-            if (int_PairNameChk > 0)
-            {
-                MessageBox.Show("无法添加：配对名称已经存在");
-                return;
-            }
-
-            int int_PairDirChk = _DirPairDataTable.Select("DIR1='" + txtBoxDir1.Text + "' and DIR2='" + txtBoxDir2.Text + "'").Length;
-            if (int_PairDirChk > 0)
-            {
-                MessageBox.Show("无法添加：请勿重复添加配对目录");
-                return;
-            }
-
-            int int_SyncDirection = comboBox1.SelectedIndex < 0 ? 0 : comboBox1.SelectedIndex;
-            if (Files_InfoDB.AddDirPair(txtBoxPairName.Text, txtBoxDir1.Text, txtBoxDir2.Text, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, int_SyncDirection.ToString()))
-            {
-                list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "添加配对(" + txtBoxPairName.Text + ")，目录1(" + txtBoxDir1.Text + ")，目录2(" + txtBoxDir2.Text + ")");
+                this.bl_RefreshListRequired = _NewPair.bl_RefreshListRequired;
+                this.list_Return_Message.AddRange(_NewPair.arr_Return_Message);
                 RefreshDirPair();
-                bl_RefreshListRequired = true;
             }
+
+            #region v3.0.0.6 old code
+            //if (!Directory.Exists(txtBoxDir1.Text))
+            //{
+            //    MessageBox.Show("无法添加：目录1不存在，请确认后重试");
+            //    return;
+            //}
+
+            //if (!Directory.Exists(txtBoxDir2.Text))
+            //{
+            //    MessageBox.Show("无法添加：目录2不存在，请确认后重试");
+            //    return;
+            //}
+
+            //int int_PairNameChk = _DirPairDataTable.Select("PairName='" + txtBoxPairName.Text + "'").Length;
+            //if (int_PairNameChk > 0)
+            //{
+            //    MessageBox.Show("无法添加：配对名称已经存在");
+            //    return;
+            //}
+
+            //int int_PairDirChk = _DirPairDataTable.Select("DIR1='" + txtBoxDir1.Text + "' and DIR2='" + txtBoxDir2.Text + "'").Length;
+            //if (int_PairDirChk > 0)
+            //{
+            //    MessageBox.Show("无法添加：请勿重复添加配对目录");
+            //    return;
+            //}
+
+            //int int_SyncDirection = comboBox1.SelectedIndex < 0 ? 0 : comboBox1.SelectedIndex;
+            //if (Files_InfoDB.AddDirPair(txtBoxPairName.Text, txtBoxDir1.Text, txtBoxDir2.Text, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, int_SyncDirection.ToString()))
+            //{
+            //    list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "添加配对(" + txtBoxPairName.Text + ")，目录1(" + txtBoxDir1.Text + ")，目录2(" + txtBoxDir2.Text + ")");
+            //    RefreshDirPair();
+            //    bl_RefreshListRequired = true;
+            //}
+            #endregion
         }
 
         private void RefreshDirPair()

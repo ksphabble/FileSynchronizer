@@ -283,6 +283,8 @@ namespace FileSynchronizer
 
             if (tabControl1.SelectedIndex == 0) return;
             ((ctrl_PairPanal)tabControl1.SelectedTab.Controls[0]).RefreshFileAndDirInfo();
+
+            tabControl1.Refresh();
         }
         #endregion
 
@@ -559,6 +561,7 @@ namespace FileSynchronizer
                 PairPanal.ObjectsInforReady += PairPanal_ObjectsInforReady;
                 tabPageDirPair.Controls.Add(PairPanal);
                 tabControl1.Controls.Add(tabPageDirPair);
+                //tabControl1.Refresh();
             }
 
             if (tabControl1.TabCount > str_SlectedTabIdx)

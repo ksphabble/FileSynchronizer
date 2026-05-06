@@ -1919,7 +1919,7 @@ namespace FileSynchronizer
         /// </summary>
         public void RefreshFileAndDirInfo()
         {
-            string str_LogMsgA = "开始刷新配对" + g_sPairName + "的文件夹/文件信息";
+            string str_LogMsgA = "开始刷新配对（" + g_sPairName + "）的文件夹/文件信息";
             LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(2));
             var dt_InitGapA = DateTime.Now;
 
@@ -1929,7 +1929,7 @@ namespace FileSynchronizer
             g_Files_Info.FetchFileInfos2(true);
 
             var dt_InitGapB = DateTime.Now.Subtract(dt_InitGapA);
-            string str_LogMsgB = "刷新配对" + g_sPairName + "的文件夹/文件信息完成，花费" + dt_InitGapB.TotalSeconds.ToString() + "秒";
+            string str_LogMsgB = "刷新配对（" + g_sPairName + "）的文件夹/文件信息完成，花费" + dt_InitGapB.TotalSeconds.ToString() + "秒";
             LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(2));
             OnObjectsInforReady(str_LogMsgB);
         }
