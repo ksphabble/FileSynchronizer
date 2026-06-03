@@ -107,6 +107,12 @@ namespace FileSynchronizer
                 dataGridView1.Columns[8].Visible = false;
                 dataGridView1.Columns[9].HeaderText = "暂停自动同步";
                 dataGridView1.Columns[9].SortMode = DataGridViewColumnSortMode.NotSortable;
+
+                if (Global_Settings.HasDBVersionReached(3011))
+                {
+                    dataGridView1.Columns[10].Visible = false;
+                    dataGridView1.Columns[11].Visible = false;
+                }
             }
         }
 
@@ -144,6 +150,7 @@ namespace FileSynchronizer
                 return;
             }
 
+            string str_PairName = txtBoxPairName.Text;
             string str_PairID = dataGridView1.SelectedRows[0].Cells["PK_PairID"].Value.ToString();
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
@@ -153,9 +160,54 @@ namespace FileSynchronizer
                 return;
             }
 
+            if (((radioButtonSyncInterval.Checked && String.IsNullOrEmpty(txtBoxSyncInterval.Text)) || (radioButtonFixedTime.Checked && String.IsNullOrEmpty(comBoxSyncDay.Text))) && !checkBoxRealTimeSync.Checked)
+            {
+                MessageBox.Show("请填入正确的自动同步设置");
+                return;
+            }
+
             string str_outputMsg = String.Empty;
-            Files_InfoDB.UpdatePairInfor(str_PairID, txtBoxFilterRule.Text, txtBoxSyncInterval.Text, comboBox1.SelectedIndex.ToString(), out str_outputMsg);
-            list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "更改配对(" + txtBoxPairName.Text + ")");
+            string str_SyncDirection = comboBox1.SelectedIndex.ToString();
+            string str_SyncInterval = txtBoxSyncInterval.Text;
+            string str_AutoSyncFixedInterval = String.Join(@"|", comBoxSyncDay.SelectedIndex.ToString(), timePickerSyncTime.Text.ToString());
+            if (checkBoxRealTimeSync.Checked)
+            {
+                str_SyncInterval = "0";
+                str_AutoSyncFixedInterval = String.Empty;
+            }
+            else
+            {
+                int i_SyncInterval = Int32.MinValue;
+                bool bConvertRet = Int32.TryParse(str_SyncInterval, out i_SyncInterval);
+                if (!bConvertRet || (bConvertRet && i_SyncInterval <= 0))
+                {
+                    MessageBox.Show("请填入正确的自动同步设置");
+                    return;
+                }
+                if (radioButtonSyncInterval.Checked)
+                {
+                    str_AutoSyncFixedInterval = String.Empty;
+                }
+                else if (radioButtonFixedTime.Checked)
+                {
+                    str_SyncInterval = String.Empty;
+                }
+            }
+            bool bResult = Files_InfoDB.UpdatePairInfor(str_PairID, str_PairName, txtBoxFilterRule.Text, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, out str_outputMsg);
+            if (!bResult)
+            {
+                MessageBox.Show("更改配对失败，请检查输入并重试");
+                return;
+            }
+
+            string str_IsPausedOld = dataGridView1.SelectedRows[0].Cells["IsPaused"].Value.ToString();
+            bool bl_IsPausedOld = Boolean.Parse(str_IsPausedOld);
+            if (!bl_IsPausedOld.Equals(checkBoxPauseSync.Checked))
+            {
+                Files_InfoDB.PausePairAutoSync(str_PairID, out str_outputMsg);
+            }
+
+            list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "更改配对(" + str_PairName + ")");
             if (!String.IsNullOrEmpty(str_outputMsg))
             {
                 list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + str_outputMsg);
@@ -174,12 +226,14 @@ namespace FileSynchronizer
             string str_FilterRule = dataGridView1.SelectedRows[0].Cells["FilterRule"].Value.ToString();
             string str_AutoSyncInterval = dataGridView1.SelectedRows[0].Cells["AutoSyncInterval"].Value.ToString();
             string str_SyncDirection = dataGridView1.SelectedRows[0].Cells["SyncDirection"].Value.ToString();
-            
+            string str_AutoSyncFixedTime = dataGridView1.SelectedRows[0].Cells["AutoSyncFixedTime"].Value.ToString();
+            string str_IsPaused = dataGridView1.SelectedRows[0].Cells["IsPaused"].Value.ToString();
+
             txtBoxPairName.Text = str_PairName;
             txtBoxDir1.Text = str_PairDir1;
             txtBoxDir2.Text = str_PairDir2;
             txtBoxFilterRule.Text = str_FilterRule;
-            txtBoxSyncInterval.Text = str_AutoSyncInterval;
+            checkBoxPauseSync.Checked = Boolean.Parse(str_IsPaused);
             if (!String.IsNullOrEmpty(str_SyncDirection))
             {
                 comboBox1.SelectedIndex = Convert.ToInt32(str_SyncDirection);
@@ -194,6 +248,45 @@ namespace FileSynchronizer
                 CalcBKSpace(str_PairDir1, str_PairDir2);
                 cls_LogPairFile cls_LogPairFile = new cls_LogPairFile(str_PairName, false);
                 lblPairLogSize.Text = FileHelper.CalcFileSizeStr(cls_LogPairFile.LogFileFullName());
+
+                if (!String.IsNullOrEmpty(str_AutoSyncInterval))
+                {
+                    int i_AutoSyncInterval = Int32.Parse(str_AutoSyncInterval);
+                    if (i_AutoSyncInterval.Equals(0))
+                    {
+                        checkBoxRealTimeSync.Checked = true;
+                        checkBoxRealTimeSync_CheckedChanged(this, e);
+                        txtBoxSyncInterval.Clear();
+                    }
+                    else
+                    {
+                        checkBoxRealTimeSync.Checked = false;
+                        checkBoxRealTimeSync_CheckedChanged(this, e);
+
+                        //radioButtonFixedTime.Checked = false;
+                        txtBoxSyncInterval.Text = str_AutoSyncInterval;
+                    }
+                    radioButtonSyncInterval.Checked = true;
+                    txtBoxSyncInterval.Enabled = true;
+                    comBoxSyncDay.Enabled = false;
+                    timePickerSyncTime.Enabled = false;
+                    comBoxSyncDay.SelectedIndex = -1;
+                }
+                else if (!String.IsNullOrEmpty(str_AutoSyncFixedTime))
+                {
+                    checkBoxRealTimeSync.Checked = false;
+                    checkBoxRealTimeSync_CheckedChanged(this, e);
+                    string str_SyncDay = str_AutoSyncFixedTime.Split('|')[0];
+                    string str_SyncTime = str_AutoSyncFixedTime.Split('|')[1];
+                    //radioButtonSyncInterval.Checked = false;
+                    radioButtonFixedTime.Checked = true;
+                    comBoxSyncDay.Enabled = true;
+                    comBoxSyncDay.SelectedIndex = Int32.Parse(str_SyncDay);
+                    timePickerSyncTime.Enabled = true;
+                    timePickerSyncTime.Text = str_SyncTime;
+                    txtBoxSyncInterval.Clear();
+                    txtBoxSyncInterval.Enabled = false;
+                }
             }
             catch (Exception)
             {
@@ -305,6 +398,36 @@ namespace FileSynchronizer
             string str_PairName = txtBoxPairName.Text;
             cls_LogPairFile cls_LogPairFile = new cls_LogPairFile(str_PairName, true);
             lblPairLogSize.Text = FileHelper.CalcFileSizeStr(cls_LogPairFile.LogFileFullName());
+        }
+
+        private void radioButtonSyncInterval_CheckedChanged(object sender, EventArgs e)
+        {
+            txtBoxSyncInterval.Enabled = true;
+            comBoxSyncDay.Enabled = false;
+            timePickerSyncTime.Enabled = false;
+        }
+
+        private void radioButtonFixedTime_CheckedChanged(object sender, EventArgs e)
+        {
+            txtBoxSyncInterval.Enabled = false;
+            comBoxSyncDay.Enabled = true;
+            timePickerSyncTime.Enabled = true;
+        }
+
+        private void checkBoxRealTimeSync_CheckedChanged(object sender, EventArgs e)
+        {
+            radioButtonSyncInterval.Visible = !checkBoxRealTimeSync.Checked;
+            txtBoxSyncInterval.Visible = !checkBoxRealTimeSync.Checked;
+            radioButtonFixedTime.Visible = !checkBoxRealTimeSync.Checked;
+            comBoxSyncDay.Visible = !checkBoxRealTimeSync.Checked;
+            timePickerSyncTime.Visible = !checkBoxRealTimeSync.Checked;
+            checkBoxPauseSync.Visible = !checkBoxRealTimeSync.Checked;
+            if (checkBoxRealTimeSync.Checked)
+            {
+                checkBoxPauseSync.Checked = false;
+                txtBoxSyncInterval.Clear();
+                comBoxSyncDay.SelectedIndex = -1;
+            }
         }
     }
 }

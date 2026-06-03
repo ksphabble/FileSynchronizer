@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static FileSynchronizer.Local_Utilities;
 
 namespace FileSynchronizer
@@ -21,7 +22,6 @@ namespace FileSynchronizer
         private string g_sPairName;
         private string g_sDir1Path;
         private string g_sDir2Path;
-        private string g_sDirLastSyncTime;
         private PairStatus g_psPairStatus;
         private string g_sFilterRule;
         private int g_iAutoSyncInterval;
@@ -33,17 +33,17 @@ namespace FileSynchronizer
         private cls_Files_Info_Helper g_Files_Info;
         private bool g_ObjectsInforReady = false;
         private DateTime g_InitTime;
+        private bool g_LastSyncStatusNull = true;
 
         public bool ObjectsInforReadyIndc { get => g_ObjectsInforReady; }
 
-        public cls_Dir_Pair_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2, string sLastSyncDT, PairStatus pPairStatus, string sFilterRule, int iAutoSyncInterval, int iSyncDirection, bool bIsPaused)
+        public cls_Dir_Pair_Helper(string sPairID, string sPairName, string sDirPath1, string sDirPath2, PairStatus pPairStatus, string sFilterRule, int iAutoSyncInterval, int iSyncDirection, bool bIsPaused)
         {
             g_InitTime = DateTime.Now;
             g_sPairID = sPairID;
             g_sPairName = sPairName;
             g_sDir1Path = sDirPath1;
             g_sDir2Path = sDirPath2;
-            g_sDirLastSyncTime = sLastSyncDT;
             g_psPairStatus = pPairStatus;
             g_sFilterRule = sFilterRule;
             g_iAutoSyncInterval = iAutoSyncInterval;
@@ -54,6 +54,7 @@ namespace FileSynchronizer
             g_Files_Info.ObjectsInforReady += G_Files_Info_ObjectsInforReady;
             g_Files_Info.Dir1ObjectChanged += G_Files_Info_Dir1ObjectChanged;
             g_Files_Info.Dir2ObjectChanged += G_Files_Info_Dir2ObjectChanged;
+            g_LastSyncStatusNull = Files_InfoDB.CheckLastSyncNull(g_sPairID);
         }
         #endregion
 
@@ -62,7 +63,7 @@ namespace FileSynchronizer
         /// 分析文件夹配对
         /// </summary>
         /// <param name="IsAnalysisOnly"></param>
-        public DataTable AnalysisDirPair(bool IsAnalysisOnly)
+        public async Task<DataTable> AnalysisDirPair(bool IsAnalysisOnly)
         {
             #region Pre-Validation
             string str_StartOprMessage = "开始分析配对（" + g_sPairName + "）" + (Global_Settings.DevelopMode ? " --- 程序处于开发者模式，会导致此操作不能全部完成，请注意！" : "");
@@ -73,19 +74,16 @@ namespace FileSynchronizer
             g_bCancelRequested = false;
             OnPairStatusChange(PairStatus.ANALYSIS);
             string str_OutLogMsg = String.Empty;
-            DateTime dt_DirLastSyncTime;
             bool bFetchFileAndDirInfor = g_iAutoSyncInterval != 0;
-            bool bLastSyncStatus = DateTime.TryParse(g_sDirLastSyncTime, out dt_DirLastSyncTime);
-            if (!bLastSyncStatus)
+            if (g_LastSyncStatusNull)
             {
                 LogPairMessage(g_sPairName, "没有找到上次同步时间，首次分析同步需时较长，请耐心等待", true, true, GetTraceLevel(1));
-                dt_DirLastSyncTime = DateTime.MinValue;
             }
 
             //DIR1的子目录和文件信息
             LogPairMessage(g_sPairName, "开始获取DIR1（" + g_sDir1Path + "）的目录和文件信息", true, true, GetTraceLevel(2));
             //检查DIR1根目录是否存在，若不存在，则提示出错并停止分析
-            if (bLastSyncStatus && !Directory.Exists(g_sDir1Path))
+            if (!g_LastSyncStatusNull && !Directory.Exists(g_sDir1Path))
             {
                 LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录1可能出现问题，请检查，若目录内容为空，请忽略此提示", true, true, GetTraceLevel(1));
                 OnPairStatusChange(PairStatus.FREE);
@@ -93,22 +91,22 @@ namespace FileSynchronizer
             }
 
             string str_Dir1TableName = String.Join("_", g_sPairName, c_Dir1_Str, FileHelper.GetObjectNameFromPath(g_sDir1Path));
-            DirectoryInfo[] subDir1 = g_Files_Info.FetchDirectoryInfos1(bFetchFileAndDirInfor);
-            FileInfo[] fileInfos1 = g_Files_Info.FetchFileInfos1(bFetchFileAndDirInfor);
+            DirectoryInfo[] subDir1 = await g_Files_Info.FetchDirectoryInfos1(bFetchFileAndDirInfor);
+            FileInfo[] fileInfos1 = await g_Files_Info.FetchFileInfos1(bFetchFileAndDirInfor);
             DataTable dt_File1InforDB = Files_InfoDB.GetFileInfor(str_Dir1TableName, out str_OutLogMsg);
 
             //DIR2的子目录和文件信息
             LogPairMessage(g_sPairName, "开始获取DIR2（" + g_sDir2Path + "）的目录和文件信息", true, true, GetTraceLevel(2));
             //检查DIR2根目录是否存在，若不存在，则提示出错并停止分析
-            if (bLastSyncStatus && !Directory.Exists(g_sDir2Path))
+            if (!g_LastSyncStatusNull && !Directory.Exists(g_sDir2Path))
             {
                 LogPairMessage(g_sPairName, "配对（" + g_sPairName + "）的目录2可能出现问题，请检查，若目录内容为空，请忽略此提示", true, true, GetTraceLevel(1));
                 OnPairStatusChange(PairStatus.FREE);
                 return null;
             }
             string str_Dir2TableName = String.Join("_", g_sPairName, c_Dir2_Str, FileHelper.GetObjectNameFromPath(g_sDir2Path));
-            DirectoryInfo[] subDir2 = g_Files_Info.FetchDirectoryInfos2(bFetchFileAndDirInfor);
-            FileInfo[] fileInfos2 = g_Files_Info.FetchFileInfos2(bFetchFileAndDirInfor);
+            DirectoryInfo[] subDir2 = await g_Files_Info.FetchDirectoryInfos2(bFetchFileAndDirInfor);
+            FileInfo[] fileInfos2 = await g_Files_Info.FetchFileInfos2(bFetchFileAndDirInfor);
             DataTable dt_File2InforDB = Files_InfoDB.GetFileInfor(str_Dir2TableName, out str_OutLogMsg);
 
             int int_TotalFileFound = subDir1.Length + fileInfos1.Length + subDir2.Length + fileInfos2.Length + dt_File1InforDB.Rows.Count + dt_File2InforDB.Rows.Count;
@@ -988,7 +986,7 @@ namespace FileSynchronizer
                                 {
                                     if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                     }
                                 }
 
@@ -1008,12 +1006,13 @@ namespace FileSynchronizer
                                         if (!Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                         {
                                             LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                         }
                                         else
                                         {
                                             if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                             }
                                         }
                                     }
@@ -1061,7 +1060,7 @@ namespace FileSynchronizer
                                 {
                                     if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                     {
-                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                     }
                                 }
 
@@ -1080,12 +1079,13 @@ namespace FileSynchronizer
                                         if (!Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                         {
                                             LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                         }
                                         else
                                         {
                                             if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                             {
-                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                                LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                             }
                                         }
                                     }
@@ -1123,7 +1123,7 @@ namespace FileSynchronizer
                             {
                                 if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                 }
                             }
 
@@ -1147,12 +1147,13 @@ namespace FileSynchronizer
                                     if (!Files_InfoDB.UpdFileInfor(str_Dir2TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                     {
                                         LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                     }
                                     else
                                     {
                                         if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                         }
                                     }
                                 }
@@ -1188,7 +1189,7 @@ namespace FileSynchronizer
                             {
                                 if (!Files_InfoDB.AddSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, false, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                 }
                             }
 
@@ -1212,12 +1213,13 @@ namespace FileSynchronizer
                                     if (!Files_InfoDB.UpdFileInfor(str_Dir1TableName, str_FileName, str_FileToPath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_DatabaseErrorMsg))
                                     {
                                         LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                        LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                     }
                                     else
                                     {
                                         if (!Files_InfoDB.UpdSyncDetail(g_sPairName, str_FromFile, str_ToFile, int_FileDiffType, true, out str_DatabaseErrorMsg))
                                         {
-                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3));
+                                            LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                         }
                                     }
                                 }
@@ -1259,7 +1261,8 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1290,7 +1293,8 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1325,7 +1329,8 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1356,7 +1361,8 @@ namespace FileSynchronizer
                                 }
                                 if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_DatabaseErrorMsg))
                                 {
-                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(3));
+                                    LogPairMessage(g_sPairName, str_OngoingRecMsg + "失败", true, true, GetTraceLevel(1));
+                                    LogPairMessage(g_sPairName, str_DatabaseErrorMsg, true, true, GetTraceLevel(3), true);
                                 }
                                 bl_SyncRecordDone = true;
                             }
@@ -1819,10 +1825,14 @@ namespace FileSynchronizer
         {
             string str_OutLogMsg = String.Empty;
             //更新最后同步时间
-            bool bRet = Files_InfoDB.UpdatePairSyncStatus(g_sPairID, strDateTime, SyncSuccessfulIndc, out str_OutLogMsg);
-            if (!String.IsNullOrEmpty(str_OutLogMsg))
+            bool bRet = Files_InfoDB.UpdatePairSyncStatus(g_sPairID, g_sPairName, strDateTime, SyncSuccessfulIndc, out str_OutLogMsg);
+            if (!bRet)
             {
                 LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
+            }
+            if (g_LastSyncStatusNull && SyncSuccessfulIndc && bRet)
+            {
+                g_LastSyncStatusNull = false;
             }
             return bRet;
         }
@@ -1917,21 +1927,28 @@ namespace FileSynchronizer
         /// <summary>
         /// 刷新配对的文件夹/文件信息
         /// </summary>
-        public void RefreshFileAndDirInfo()
+        public async void RefreshFileAndDirInfo()
         {
             string str_LogMsgA = "开始刷新配对（" + g_sPairName + "）的文件夹/文件信息";
             LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(2));
             var dt_InitGapA = DateTime.Now;
 
-            g_Files_Info.FetchDirectoryInfos1(true);
-            g_Files_Info.FetchDirectoryInfos2(true);
-            g_Files_Info.FetchFileInfos1(true);
-            g_Files_Info.FetchFileInfos2(true);
+            List<Task> tasks = new List<Task>();
+            tasks.Add(Task.Run(() => g_Files_Info.FetchDirectoryInfos1(true)));
+            tasks.Add(Task.Run(() => g_Files_Info.FetchDirectoryInfos2(true)));
+            tasks.Add(Task.Run(() => g_Files_Info.FetchFileInfos1(true)));
+            tasks.Add(Task.Run(() => g_Files_Info.FetchFileInfos2(true)));
 
+            await Task.WhenAll(tasks);
             var dt_InitGapB = DateTime.Now.Subtract(dt_InitGapA);
             string str_LogMsgB = "刷新配对（" + g_sPairName + "）的文件夹/文件信息完成，花费" + dt_InitGapB.TotalSeconds.ToString() + "秒";
             LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(2));
             OnObjectsInforReady(str_LogMsgB);
+
+            //await g_Files_Info.FetchDirectoryInfos1(true);
+            //await g_Files_Info.FetchDirectoryInfos2(true);
+            //await g_Files_Info.FetchFileInfos1(true);
+            //await g_Files_Info.FetchFileInfos2(true);
         }
         #endregion
 

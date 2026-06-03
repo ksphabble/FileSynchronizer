@@ -133,6 +133,26 @@ namespace FileSynchronizer
             }
             return sql_out;
         }
+
+        public string SQL_DB_Upgrade_V3011a()
+        {
+            string sql_out = @"Alter TABLE DIRPAIR ADD COLUMN AutoSyncFixedTime TEXT(12)";
+            return sql_out;
+        }
+
+        public string SQL_DB_Upgrade_V3011b()
+        {
+            string sql_out = @"Alter TABLE DIRPAIR ADD COLUMN AutoSyncNextTime ";
+            if (m_DBType.Equals(DATABASE_TYPE.ACCESS))
+            {
+                sql_out += @"DATETIME";
+            }
+            else if (m_DBType.Equals(DATABASE_TYPE.SQLITE))
+            {
+                sql_out += @"VARCHAR";
+            }
+            return sql_out;
+        }
         #endregion
 
         #region Global_Settings Methods
@@ -189,19 +209,21 @@ namespace FileSynchronizer
             return sql_out;
         }
 
-        public string SQL_AddDirPairEnq(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection)
+        public string SQL_AddDirPairEnq(string str_PairName, string str_Dir1_Path, string str_Dir2_Path)
         {
             string sql_out = @"select * from DIRPAIR where PAIRNAME='" + str_PairName + "' AND DIR1='" + str_Dir1_Path + "' AND DIR2='" + str_Dir2_Path + "'";
             return sql_out;
         }
 
-        public string SQL_AddDirPairIns(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection)
+        public string SQL_AddDirPairIns(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, string str_AutoSyncFixedInterval, int bl_IsPaused)
         {
-            string sql_out = @"Insert Into DIRPAIR (PAIRNAME,DIR1,DIR2,LastSyncStatus,FilterRule,AutoSyncInterval,SyncDirection,IsPaused) values('" + str_PairName + "','" + str_Dir1_Path + "','" + str_Dir2_Path + "',true";
-            sql_out += String.IsNullOrEmpty(str_FilterRule) ? @",''" : (",'" + str_FilterRule + "'");
-            sql_out += String.IsNullOrEmpty(str_SyncInterval) ? @",0" : ("," + str_SyncInterval);
-            sql_out += String.IsNullOrEmpty(str_SyncDirection) ? @",0" : ("," + str_SyncDirection);
-            sql_out += @",0)";
+            string sql_out = @"Insert Into DIRPAIR (PAIRNAME,DIR1,DIR2,LastSyncStatus,FilterRule,AutoSyncInterval,SyncDirection,IsPaused,AutoSyncFixedTime) values(";
+            sql_out += @"'" + str_PairName + @"','" + str_Dir1_Path + @"','" + str_Dir2_Path + @"',true";
+            sql_out += String.IsNullOrEmpty(str_FilterRule) ? @",''" : (@",'" + str_FilterRule + @"'");
+            sql_out += String.IsNullOrEmpty(str_SyncInterval) ? @",null" : (@"," + str_SyncInterval);
+            sql_out += String.IsNullOrEmpty(str_SyncDirection) ? @",0" : (@"," + str_SyncDirection);
+            sql_out += @"," + bl_IsPaused.ToString();
+            sql_out += String.IsNullOrEmpty(str_AutoSyncFixedInterval) ? @",null)" : (@",'" + str_AutoSyncFixedInterval + @"')");
             return sql_out;
         }
 
@@ -217,10 +239,10 @@ namespace FileSynchronizer
             return sql_out;
         }
 
-        public string SQL_UpdatePairInfor(string str_PairID, string str_FilterRule, string str_SyncInterval, string str_SyncDirection)
+        public string SQL_UpdatePairInfor(string str_PairID, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, string str_AutoSyncFixedInterval)
         {
-            string sql_out = @"Update DIRPAIR set FilterRule='" + str_FilterRule + @"', AutoSyncInterval=" + (String.IsNullOrEmpty(str_SyncInterval) ? "0" : str_SyncInterval);
-            sql_out += @",SyncDirection=" + str_SyncDirection + @" where PK_PAIRID=" + str_PairID;
+            string sql_out = @"Update DIRPAIR set FilterRule='" + str_FilterRule + @"', AutoSyncInterval=" + (String.IsNullOrEmpty(str_SyncInterval) ? "null" : str_SyncInterval);
+            sql_out += @",SyncDirection=" + str_SyncDirection + @",AutoSyncFixedTime=" + (String.IsNullOrEmpty(str_AutoSyncFixedInterval) ? "null" : ("'" + str_AutoSyncFixedInterval + "'")) + @" where PK_PAIRID=" + str_PairID;
             return sql_out;
         }
 
@@ -229,11 +251,13 @@ namespace FileSynchronizer
             string sql_out = String.Empty;
             if (m_DBType.Equals(DATABASE_TYPE.ACCESS))
             {
-                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval>0 and (DateDiff(""n"",LastSyncDT,now)>AutoSyncInterval or LastSyncDT is null) and IsPaused=false";
+                //sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval>0 and (DateDiff(""n"",LastSyncDT,now)>AutoSyncInterval or LastSyncDT is null) and IsPaused=false";
+                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and IsPaused=false and AutoSyncNextTime is not null and DateDiff(""n"",AutoSyncNextTime,now)>0";
             }
             else if (m_DBType.Equals(DATABASE_TYPE.SQLITE))
             {
-                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval>0 and ((strftime('%s',datetime('now','localtime'))-strftime('%s',LastSyncDT))/60>=AutoSyncInterval or LastSyncDT is null) and IsPaused=false;";
+                //sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and AutoSyncInterval>0 and ((strftime('%s',datetime('now','localtime'))-strftime('%s',LastSyncDT))/60>=AutoSyncInterval or LastSyncDT is null) and IsPaused=false;";
+                sql_out = @"SELECT PK_PairID,PairName from DIRPAIR where LastSyncStatus=true and IsPaused=false and AutoSyncNextTime is not null and (strftime('%s',datetime('now','localtime'))-strftime('%s',AutoSyncNextTime))>0";
             }
             return sql_out;
         }
@@ -251,6 +275,28 @@ namespace FileSynchronizer
         public string SQL_PausePairAutoSync(string str_PairID)
         {
             string sql_out = @"Update DIRPAIR set IsPaused=iif(IsPaused,0,1) where PK_PAIRID=" + str_PairID;
+            return sql_out;
+        }
+
+        public string SQL_SetNextSyncTime(string str_PairName, string str_NextSyncTime)
+        {
+            string sql_out = @"Update DIRPAIR set AutoSyncNextTime=";
+            if (String.IsNullOrEmpty(str_NextSyncTime))
+            {
+                sql_out += @"null";
+            }
+            else
+            {
+                sql_out += @"'" + str_NextSyncTime + @"'";
+            }
+            sql_out += @" where PAIRNAME='" + str_PairName + "'";
+            return sql_out;
+        }
+
+        public string SQL_CheckLastSyncNull(string str_PairID)
+        {
+            string sql_out = String.Empty;
+            sql_out = @"SELECT iif(LastSyncDT is null,'true',iif(LastSyncDT='','true','false')) from DIRPAIR where PK_PAIRID=" + str_PairID;
             return sql_out;
         }
         #endregion

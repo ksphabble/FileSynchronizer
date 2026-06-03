@@ -24,6 +24,11 @@ namespace FileSynchronizer
             if (Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.SQLITE)
             {
                 lblCurrentDB.Text = lblCurrentDB.Text + @"SQLITE";
+                comboxDBMigration.Enabled = false;
+                comboxDBMigration.Visible = false;
+                btnStartDBMigration.Enabled = false;
+                btnStartDBMigration.Visible = false;
+                label5.Visible = false;
             }
             else if (Files_InfoDB.DBType == cls_SQLBuilder.DATABASE_TYPE.ACCESS)
             {

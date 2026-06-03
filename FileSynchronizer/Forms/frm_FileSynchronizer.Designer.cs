@@ -63,6 +63,7 @@
             btnTest = new System.Windows.Forms.Button();
             btnOpenPairLog = new System.Windows.Forms.Button();
             timerAutoUpdate = new System.Windows.Forms.Timer(components);
+            tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             tabControl1.SuspendLayout();
             tabPageMain.SuspendLayout();
             NotifyMenu.SuspendLayout();
@@ -70,6 +71,7 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             groupBox1.SuspendLayout();
             panel1.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // tabControl1
@@ -81,7 +83,7 @@
             tabControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(1055, 411);
+            tabControl1.Size = new System.Drawing.Size(1055, 423);
             tabControl1.TabIndex = 3;
             tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
             // 
@@ -93,7 +95,7 @@
             tabPageMain.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tabPageMain.Name = "tabPageMain";
             tabPageMain.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            tabPageMain.Size = new System.Drawing.Size(1047, 383);
+            tabPageMain.Size = new System.Drawing.Size(1047, 395);
             tabPageMain.TabIndex = 0;
             tabPageMain.Text = "程序日志";
             tabPageMain.UseVisualStyleBackColor = true;
@@ -106,18 +108,18 @@
             TxtProgramLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             TxtProgramLog.Name = "TxtProgramLog";
             TxtProgramLog.ReadOnly = true;
-            TxtProgramLog.Size = new System.Drawing.Size(1041, 375);
+            TxtProgramLog.Size = new System.Drawing.Size(1041, 387);
             TxtProgramLog.TabIndex = 0;
             TxtProgramLog.TabStop = false;
             TxtProgramLog.Text = "";
             // 
             // btnSync
             // 
-            btnSync.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnSync.Location = new System.Drawing.Point(240, 679);
-            btnSync.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnSync.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnSync.Location = new System.Drawing.Point(210, 0);
+            btnSync.Margin = new System.Windows.Forms.Padding(0);
             btnSync.Name = "btnSync";
-            btnSync.Size = new System.Drawing.Size(109, 34);
+            btnSync.Size = new System.Drawing.Size(105, 40);
             btnSync.TabIndex = 4;
             btnSync.Text = "同步当前配对";
             btnSync.UseVisualStyleBackColor = true;
@@ -125,11 +127,11 @@
             // 
             // btnAnalysis
             // 
-            btnAnalysis.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnAnalysis.Location = new System.Drawing.Point(701, 679);
-            btnAnalysis.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnAnalysis.Location = new System.Drawing.Point(630, 0);
+            btnAnalysis.Margin = new System.Windows.Forms.Padding(0);
             btnAnalysis.Name = "btnAnalysis";
-            btnAnalysis.Size = new System.Drawing.Size(109, 34);
+            btnAnalysis.Size = new System.Drawing.Size(105, 40);
             btnAnalysis.TabIndex = 5;
             btnAnalysis.Text = "分析当前配对";
             btnAnalysis.UseVisualStyleBackColor = true;
@@ -187,11 +189,11 @@
             // 
             // btnClearLog
             // 
-            btnClearLog.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnClearLog.Location = new System.Drawing.Point(10, 679);
-            btnClearLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnClearLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnClearLog.Location = new System.Drawing.Point(0, 0);
+            btnClearLog.Margin = new System.Windows.Forms.Padding(0);
             btnClearLog.Name = "btnClearLog";
-            btnClearLog.Size = new System.Drawing.Size(109, 34);
+            btnClearLog.Size = new System.Drawing.Size(105, 40);
             btnClearLog.TabIndex = 17;
             btnClearLog.Text = "清空日志";
             btnClearLog.UseVisualStyleBackColor = true;
@@ -278,11 +280,11 @@
             // 
             // btnStopOpr
             // 
-            btnStopOpr.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnStopOpr.Location = new System.Drawing.Point(471, 679);
-            btnStopOpr.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnStopOpr.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnStopOpr.Location = new System.Drawing.Point(420, 0);
+            btnStopOpr.Margin = new System.Windows.Forms.Padding(0);
             btnStopOpr.Name = "btnStopOpr";
-            btnStopOpr.Size = new System.Drawing.Size(109, 34);
+            btnStopOpr.Size = new System.Drawing.Size(105, 40);
             btnStopOpr.TabIndex = 20;
             btnStopOpr.Text = "停止所有操作";
             btnStopOpr.UseVisualStyleBackColor = true;
@@ -290,11 +292,11 @@
             // 
             // btnSyncAll
             // 
-            btnSyncAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnSyncAll.Location = new System.Drawing.Point(355, 679);
-            btnSyncAll.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnSyncAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnSyncAll.Location = new System.Drawing.Point(315, 0);
+            btnSyncAll.Margin = new System.Windows.Forms.Padding(0);
             btnSyncAll.Name = "btnSyncAll";
-            btnSyncAll.Size = new System.Drawing.Size(109, 34);
+            btnSyncAll.Size = new System.Drawing.Size(105, 40);
             btnSyncAll.TabIndex = 21;
             btnSyncAll.Text = "同步所有配对";
             btnSyncAll.UseVisualStyleBackColor = true;
@@ -302,11 +304,11 @@
             // 
             // btnPauseSync
             // 
-            btnPauseSync.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnPauseSync.Location = new System.Drawing.Point(586, 679);
-            btnPauseSync.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnPauseSync.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnPauseSync.Location = new System.Drawing.Point(525, 0);
+            btnPauseSync.Margin = new System.Windows.Forms.Padding(0);
             btnPauseSync.Name = "btnPauseSync";
-            btnPauseSync.Size = new System.Drawing.Size(109, 34);
+            btnPauseSync.Size = new System.Drawing.Size(105, 40);
             btnPauseSync.TabIndex = 23;
             btnPauseSync.Text = "暂停自动同步";
             btnPauseSync.UseVisualStyleBackColor = true;
@@ -354,19 +356,19 @@
             panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             panel1.Controls.Add(tabControl1);
             panel1.Controls.Add(groupBox1);
-            panel1.Location = new System.Drawing.Point(10, 30);
-            panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            panel1.Location = new System.Drawing.Point(10, 74);
+            panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(1055, 641);
+            panel1.Size = new System.Drawing.Size(1055, 653);
             panel1.TabIndex = 24;
             // 
             // btnTest
             // 
-            btnTest.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnTest.Location = new System.Drawing.Point(816, 679);
-            btnTest.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnTest.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnTest.Location = new System.Drawing.Point(735, 0);
+            btnTest.Margin = new System.Windows.Forms.Padding(0);
             btnTest.Name = "btnTest";
-            btnTest.Size = new System.Drawing.Size(109, 34);
+            btnTest.Size = new System.Drawing.Size(105, 40);
             btnTest.TabIndex = 25;
             btnTest.Text = "测试按钮";
             btnTest.UseVisualStyleBackColor = true;
@@ -374,11 +376,11 @@
             // 
             // btnOpenPairLog
             // 
-            btnOpenPairLog.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnOpenPairLog.Location = new System.Drawing.Point(125, 679);
-            btnOpenPairLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnOpenPairLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            btnOpenPairLog.Location = new System.Drawing.Point(105, 0);
+            btnOpenPairLog.Margin = new System.Windows.Forms.Padding(0);
             btnOpenPairLog.Name = "btnOpenPairLog";
-            btnOpenPairLog.Size = new System.Drawing.Size(109, 34);
+            btnOpenPairLog.Size = new System.Drawing.Size(105, 40);
             btnOpenPairLog.TabIndex = 26;
             btnOpenPairLog.Text = "打开日志";
             btnOpenPairLog.UseVisualStyleBackColor = true;
@@ -388,22 +390,43 @@
             // 
             timerAutoUpdate.Tick += timerAutoUpdate_Tick;
             // 
+            // tableLayoutPanel1
+            // 
+            tableLayoutPanel1.ColumnCount = 10;
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.Controls.Add(btnClearLog, 0, 0);
+            tableLayoutPanel1.Controls.Add(btnOpenPairLog, 1, 0);
+            tableLayoutPanel1.Controls.Add(btnTest, 7, 0);
+            tableLayoutPanel1.Controls.Add(btnSync, 2, 0);
+            tableLayoutPanel1.Controls.Add(btnSyncAll, 3, 0);
+            tableLayoutPanel1.Controls.Add(btnPauseSync, 5, 0);
+            tableLayoutPanel1.Controls.Add(btnAnalysis, 6, 0);
+            tableLayoutPanel1.Controls.Add(btnStopOpr, 4, 0);
+            tableLayoutPanel1.Location = new System.Drawing.Point(10, 30);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            tableLayoutPanel1.Size = new System.Drawing.Size(1055, 40);
+            tableLayoutPanel1.TabIndex = 27;
+            // 
             // frm_FileSynchronizer
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.SystemColors.Window;
             ClientSize = new System.Drawing.Size(1076, 732);
-            Controls.Add(btnOpenPairLog);
-            Controls.Add(btnTest);
+            Controls.Add(tableLayoutPanel1);
             Controls.Add(panel1);
-            Controls.Add(btnPauseSync);
-            Controls.Add(btnSyncAll);
-            Controls.Add(btnStopOpr);
             Controls.Add(PgmMenu);
-            Controls.Add(btnClearLog);
-            Controls.Add(btnAnalysis);
-            Controls.Add(btnSync);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = PgmMenu;
             Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -421,6 +444,7 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             groupBox1.ResumeLayout(false);
             panel1.ResumeLayout(false);
+            tableLayoutPanel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
 
@@ -460,6 +484,7 @@
         private System.Windows.Forms.ToolStripMenuItem 项目Github主页ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 检查更新ToolStripMenuItem;
         private System.Windows.Forms.Timer timerAutoUpdate;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

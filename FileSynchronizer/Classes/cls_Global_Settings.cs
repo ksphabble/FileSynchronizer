@@ -100,6 +100,12 @@ namespace FileSynchronizer
             }
             return true;
         }
+
+        public static bool HasDBVersionReached(int TargetVersion)
+        {
+            int m_DBVersion = Int32.Parse(DBVersion.Replace(".", ""));
+            return m_DBVersion >= TargetVersion;
+        }
         #endregion
     }
 }

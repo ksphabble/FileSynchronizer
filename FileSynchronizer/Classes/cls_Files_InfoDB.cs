@@ -214,15 +214,14 @@ namespace FileSynchronizer
                     string str_SyncDirection = dataRow.ItemArray[8].ToString();
                     int int_SyncDirection = 0;
                     if (!String.IsNullOrEmpty(str_SyncDirection)) int_SyncDirection = Convert.ToInt32(str_SyncDirection);
-                    int int_AutoSyncInterval = 0;
-                    if (!Int32.TryParse(str_AutoSyncInterval, out int_AutoSyncInterval)) int_AutoSyncInterval = 0;
                     string str_IsPaused = dataRow.ItemArray[9].ToString();
                     bool bl_IsPaused = Boolean.Parse(str_IsPaused);
+                    string str_AutoSyncFixedInterval = dataRow.ItemArray[10].ToString();
 
                     //添加配对信息至新数据库
                     if (ToDatabaseType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
                     {
-                        cls_Files_InfoDB_ACCESS.AddDirPair(str_PairName, str_Dir1Path, str_Dir2Path, str_FilterRule, str_AutoSyncInterval, str_SyncDirection);
+                        cls_Files_InfoDB_ACCESS.AddDirPair(str_PairName, str_Dir1Path, str_Dir2Path, str_FilterRule, str_AutoSyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, bl_IsPaused ? 1 : 0);
                         DataTable dataTable = cls_Files_InfoDB_ACCESS.GetDirPairInfor(str_PairName);
                         str_PairID = dataTable.Rows[0][0].ToString();
                         if (bl_IsPaused)
@@ -230,7 +229,7 @@ namespace FileSynchronizer
                     }
                     else if (ToDatabaseType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
                     {
-                        cls_Files_InfoDB_SQLITE.AddDirPair(str_PairName, str_Dir1Path, str_Dir2Path, str_FilterRule, str_AutoSyncInterval, str_SyncDirection);
+                        cls_Files_InfoDB_SQLITE.AddDirPair(str_PairName, str_Dir1Path, str_Dir2Path, str_FilterRule, str_AutoSyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, bl_IsPaused ? 1 : 0);
                         DataTable dataTable = cls_Files_InfoDB_SQLITE.GetDirPairInfor(str_PairName);
                         str_PairID = dataTable.Rows[0][0].ToString();
                         if (bl_IsPaused)
@@ -301,6 +300,16 @@ namespace FileSynchronizer
                 str_OutMsg = "配对获取失败！";
                 System.IO.File.Delete(str_NewDBFileName);
                 return false;
+            }
+
+            //Step 4: 生成SyncDetail表
+            if (ToDatabaseType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                cls_Files_InfoDB_ACCESS.DB_Upgrade_V2101(1001);
+            }
+            else if (ToDatabaseType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                cls_Files_InfoDB_SQLITE.DB_Upgrade_V2101(1001);
             }
 
             return true;
@@ -496,15 +505,25 @@ namespace FileSynchronizer
             }
         }
 
-        public static bool AddDirPair(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection)
+        public static bool AddDirPair(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, string str_AutoSyncFixedInterval, int bl_IsPaused)
         {
             if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
             {
-                return cls_Files_InfoDB_ACCESS.AddDirPair(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection);
+                bool bRet1 = cls_Files_InfoDB_ACCESS.AddDirPair(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, bl_IsPaused);
+                return bRet1;
             }
             else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
             {
-                return cls_Files_InfoDB_SQLITE.AddDirPair(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection);
+                bool bRet1 = cls_Files_InfoDB_SQLITE.AddDirPair(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, bl_IsPaused);
+                if (bRet1)
+                {
+                    string str_OutMsg = String.Empty;
+                    return SetNextSyncTime(str_PairName, out str_OutMsg);
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -528,7 +547,7 @@ namespace FileSynchronizer
             }
         }
 
-        public static bool UpdatePairSyncStatus(string str_PairID, string str_LastSyncDT, bool bl_SyncSuccessfulIndc, out string OutputMsg)
+        public static bool UpdatePairSyncStatus(string str_PairID, string str_PairName, string str_LastSyncDT, bool bl_SyncSuccessfulIndc, out string OutputMsg)
         {
             OutputMsg = String.Empty;
             if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
@@ -537,7 +556,15 @@ namespace FileSynchronizer
             }
             else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
             {
-                return cls_Files_InfoDB_SQLITE.UpdatePairSyncStatus(str_PairID, str_LastSyncDT, bl_SyncSuccessfulIndc, out OutputMsg);
+                bool bRet1 = cls_Files_InfoDB_SQLITE.UpdatePairSyncStatus(str_PairID, str_LastSyncDT, bl_SyncSuccessfulIndc, out OutputMsg);
+                if (bRet1)
+                {
+                    return SetNextSyncTime(str_PairName, out OutputMsg);
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -545,16 +572,24 @@ namespace FileSynchronizer
             }
         }
 
-        public static bool UpdatePairInfor(string str_PairID, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, out string OutputMsg)
+        public static bool UpdatePairInfor(string str_PairID, string str_PairName, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, string str_AutoSyncFixedInterval, out string OutputMsg)
         {
             OutputMsg = String.Empty;
             if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
             {
-                return cls_Files_InfoDB_ACCESS.UpdatePairInfor(str_PairID, str_FilterRule, str_SyncInterval, str_SyncDirection, out OutputMsg);
+                return cls_Files_InfoDB_ACCESS.UpdatePairInfor(str_PairID, str_FilterRule, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, out OutputMsg);
             }
             else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
             {
-                return cls_Files_InfoDB_SQLITE.UpdatePairInfor(str_PairID, str_FilterRule, str_SyncInterval, str_SyncDirection, out OutputMsg);
+                bool bRet1 = cls_Files_InfoDB_SQLITE.UpdatePairInfor(str_PairID, str_FilterRule, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, out OutputMsg);
+                if (bRet1)
+                {
+                    return SetNextSyncTime(str_PairName, out OutputMsg);
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -590,20 +625,119 @@ namespace FileSynchronizer
             }
         }
 
-        public static bool PausePairAutoSync(string str_PairName, out string OutputMsg)
+        public static bool PausePairAutoSync(string str_PairID, out string OutputMsg)
         {
             OutputMsg = String.Empty;
             if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
             {
-                return cls_Files_InfoDB_ACCESS.PausePairAutoSync(str_PairName, out OutputMsg);
+                return cls_Files_InfoDB_ACCESS.PausePairAutoSync(str_PairID, out OutputMsg);
             }
             else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
             {
-                return cls_Files_InfoDB_SQLITE.PausePairAutoSync(str_PairName, out OutputMsg);
+                return cls_Files_InfoDB_SQLITE.PausePairAutoSync(str_PairID, out OutputMsg);
             }
             else
             {
                 return false;
+            }
+        }
+
+        private static bool SetNextSyncTime(string str_PairName, out string OutputMsg)
+        {
+            try
+            {
+                OutputMsg = String.Empty;
+                DataTable dt_PairInfor = GetDirPairInfor(str_PairName);
+                string str_LastSyncDT = dt_PairInfor.Rows[0]["LastSyncDT"].ToString();
+                string str_AutoSyncInterval = dt_PairInfor.Rows[0]["AutoSyncInterval"].ToString();
+                string str_AutoSyncFixedTime = dt_PairInfor.Rows[0]["AutoSyncFixedTime"].ToString();
+                DateTime dt_LastSyncDT = String.IsNullOrEmpty(str_LastSyncDT) ? DateTime.Now : DateTime.Parse(str_LastSyncDT);
+
+                string str_NextSyncTime;
+                if (!String.IsNullOrEmpty(str_AutoSyncInterval))
+                {
+                    int i_AutoSyncInterval = Int32.Parse(str_AutoSyncInterval);
+                    if (i_AutoSyncInterval > 0)
+                    {
+                        DateTime dt_NextSyncTime = dt_LastSyncDT.AddMinutes(i_AutoSyncInterval);
+                        str_NextSyncTime = dt_NextSyncTime.ToString(DBDateTimeFormat);
+                    }
+                    else
+                    {
+                        str_NextSyncTime = String.Empty;
+                    }
+                }
+                else if (!String.IsNullOrEmpty(str_AutoSyncFixedTime))
+                {
+                    string str_SyncDay = str_AutoSyncFixedTime.Split('|')[0];
+                    string str_SyncTime = str_AutoSyncFixedTime.Split('|')[1];
+                    string[] arr_SyncTime = str_SyncTime.Split(":");
+                    int i_SyncDay = Int32.Parse(str_SyncDay);
+                    DateTime dt_NextSyncDateTime = dt_LastSyncDT.Date.Add(new TimeSpan(Int32.Parse(arr_SyncTime[0]), Int32.Parse(arr_SyncTime[1]), Int32.Parse(arr_SyncTime[2])));
+
+                    if (i_SyncDay.Equals(0))
+                    {
+                        if (dt_NextSyncDateTime < DateTime.Now)
+                        {
+                            dt_NextSyncDateTime = dt_NextSyncDateTime.AddDays(1);
+                        }
+                        str_NextSyncTime = dt_NextSyncDateTime.ToString(DBDateTimeFormat);
+                    }
+                    else if (i_SyncDay > 0)
+                    {
+                        int i_LastSyncDOW = ((int)dt_LastSyncDT.DayOfWeek);
+                        int i_DayGap = i_SyncDay - i_LastSyncDOW;
+
+                        dt_NextSyncDateTime = dt_NextSyncDateTime.AddDays(i_DayGap);
+                        if (dt_NextSyncDateTime < DateTime.Now)
+                        {
+                            dt_NextSyncDateTime = dt_NextSyncDateTime.AddDays(7);
+                        }
+                        str_NextSyncTime = dt_NextSyncDateTime.ToString(DBDateTimeFormat);
+                    }
+                    else
+                    {
+                        str_NextSyncTime = String.Empty;
+                    }
+                }
+                else
+                {
+                    str_NextSyncTime = String.Empty;
+                }
+
+                if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+                {
+                    return cls_Files_InfoDB_ACCESS.SetNextSyncTime(str_PairName, str_NextSyncTime, out OutputMsg);
+                }
+                else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+                {
+                    return cls_Files_InfoDB_SQLITE.SetNextSyncTime(str_PairName, str_NextSyncTime, out OutputMsg);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                OutputMsg = ex.Message;
+                return false;
+            }
+        }
+
+        public static bool CheckLastSyncNull(string str_PairID)
+        {
+            if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.ACCESS))
+            {
+                return cls_Files_InfoDB_ACCESS.CheckLastSyncNull(str_PairID);
+            }
+            else if (DBType.Equals(cls_SQLBuilder.DATABASE_TYPE.SQLITE))
+            {
+                return cls_Files_InfoDB_SQLITE.CheckLastSyncNull(str_PairID);
+            }
+            else
+            {
+                return true;
             }
         }
         #endregion

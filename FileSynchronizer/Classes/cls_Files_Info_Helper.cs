@@ -1,6 +1,7 @@
 ﻿using Common.Components;
 using D2Phap.FileWatcherEx;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using static FileSynchronizer.Local_Utilities;
@@ -98,8 +99,13 @@ namespace FileSynchronizer
             //thread2.IsBackground = true;
             //thread2.Start(2);
 
-            await Task.Run(() => LoadObjects1(2));
-            await Task.Run(() => LoadObjects2(2));
+            //await Task.Run(() => LoadObjects1(2));
+            //await Task.Run(() => LoadObjects2(2));
+
+            List<Task> tasks = new List<Task>();
+            tasks.Add(Task.Run(() => LoadObjects1(2)));
+            tasks.Add(Task.Run(() => LoadObjects2(2)));
+            await Task.WhenAll(tasks);
 
             bool bObjectInfoReady = false;
             while (!bObjectInfoReady)
@@ -231,38 +237,38 @@ namespace FileSynchronizer
         #endregion
 
         #region 公有方法
-        public DirectoryInfo[] FetchDirectoryInfos1(bool bIsRefresh)
+        public async Task<DirectoryInfo[]> FetchDirectoryInfos1(bool bIsRefresh)
         {
             if (g_subDir1 == null || bIsRefresh)
             {
-                LoadObjects1(0);
+                await Task.Run(() => LoadObjects1(0));
             }
             return g_subDir1;
         }
 
-        public DirectoryInfo[] FetchDirectoryInfos2(bool bIsRefresh)
+        public async Task<DirectoryInfo[]> FetchDirectoryInfos2(bool bIsRefresh)
         {
             if (g_subDir2 == null || bIsRefresh)
             {
-                LoadObjects2(0);
+                await Task.Run(() => LoadObjects2(0));
             }
             return g_subDir2;
         }
 
-        public FileInfo[] FetchFileInfos1(bool bIsRefresh)
+        public async Task<FileInfo[]> FetchFileInfos1(bool bIsRefresh)
         {
             if (g_fileInfos1 == null || bIsRefresh)
             {
-                LoadObjects1(1);
+                await Task.Run(() => LoadObjects1(1));
             }
             return g_fileInfos1;
         }
 
-        public FileInfo[] FetchFileInfos2(bool bIsRefresh)
+        public async Task<FileInfo[]> FetchFileInfos2(bool bIsRefresh)
         {
             if (g_fileInfos2 == null || bIsRefresh)
             {
-                LoadObjects2(1);
+                await Task.Run(() => LoadObjects2(1));
             }
             return g_fileInfos2;
         }

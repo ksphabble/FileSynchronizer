@@ -75,19 +75,24 @@ namespace FileSynchronizer
             {
                 string str_PairName = tabControl1.SelectedTab.Name;
                 g_sSelectedPairName = str_PairName;
+                LogProgramMessage("Program - tabControl1_SelectedIndexChanged A - " + str_PairName, true, true, GetTraceLevel(4), true);
                 DataRow _dr = GetPairInfor(str_PairName);
                 if (_dr == null)
                 {
                     LogProgramMessage("没有找到配对（" + str_PairName + "）的信息", true, true, GetTraceLevel(1));
                     return;
                 }
+                LogProgramMessage("Program - tabControl1_SelectedIndexChanged B - " + str_PairName, true, true, GetTraceLevel(4), true);
 
                 string str_AutoSyncInterval = _dr.ItemArray[7].ToString();
                 int int_AutoSyncInterval = 0;
-                if (!Int32.TryParse(str_AutoSyncInterval, out int_AutoSyncInterval)) int_AutoSyncInterval = 0;
-                string str_IsPausedSync = _dr.ItemArray[9].ToString();
-
+                if (!Int32.TryParse(str_AutoSyncInterval, out int_AutoSyncInterval))
+                {
+                    int_AutoSyncInterval = Int32.MinValue;
+                }
                 btnPauseSync.Visible = int_AutoSyncInterval != 0;
+
+                string str_IsPausedSync = _dr.ItemArray[9].ToString();
                 if (!Boolean.Parse(str_IsPausedSync))
                 {
                     btnPauseSync.Text = "暂停自动同步";
@@ -310,7 +315,7 @@ namespace FileSynchronizer
                     {
                         LogProgramMessage("执行每日自动清除界面日志", true, true, GetTraceLevel(3));
                         ClearAllLogs();
-                        RefreshAllFileAndDirInfo();
+                        Task.Run(() => RefreshAllFileAndDirInfo());
                     }
                 }
             }
@@ -442,9 +447,11 @@ namespace FileSynchronizer
 
             if (g_dDirPair == null)
             {
+                LogProgramMessage("Program - RebindPairTable A", true, true, GetTraceLevel(4), true);
                 g_dDirPair = new DataTable();
                 bl_IsFirstGetDirPair = true;
             }
+
             DataTable dt_Temp = g_dDirPair.Copy();
             try
             {
@@ -461,22 +468,32 @@ namespace FileSynchronizer
                 bool bl_IsDirPairSame = IsDirPairSame(g_dDirPair, dt_Temp, out bl_IsOnlyRefreshGrid);
                 if (bl_IsForceRefresh || !bl_IsDirPairSame)
                 {
+                    LogProgramMessage("Program - RebindPairTable C", true, true, GetTraceLevel(4), true);
                     if (bl_IsForceRefresh || !bl_IsOnlyRefreshGrid)
                     {
-                        BindDirPairToTabCntl();
+                        //BindDirPairToTabCntl();
+                        Thread thread = new Thread(BindDirPairToTabCntl);
+                        thread.IsBackground = true;
+                        thread.Start();
                     }
 
                     //生成、绑定至列表
                     if (bl_IsFirstGetDirPair)
                     {
-                        CreatePairToGridView();
+                        //CreatePairToGridView();
+                        Thread thread = new Thread(CreatePairToGridView);
+                        thread.IsBackground = true;
+                        thread.Start();
                     }
                     else
                     {
-                        BindPairToGridView();
+                        //BindPairToGridView();
+                        Thread thread = new Thread(BindPairToGridView);
+                        thread.IsBackground = true;
+                        thread.Start();
                     }
                 }
-                tabControl1_SelectedIndexChanged(this, new EventArgs());
+                //tabControl1_SelectedIndexChanged(this, new EventArgs());
             }
             catch (Exception ex)
             {
@@ -515,58 +532,58 @@ namespace FileSynchronizer
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new MethodInvoker(delegate { BindDirPairToTabCntl(); }));
-                return;
+                this.Invoke((MethodInvoker)delegate ()
+                {
+                    BindDirPairToTabCntl();
+                });
             }
-
-            int str_SlectedTabIdx = tabControl1.SelectedIndex;
-
-            for (int i = tabControl1.Controls.Count - 1; i > 0; i--)
+            else
             {
-                tabControl1.Controls[i].Dispose();
-            }
+                try
+                {
+                    int str_SlectedTabIdx = tabControl1.SelectedIndex;
 
-            if (g_dDirPair == null) return;
-            if (g_dDirPair.Rows.Count.Equals(0))
-            {
-                LogProgramMessage("没有找到任何配对信息，请先到“程序-管理目录配对”窗口添加配对", true, true, GetTraceLevel(1));
-                return;
-            }
+                    for (int i = tabControl1.Controls.Count - 1; i > 0; i--)
+                    {
+                        tabControl1.Controls[i].Dispose();
+                    }
 
-            DataTable dt_Temp = g_dDirPair.Copy();
-            foreach (DataRow dataRow in dt_Temp.Rows)
-            {
-                string str_PairID = dataRow.ItemArray[0].ToString();
-                string str_PairName = dataRow.ItemArray[1].ToString();
-                string str_Dir1Path = dataRow.ItemArray[2].ToString();
-                string str_Dir2Path = dataRow.ItemArray[3].ToString();
-                string str_LastSyncTime = dataRow.ItemArray[4].ToString();
-                string str_FilterRule = dataRow.ItemArray[6].ToString();
-                string str_AutoSyncInterval = dataRow.ItemArray[7].ToString();
-                string str_SyncDirection = dataRow.ItemArray[8].ToString();
-                string str_IsPaused = dataRow.ItemArray[9].ToString();
-                int int_SyncDirection = 0;
-                if (!String.IsNullOrEmpty(str_SyncDirection)) int_SyncDirection = Convert.ToInt32(str_SyncDirection);
-                int int_AutoSyncInterval = 0;
-                if (!Int32.TryParse(str_AutoSyncInterval, out int_AutoSyncInterval)) int_AutoSyncInterval = 0;
-                bool bl_IsPaused = false;
-                if (!Boolean.TryParse(str_IsPaused, out bl_IsPaused)) bl_IsPaused = false;
+                    if (g_dDirPair == null) return;
+                    if (g_dDirPair.Rows.Count.Equals(0))
+                    {
+                        LogProgramMessage("没有找到任何配对信息，请先到“程序-管理目录配对”窗口添加配对", true, true, GetTraceLevel(1));
+                        return;
+                    }
 
-                TabPage tabPageDirPair = new TabPage(str_PairName);
-                tabPageDirPair.Tag = str_PairID;
-                tabPageDirPair.Name = str_PairName;
-                ctrl_PairPanal PairPanal = new ctrl_PairPanal(str_PairID, str_PairName, str_Dir1Path, str_Dir2Path, str_LastSyncTime, str_FilterRule, int_AutoSyncInterval, int_SyncDirection, bl_IsPaused, Files_InfoDB.DBDateTimeFormat) { Dock = DockStyle.Fill };
-                PairPanal.OperationStarted += PairPanal_OperationStarted;
-                PairPanal.OperationDone += PairPanal_OperationDone;
-                PairPanal.ObjectsInforReady += PairPanal_ObjectsInforReady;
-                tabPageDirPair.Controls.Add(PairPanal);
-                tabControl1.Controls.Add(tabPageDirPair);
-                //tabControl1.Refresh();
-            }
+                    DataTable dt_Temp = g_dDirPair.Copy();
+                    foreach (DataRow dataRow in dt_Temp.Rows)
+                    {
+                        string str_PairID = dataRow.ItemArray[0].ToString();
+                        string str_PairName = dataRow.ItemArray[1].ToString();
 
-            if (tabControl1.TabCount > str_SlectedTabIdx)
-            {
-                tabControl1.SelectedIndex = str_SlectedTabIdx;
+                        TabPage tabPageDirPair = new TabPage(str_PairName);
+                        tabPageDirPair.Tag = str_PairID;
+                        tabPageDirPair.Name = str_PairName;
+                        ctrl_PairPanal PairPanal = new ctrl_PairPanal(dataRow, Files_InfoDB.DBDateTimeFormat) { Dock = DockStyle.Fill };
+                        PairPanal.OperationStarted += PairPanal_OperationStarted;
+                        PairPanal.OperationDone += PairPanal_OperationDone;
+                        PairPanal.ObjectsInforReady += PairPanal_ObjectsInforReady;
+                        tabPageDirPair.Controls.Add(PairPanal);
+                        tabControl1.Controls.Add(tabPageDirPair);
+                        PairPanal.InitElements();
+                        //Thread.Sleep(100);
+                        //tabControl1.Refresh();
+                    }
+
+                    if (tabControl1.TabCount > str_SlectedTabIdx)
+                    {
+                        tabControl1.SelectedIndex = str_SlectedTabIdx;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogProgramMessage(ex.Message, true, true, GetTraceLevel(5), true);
+                }
             }
         }
 
@@ -589,25 +606,43 @@ namespace FileSynchronizer
         {
             if (g_dDirPair == null) return;
 
-            dataGridView1.DataSource = g_dDirPair;
-            dataGridView1.Columns[0].Visible = false;
-            dataGridView1.Columns[1].HeaderText = "配对名称";
-            dataGridView1.Columns[1].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView1.Columns[2].HeaderText = "目录1";
-            dataGridView1.Columns[2].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView1.Columns[3].HeaderText = "目录2";
-            dataGridView1.Columns[3].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView1.Columns[4].HeaderText = "最后一次同步时间";
-            dataGridView1.Columns[4].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView1.Columns[5].HeaderText = "最后一次同步状态";
-            dataGridView1.Columns[5].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView1.Columns[6].Visible = false;
-            dataGridView1.Columns[7].HeaderText = "自动同步间隔(分钟)";
-            dataGridView1.Columns[7].SortMode = DataGridViewColumnSortMode.NotSortable;
-            dataGridView1.Columns[8].Visible = false;
-            dataGridView1.Columns[9].HeaderText = "暂停自动同步";
-            dataGridView1.Columns[9].SortMode = DataGridViewColumnSortMode.NotSortable;
-            groupBox1.Height = 60 + dataGridView1.ColumnHeadersHeight * g_dDirPair.Rows.Count;
+            if (dataGridView1.InvokeRequired)
+            {
+                dataGridView1.Invoke((MethodInvoker)delegate ()
+                {
+                    CreatePairToGridView();
+                });
+            }
+            else
+            {
+                dataGridView1.DataSource = g_dDirPair;
+                dataGridView1.Columns[0].Visible = false;
+                dataGridView1.Columns[1].HeaderText = "配对名称";
+                dataGridView1.Columns[1].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[2].HeaderText = "目录1";
+                dataGridView1.Columns[2].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[3].HeaderText = "目录2";
+                dataGridView1.Columns[3].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[4].HeaderText = "最后一次同步时间";
+                dataGridView1.Columns[4].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[5].HeaderText = "最后一次同步状态";
+                dataGridView1.Columns[5].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[6].Visible = false;
+                dataGridView1.Columns[7].Visible = false;
+                //dataGridView1.Columns[7].HeaderText = "自动同步间隔(分钟)";
+                //dataGridView1.Columns[7].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[8].Visible = false;
+                dataGridView1.Columns[9].HeaderText = "暂停自动同步";
+                dataGridView1.Columns[9].SortMode = DataGridViewColumnSortMode.NotSortable;
+                groupBox1.Height = 60 + dataGridView1.ColumnHeadersHeight * g_dDirPair.Rows.Count;
+
+                if (Global_Settings.HasDBVersionReached(3011))
+                {
+                    dataGridView1.Columns[10].Visible = false;
+                    dataGridView1.Columns[11].HeaderText = "下一次同步时间";
+                    dataGridView1.Columns[11].SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+            }
         }
 
         private void BindPairToGridView()
@@ -625,7 +660,7 @@ namespace FileSynchronizer
             {
                 dataGridView1.DataSource = g_dDirPair;
                 dataGridView1.Refresh();
-                groupBox1.Height = 60 + dataGridView1.ColumnHeadersHeight * g_dDirPair.Rows.Count;
+                groupBox1.Height = 50 + dataGridView1.ColumnHeadersHeight * g_dDirPair.Rows.Count;
 
                 foreach (DataGridViewRow item in dataGridView1.Rows)
                 {
@@ -753,24 +788,32 @@ namespace FileSynchronizer
             try
             {
                 LogProgramMessage("Stoping all oprating threads", true, true, GetTraceLevel(4));
+                bool bHasStoppedAny = false;
 
                 //查找正在进行的分析/同步线程并停止
                 for (int i = 1; i < tabControl1.TabCount; i++)
                 {
                     ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.TabPages[i].Controls[0];
                     string str_PairName = CurrentPair.PairName;
-                    if (CurrentPair.StopOngoingOperation())
+                    if (CurrentPair.PairStatus != PairStatus.FREE)
                     {
-                        LogProgramMessage("成功停止了配对[" + str_PairName + "]正在进行的操作", true, true, GetTraceLevel(1));
+                        if (CurrentPair.StopOngoingOperation())
+                        {
+                            bHasStoppedAny = true;
+                            LogProgramMessage("成功停止了配对[" + str_PairName + "]正在进行的操作", true, true, GetTraceLevel(1));
+                        }
                     }
                 }
 
-                Thread.Sleep(1000);
+                if (bHasStoppedAny)
+                {
+                    Thread.Sleep(1000);
+                }
                 if (cls_LogProgramFile.LogToCache) cls_LogProgramFile.LogMsgFromCacheToFile();
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, GetTraceLevel(5));
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(5), true);
             }
         }
 
@@ -1077,7 +1120,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, GetTraceLevel(3));
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(3), true);
             }
         }
 
@@ -1096,7 +1139,7 @@ namespace FileSynchronizer
             }
             catch (Exception ex)
             {
-                LogProgramMessage(ex.Message, true, true, GetTraceLevel(3));
+                LogProgramMessage(ex.Message, true, true, GetTraceLevel(3), true);
             }
         }
         #endregion

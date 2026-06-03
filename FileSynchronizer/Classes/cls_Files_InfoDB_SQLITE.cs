@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -164,9 +163,6 @@ namespace FileSynchronizer
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
             string sql_enq = _SQLBuilder.SQL_CheckDBUpgradeSel(str_TargetVersion);
             string sql_upd = _SQLBuilder.SQL_CheckDBUpgradeUpd(str_TargetVersion);
-            //string sql_dbupgradeV10220111_b1 = @"";
-            //string sql_dbupgradeV11220702_b1 = @"Alter TABLE DIRPAIR ADD COLUMN IsPaused BIT";
-            string sql_dbupgradeV2101_b1 = _SQLBuilder.SQL_BuildSyncDetailTableCre();
             CloseConnection();
             OpenConnection();
             
@@ -184,19 +180,12 @@ namespace FileSynchronizer
                         int i_idxUnderScroll = str_CurrentDBVer.IndexOf("_");
                         string str_CurrVer = str_CurrentDBVer.Substring(0, i_idxUnderScroll < 0 ? str_CurrentDBVer.Length : i_idxUnderScroll).Replace(".", "");
                         int int_CurrentVer = Int32.Parse(str_CurrVer);
-                        if (int_CurrentVer < 1211)
-                        {
-                            //更新数据库至版本1.2.1.1
-                            //SQLiteCommand cmd_updDB_302202111 = new SQLiteCommand(sql_dbupgradeV30220211_b1, dbconn);
-                            //cmd_updDB_302202111.ExecuteNonQuery();
-                        }
 
-                        if (int_CurrentVer < 2101)
-                        {
-                            //更新数据库至版本2.0.4.1
-                            SQLiteCommand cmd_dbupgradeV2101_b1 = new SQLiteCommand(sql_dbupgradeV2101_b1, dbconn_SQLITE);
-                            cmd_dbupgradeV2101_b1.ExecuteNonQuery();
-                        }
+                        //更新数据库至版本2.1.0.1
+                        DB_Upgrade_V2101(int_CurrentVer);
+
+                        //更新数据库至版本3.0.1.1
+                        DB_Upgrade_V3011(int_CurrentVer);
 
                         //更新数据库版本至最新
                         SQLiteCommand cmd_upd = new SQLiteCommand(sql_upd, dbconn_SQLITE);
@@ -305,6 +294,42 @@ namespace FileSynchronizer
             {
                 SQLError = ex.Message;
                 return -1;
+            }
+        }
+
+        /// <summary>
+        /// 更新数据库至版本2.1.0.1
+        /// </summary>
+        /// <param name="Current_DB_Ver"></param>
+        public static void DB_Upgrade_V2101(int Current_DB_Ver)
+        {
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_dbupgradeV2101_b1 = _SQLBuilder.SQL_BuildSyncDetailTableCre();
+
+            if (Current_DB_Ver < 2101)
+            {
+                SQLiteCommand cmd_dbupgradeV2101_b1 = new SQLiteCommand(sql_dbupgradeV2101_b1, dbconn_SQLITE);
+                cmd_dbupgradeV2101_b1.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// 更新数据库至版本3.0.1.1
+        /// </summary>
+        /// <param name="Current_DB_Ver"></param>
+        private static void DB_Upgrade_V3011(int Current_DB_Ver)
+        {
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_dbupgradeV3011_b1 = _SQLBuilder.SQL_DB_Upgrade_V3011a();
+            string sql_dbupgradeV3011_b2 = _SQLBuilder.SQL_DB_Upgrade_V3011b();
+
+            if (Current_DB_Ver < 3011)
+            {
+                SQLiteCommand cmd_dbupgradeV3011_b1 = new SQLiteCommand(sql_dbupgradeV3011_b1, dbconn_SQLITE);
+                cmd_dbupgradeV3011_b1.ExecuteNonQuery();
+
+                SQLiteCommand cmd_dbupgradeV3011_b2 = new SQLiteCommand(sql_dbupgradeV3011_b2, dbconn_SQLITE);
+                cmd_dbupgradeV3011_b2.ExecuteNonQuery();
             }
         }
         #endregion
@@ -435,7 +460,7 @@ namespace FileSynchronizer
             }
         }
 
-        public static bool AddDirPair(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection)
+        public static bool AddDirPair(string str_PairName, string str_Dir1_Path, string str_Dir2_Path, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, string str_AutoSyncFixedInterval, int bl_IsPaused)
         {
             if (String.IsNullOrEmpty(str_PairName) || String.IsNullOrEmpty(str_Dir1_Path) || String.IsNullOrEmpty(str_Dir2_Path))
             {
@@ -448,8 +473,8 @@ namespace FileSynchronizer
             string str_Pair_Table2 = str_PairName + "_DIR2_" + str_Folder2_Name;
 
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
-            string sql_enq = _SQLBuilder.SQL_AddDirPairEnq(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection);
-            string sql_ins = _SQLBuilder.SQL_AddDirPairIns(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection);
+            string sql_enq = _SQLBuilder.SQL_AddDirPairEnq(str_PairName, str_Dir1_Path, str_Dir2_Path);
+            string sql_ins = _SQLBuilder.SQL_AddDirPairIns(str_PairName, str_Dir1_Path, str_Dir2_Path, str_FilterRule, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval, bl_IsPaused);
 
             try
             {
@@ -534,11 +559,11 @@ namespace FileSynchronizer
             }
         }
 
-        public static bool UpdatePairInfor(string str_PairID, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, out string OutputMsg)
+        public static bool UpdatePairInfor(string str_PairID, string str_FilterRule, string str_SyncInterval, string str_SyncDirection, string str_AutoSyncFixedInterval, out string OutputMsg)
         {
             OutputMsg = String.Empty;
             cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
-            string sql_upd = _SQLBuilder.SQL_UpdatePairInfor(str_PairID, str_FilterRule, str_SyncInterval, str_SyncDirection);
+            string sql_upd = _SQLBuilder.SQL_UpdatePairInfor(str_PairID, str_FilterRule, str_SyncInterval, str_SyncDirection, str_AutoSyncFixedInterval);
 
             try
             {
@@ -616,6 +641,54 @@ namespace FileSynchronizer
             {
                 OutputMsg = ex.Message;
                 return false;
+            }
+        }
+
+        public static bool SetNextSyncTime(string str_PairName, string str_NextSyncTime, out string OutputMsg)
+        {
+            OutputMsg = String.Empty;
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_upd = _SQLBuilder.SQL_SetNextSyncTime(str_PairName, str_NextSyncTime);
+
+            try
+            {
+                SQLiteCommand cmd = new SQLiteCommand(sql_upd, dbconn_SQLITE);
+                int row = cmd.ExecuteNonQuery();
+                return row > 0;
+            }
+            catch (Exception ex)
+            {
+                OutputMsg = ex.Message;
+                return false;
+            }
+        }
+
+        public static bool CheckLastSyncNull(string str_PairID)
+        {
+            cls_SQLBuilder _SQLBuilder = new cls_SQLBuilder(cls_SQLBuilder.DATABASE_TYPE.SQLITE);
+            string sql_enq = _SQLBuilder.SQL_CheckLastSyncNull(str_PairID);
+
+            try
+            {
+                SQLiteCommand cmd = new SQLiteCommand(sql_enq, dbconn_SQLITE);
+                cmd.CommandTimeout = 600;
+                SQLiteDataReader dr = cmd.ExecuteReader();
+                bool bl_HasNextRecord = true;
+
+                while (bl_HasNextRecord)
+                {
+                    bl_HasNextRecord = dr.Read();
+                    if (bl_HasNextRecord)
+                    {
+                        string str_LastSyncNull = dr[0].ToString();
+                        return Boolean.Parse(str_LastSyncNull);
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return true;
             }
         }
         #endregion

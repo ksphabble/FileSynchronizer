@@ -530,6 +530,7 @@ namespace FileSynchronizer
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4);
             MaximizeBox = false;
+            MinimizeBox = false;
             Name = "frm_GlobalSettings";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Text = "全局设置";
