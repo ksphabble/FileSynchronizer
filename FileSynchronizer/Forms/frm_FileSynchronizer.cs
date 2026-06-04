@@ -690,7 +690,7 @@ namespace FileSynchronizer
             if (!str_Current.Equals(g_sMainProgramVersion))
             {
                 Files_InfoDB.BackupDBFile(str_Current);
-                string str_DBVersion = Files_InfoDB.CheckDBUpgrade(g_sMainProgramVersion);
+                string str_DBVersion = Global_Settings.CheckDBUpgrade(g_sMainProgramVersion);
                 if (!String.IsNullOrEmpty(str_DBVersion))
                 {
                     LogProgramMessage("数据库已经升级到版本" + str_DBVersion, true, true, GetTraceLevel(1));

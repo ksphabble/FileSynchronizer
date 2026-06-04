@@ -1,6 +1,7 @@
 ﻿using Common.Components;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace FileSynchronizer
 {
@@ -105,6 +106,16 @@ namespace FileSynchronizer
         {
             int m_DBVersion = Int32.Parse(DBVersion.Replace(".", ""));
             return m_DBVersion >= TargetVersion;
+        }
+
+        /// <summary>
+        /// 检查数据库版本升级
+        /// </summary>
+        /// <returns>升级后的最新版本</returns>
+        public static string CheckDBUpgrade(string str_TargetVersion)
+        {
+            DBVersion = Files_InfoDB.CheckDBUpgrade(str_TargetVersion);
+            return DBVersion;
         }
         #endregion
     }
