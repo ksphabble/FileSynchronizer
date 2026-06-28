@@ -133,14 +133,24 @@ namespace FileSynchronizer
                 return;
             }
 
+            if (MessageBox.Show("此操作将会永久删除此配对，确定？", "提示", MessageBoxButtons.YesNo) == DialogResult.No) return;
+
             string str_PairName = dataGridView1.SelectedRows[0].Cells["PAIRNAME"].Value.ToString();
             string str_PairDir1 = dataGridView1.SelectedRows[0].Cells["DIR1"].Value.ToString();
             string str_PairDir2 = dataGridView1.SelectedRows[0].Cells["DIR2"].Value.ToString();
 
-            Files_InfoDB.DelDirPair(str_PairName, str_PairDir1, str_PairDir2);
-            list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "删除配对(" + txtBoxPairName.Text + ")");
-            RefreshDirPair();
-            bl_RefreshListRequired = true;
+            if (Files_InfoDB.DelDirPair(str_PairName, str_PairDir1, str_PairDir2))
+            {
+                string str_PairDir1BK = Path.Combine(str_PairDir1, Local_Utilities.c_FSBackup_Str);
+                string str_PairDir2BK = Path.Combine(str_PairDir2, Local_Utilities.c_FSBackup_Str);
+                FileHelper.xDelete(str_PairDir1BK, true);
+                FileHelper.xDelete(str_PairDir2BK, true);
+                cls_LogPairFile cls_LogPairFile = new cls_LogPairFile(str_PairName, false);
+                cls_LogPairFile.DeleteLogFile();
+                list_Return_Message.Add(DateTime.Now.ToString(Files_InfoDB.DBDateTimeFormat) + " --- " + "删除配对(" + txtBoxPairName.Text + ")");
+                RefreshDirPair();
+                bl_RefreshListRequired = true;
+            }
         }
 
         private void btnUpdPair_Click(object sender, EventArgs e)
@@ -160,7 +170,8 @@ namespace FileSynchronizer
                 return;
             }
 
-            if (((radioButtonSyncInterval.Checked && String.IsNullOrEmpty(txtBoxSyncInterval.Text)) || (radioButtonFixedTime.Checked && String.IsNullOrEmpty(comBoxSyncDay.Text))) && !checkBoxRealTimeSync.Checked)
+            if ((radioButtonSyncInterval.Checked && String.IsNullOrEmpty(txtBoxSyncInterval.Text)) || (radioButtonFixedTime.Checked && String.IsNullOrEmpty(comBoxSyncDay.Text)) ||
+                (!radioButtonSyncInterval.Checked && !radioButtonFixedTime.Checked && !checkBoxRealTimeSync.Checked))
             {
                 MessageBox.Show("请填入正确的自动同步设置");
                 return;
@@ -179,7 +190,7 @@ namespace FileSynchronizer
             {
                 int i_SyncInterval = Int32.MinValue;
                 bool bConvertRet = Int32.TryParse(str_SyncInterval, out i_SyncInterval);
-                if (!bConvertRet || (bConvertRet && i_SyncInterval <= 0))
+                if (radioButtonSyncInterval.Checked && (!bConvertRet || (bConvertRet && i_SyncInterval <= 0)))
                 {
                     MessageBox.Show("请填入正确的自动同步设置");
                     return;

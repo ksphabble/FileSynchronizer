@@ -90,8 +90,8 @@ namespace FileSynchronizer
                 return;
             }
 
-            if (((radioButtonSyncInterval.Checked && String.IsNullOrEmpty(txtBoxSyncInterval.Text)) || (radioButtonFixedTime.Checked && String.IsNullOrEmpty(comBoxSyncDay.Text)) ||
-                (!radioButtonSyncInterval.Checked && !radioButtonFixedTime.Checked)) && !checkBoxRealTimeSync.Checked)
+            if ((radioButtonSyncInterval.Checked && String.IsNullOrEmpty(txtBoxSyncInterval.Text)) || (radioButtonFixedTime.Checked && String.IsNullOrEmpty(comBoxSyncDay.Text)) ||
+                (!radioButtonSyncInterval.Checked && !radioButtonFixedTime.Checked && !checkBoxRealTimeSync.Checked))
             {
                 MessageBox.Show("请填入正确的自动同步设置");
                 return;
@@ -111,7 +111,7 @@ namespace FileSynchronizer
             {
                 int i_SyncInterval = Int32.MinValue;
                 bool bConvertRet = Int32.TryParse(str_SyncInterval, out i_SyncInterval);
-                if (!bConvertRet || (bConvertRet && i_SyncInterval <= 0))
+                if (radioButtonSyncInterval.Checked && (!bConvertRet || (bConvertRet && i_SyncInterval <= 0)))
                 {
                     MessageBox.Show("请填入正确的自动同步设置");
                     return;

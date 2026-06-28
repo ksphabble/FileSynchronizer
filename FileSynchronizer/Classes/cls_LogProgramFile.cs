@@ -153,5 +153,16 @@ namespace FileSynchronizer
         {
             System.Diagnostics.Process.Start("notepad.exe", str_LogFile);
         }
+
+        /// <summary>
+        /// 删除日志文件
+        /// </summary>
+        public static void DeleteLogFile()
+        {
+            if (File.Exists(str_LogFile))
+            {
+                File.Delete(str_LogFile);
+            }
+        }
     }
 }
