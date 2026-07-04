@@ -20,3 +20,15 @@ FileSynchronizer是一个Windows环境下的同步工具，理论上只要能在
 7. 全局设置中可以设置本地临时目录，此功能打开后当配对的一方目录不是本地磁盘的时候，同步过程中发现的新文件会先复制到临时目录，再计算MD5，后面的同步也会使用这个临时目录里的临时文件，这样能够有效提高同步速度，针对网络驱动器上的大文件同步尤其有效
 8. 数据库默认使用SQLITE
 9. 虽然软件有开发人员设置，但非专业人士请勿随意打开，那仅仅是为了开发时方便调试的设计，如果因为开启了调试模式或者开发者模式导致使用问题或者数据问题本人概不负责，郑重声明
+10. 下面是软件的截图（截至版本3.0.1.2），供参考，软件本身追求实用性，对界面UI并没用太刻意地设计，个人开发没有团队，精力有限，所以暂时无自定义皮肤计划
+主界面：
+ <img width="962" height="682" alt="image" src="https://github.com/user-attachments/assets/726e1e26-5d40-47f0-bc67-950b05597928" />
+
+全局设置：
+ <img width="946" height="879" alt="image" src="https://github.com/user-attachments/assets/2bcc0e02-89bf-48ea-88f5-e606a896335c" />
+
+配对管理：
+ <img width="776" height="613" alt="image" src="https://github.com/user-attachments/assets/4d106414-cbe9-4baf-af6b-5aa19e53dcba" />
+
+新建配对：
+ <img width="975" height="445" alt="image" src="https://github.com/user-attachments/assets/b8d1a3c8-9ec9-4317-8499-96cde213e120" />
