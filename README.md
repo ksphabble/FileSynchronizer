@@ -1,8 +1,9 @@
 By Habble
-此工具是我从2022年开始利用业余时间写出来的，至今已经不断打磨了4个年头，主要是因为其他第三方同步工具都需要付费或者功能上无法满足我的需求，所以有了这个工具，图个方便，软件开源，非盈利性质，实装功能都以我的个人需求优先，如果使用过程中出现BUG或者有使用上的疑问或者有好的建议，请在GITHUB上反馈或者联系邮箱，我会尽量答复，个人开发没有团队，不喜勿喷，遇到BUG请理性发言，如果想要实际支持，可以联系我的微信号：ksphabble
+此工具是我从2022年开始利用业余时间写出来的，主要是因为其他第三方同步工具都需要付费或者功能上无法满足我的需求，所以有了这个工具，图个方便，软件开源，非盈利性质，实装功能都以我的个人需求优先，如果使用过程中出现BUG或者有使用上的疑问或者有好的建议，请在GITHUB上反馈或者联系邮箱，我会尽量答复，个人开发没有团队，不喜勿喷，遇到BUG请理性发言，如果想要实际支持，可以联系我的微信号：ksphabble
 邮箱：ksphabble@hotmail.com
 程序Github主页：https://github.com/ksphabble/FileSynchronizer
 程序发布页：https://github.com/ksphabble/FileSynchronizer/releases
+BUG反馈页：https://github.com/ksphabble/FileSynchronizer/issues
 
 FileSynchronizer是一个Windows环境下的同步工具，理论上只要能在Windows的资源管理器里面打开的目录和文件都支持，如果想同步网络驱动器，建议打开FTP或者SMB之后在PC端连接使用。
 这个工具的主要逻辑是利用目录/文件的创建时间/修改时间/文件大小/MD5等信息比较配对目录下面的所有子目录/文件，如果不一样，就会有相对应的程序逻辑。
