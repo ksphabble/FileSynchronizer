@@ -42,6 +42,7 @@
             pnlPairBasicInfor = new System.Windows.Forms.Panel();
             btnStopMonitoringRMD = new System.Windows.Forms.Button();
             TxtPairLog = new System.Windows.Forms.RichTextBox();
+            btnRefreshFileAndDir = new System.Windows.Forms.Button();
             pnlPairExInfor.SuspendLayout();
             pnlPairBasicInfor.SuspendLayout();
             SuspendLayout();
@@ -95,6 +96,7 @@
             // 
             // pnlPairBasicInfor
             // 
+            pnlPairBasicInfor.Controls.Add(btnRefreshFileAndDir);
             pnlPairBasicInfor.Controls.Add(btnStopMonitoringRMD);
             pnlPairBasicInfor.Controls.Add(lblPairInfor);
             pnlPairBasicInfor.Dock = System.Windows.Forms.DockStyle.Top;
@@ -107,9 +109,10 @@
             // btnStopMonitoringRMD
             // 
             btnStopMonitoringRMD.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnStopMonitoringRMD.Location = new System.Drawing.Point(940, 1);
+            btnStopMonitoringRMD.Location = new System.Drawing.Point(873, 3);
+            btnStopMonitoringRMD.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             btnStopMonitoringRMD.Name = "btnStopMonitoringRMD";
-            btnStopMonitoringRMD.Size = new System.Drawing.Size(130, 23);
+            btnStopMonitoringRMD.Size = new System.Drawing.Size(100, 23);
             btnStopMonitoringRMD.TabIndex = 3;
             btnStopMonitoringRMD.Text = "停止监控(%s1)";
             btnStopMonitoringRMD.UseVisualStyleBackColor = true;
@@ -126,6 +129,18 @@
             TxtPairLog.Size = new System.Drawing.Size(1073, 655);
             TxtPairLog.TabIndex = 0;
             TxtPairLog.Text = "";
+            // 
+            // btnRefreshFileAndDir
+            // 
+            btnRefreshFileAndDir.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnRefreshFileAndDir.Location = new System.Drawing.Point(973, 3);
+            btnRefreshFileAndDir.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            btnRefreshFileAndDir.Name = "btnRefreshFileAndDir";
+            btnRefreshFileAndDir.Size = new System.Drawing.Size(100, 23);
+            btnRefreshFileAndDir.TabIndex = 4;
+            btnRefreshFileAndDir.Text = "刷新配对内容";
+            btnRefreshFileAndDir.UseVisualStyleBackColor = true;
+            btnRefreshFileAndDir.Click += btnRefreshFileAndDir_Click;
             // 
             // ctrl_PairPanal
             // 
@@ -154,5 +169,6 @@
         private System.Windows.Forms.Label lblBeingSync;
         private System.Windows.Forms.Button btnStopMonitoringRMD;
         private System.Windows.Forms.RichTextBox TxtPairLog;
+        private System.Windows.Forms.Button btnRefreshFileAndDir;
     }
 }

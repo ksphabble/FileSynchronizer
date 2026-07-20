@@ -297,7 +297,7 @@ namespace FileSynchronizer
         private void StartTimer()
         {
             LogProgramMessage("计时器开始工作", true, true, GetTraceLevel(3));
-            g_Timer = new System.Threading.Timer(TimerEvent, null, 0, c_Timer_Interval);
+            g_Timer = new System.Threading.Timer(TimerEvent, this, 0, c_Timer_Interval);
         }
 
         private void TimerEvent(object o)
@@ -311,11 +311,14 @@ namespace FileSynchronizer
                     CheckAutoSyncPair();
                     if (cls_LogProgramFile.LogToCache) cls_LogProgramFile.LogMsgFromCacheToFile();
 
-                    if (DateTime.Now >= DateTime.Today.AddMilliseconds(0) && DateTime.Now <= DateTime.Today.AddMilliseconds(c_Timer_Interval) && Global_Settings.AutoClearLog)
+                    if (!(o == null))
                     {
-                        LogProgramMessage("执行每日自动清除界面日志", true, true, GetTraceLevel(3));
-                        ClearAllLogs();
-                        Task.Run(() => RefreshAllFileAndDirInfo());
+                        if (DateTime.Now >= DateTime.Today.AddMilliseconds(0) && DateTime.Now <= DateTime.Today.AddMilliseconds(c_Timer_Interval) && Global_Settings.AutoClearLog)
+                        {
+                            LogProgramMessage("执行每日自动清除界面日志", true, true, GetTraceLevel(3));
+                            ClearAllLogs();
+                            Task.Run(() => RefreshAllFileAndDirInfo());
+                        }
                     }
                 }
             }
@@ -770,8 +773,7 @@ namespace FileSynchronizer
         {
             ctrl_PairPanal CurrentPair = (ctrl_PairPanal)tabControl1.TabPages[PairName].Controls[0];
 
-            PairStatus pairStatus;
-            if (CurrentPair.IsPairBusy(out pairStatus))
+            if (CurrentPair.IsPairBusy(out PairStatus pairStatus))
             {
                 string str_PairStatus = FormatPairStatusString(PairName, pairStatus);
                 LogProgramMessage(str_PairStatus, true, true, GetTraceLevel(1));

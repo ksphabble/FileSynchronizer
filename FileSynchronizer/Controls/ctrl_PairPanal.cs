@@ -56,9 +56,10 @@ namespace FileSynchronizer
             g_sFilterRule = dr_DirPair.ItemArray[6].ToString();
             string str_AutoSyncInterval = dr_DirPair.ItemArray[7].ToString();
             if (!Int32.TryParse(str_AutoSyncInterval, out g_iAutoSyncInterval))
-            { 
+            {
                 g_iAutoSyncInterval = Int32.MinValue;
             }
+            bool bRealTimeSync = g_iAutoSyncInterval.Equals(0);
 
             string str_SyncDirection = dr_DirPair.ItemArray[8].ToString();
             string sDirection = String.Empty;
@@ -84,8 +85,9 @@ namespace FileSynchronizer
                 g_bIspaused = false;
             }
 
-            lblPairInfor.Text = String.Format(c_PairInforPairInfor, g_sPairName, g_iAutoSyncInterval == 0 ? "（实时同步）" : "", g_sDir1Path, sDirection, g_sDir2Path);
+            lblPairInfor.Text = String.Format(c_PairInforPairInfor, g_sPairName, bRealTimeSync ? "（实时同步）" : "", g_sDir1Path, sDirection, g_sDir2Path);
             g_sDateTimeFormat = dateTimeFormat;
+            btnRefreshFileAndDir.Visible = bRealTimeSync;
 
             //Task.Run(InitElements);
         }
@@ -116,9 +118,9 @@ namespace FileSynchronizer
             Add1Analysis();
         }
 
-        private void Dir_Pair_Helper_SetOngoingItem(object sender, string OngoingItem)
+        private void Dir_Pair_Helper_SetOngoingItem(object sender, string OngoingItem, int MsgTraceLevel)
         {
-            SetOngoingItem(OngoingItem);
+            SetOngoingItem(OngoingItem, MsgTraceLevel);
         }
 
         private void Dir_Pair_Helper_LogPairMsg(object sender, string LogMessage, bool IsChangeLine, bool IsAddTS)
@@ -186,10 +188,17 @@ namespace FileSynchronizer
         /// 设置正在进行的操作
         /// </summary>
         /// <param name="str_OngoingItem">正在进行的操作</param>
-        private void SetOngoingItem(string str_OngoingItem)
+        private void SetOngoingItem(string str_OngoingItem, int MsgTraceLevel)
         {
-            lblBeingSync.Text = String.Format(c_BeingAction, str_OngoingItem);
-            lblBeingSync.Left = labelProgress.Right;
+            if (!String.IsNullOrEmpty(str_OngoingItem) && ((MsgTraceLevel >= 0 && MsgTraceLevel <= Global_Settings.TraceLevel) || MsgTraceLevel.Equals(-1)))
+            {
+                lblBeingSync.Text = String.Format(c_BeingAction, str_OngoingItem);
+                lblBeingSync.Left = labelProgress.Right;
+            }
+            else
+            {
+                lblBeingSync.Text = String.Empty;
+            }
         }
 
         /// <summary>
@@ -322,6 +331,19 @@ namespace FileSynchronizer
             gTokenSource = new CancellationTokenSource();
             gTaskFactory = new TaskFactory(gTokenSource.Token);
         }
+
+        private void btnRefreshFileAndDir_Click(object sender, EventArgs e)
+        {
+            if (IsPairBusy())
+            {
+                string str_LogMsgU = "配对正忙，无法刷新，请稍后再试！";
+                Dir_Pair_Helper.LogPairMessage(g_sPairName, str_LogMsgU, true, true, GetTraceLevel(1));
+            }
+            else
+            {
+                RefreshFileAndDirInfo();
+            }
+        }
         #endregion
 
         #region 公有方法
@@ -429,7 +451,7 @@ namespace FileSynchronizer
         public void InitElements()
         {
             ResetSyncLabels();
-            SetOngoingItem(string.Empty);
+            SetOngoingItem(string.Empty, GetTraceLevel(0));
             Dir_Pair_Helper = new cls_Dir_Pair_Helper(g_sPairID, g_sPairName, g_sDir1Path, g_sDir2Path, PairStatus.FREE, g_sFilterRule, g_iAutoSyncInterval, g_SyncDirection, g_bIspaused);
             Dir_Pair_Helper.LogPairMsg += Dir_Pair_Helper_LogPairMsg;
             Dir_Pair_Helper.SetOngoingItem += Dir_Pair_Helper_SetOngoingItem;
@@ -484,7 +506,7 @@ namespace FileSynchronizer
             bool bIsRemovableDriveRelated = false;
             InitilizeRemovableDrive(out bIsRemovableDriveRelated);
 
-            if (ChangeType ==0)
+            if (ChangeType == 0)
             {
                 Dir_Pair_Helper.RemovableDriveHandler(DriveLetter, ChangeType);
             }

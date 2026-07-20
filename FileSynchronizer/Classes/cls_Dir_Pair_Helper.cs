@@ -145,7 +145,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-" + str_OutLogMsg;
                         LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgA);
+                        OnSetOngoingItem(str_LogMsgA, GetTraceLevel(4));
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
@@ -164,7 +164,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-ExistsInDB-ExcludeDIR:" + str_FileFullName;
                         LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgB);
+                        OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(i_SleepInterval);
                         continue;
@@ -172,7 +172,7 @@ namespace FileSynchronizer
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-AddDIR:" + str_FilePath;
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_DirCreDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "Step-1-AddFileInfor:" + str_OutLogMsg;
@@ -222,7 +222,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-" + str_OutLogMsg;
                         LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgA);
+                        OnSetOngoingItem(str_LogMsgA, GetTraceLevel(4));
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
@@ -241,7 +241,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-ExistsInDB-ExcludeFile:" + str_FileFullName;
                         LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgB);
+                        OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(50);
                         continue;
@@ -250,7 +250,7 @@ namespace FileSynchronizer
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-CalculatingFileMD5:" + str_FileFullName;
                     LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgCalcMD5);
+                    OnSetOngoingItem(str_LogMsgCalcMD5, GetTraceLevel(4));
                     str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, IsAnalysisOnly, out str_OutLogMsg);
                     LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, GetTraceLevel(4));
 
@@ -272,7 +272,7 @@ namespace FileSynchronizer
                     }
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-AddFile:" + str_FileFullName;
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_Dir1TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
@@ -326,7 +326,7 @@ namespace FileSynchronizer
                 {
                     string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-" + str_OutLogMsg + "-SoftDeleteItem:" + str_FileFullName;
                     LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgA);
+                    OnSetOngoingItem(str_LogMsgA, GetTraceLevel(4));
                     if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                     {
                         LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgA, true, true, GetTraceLevel(4));
@@ -350,7 +350,7 @@ namespace FileSynchronizer
                         if (!Directory.Exists(str_FilePath))
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-SoftDeleteDIR:" + str_FilePath;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                             LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
@@ -362,7 +362,7 @@ namespace FileSynchronizer
                         else
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-CheckDIR:" + str_FilePath;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                         }
                     }
                 }
@@ -379,7 +379,7 @@ namespace FileSynchronizer
                         if (!System.IO.File.Exists(str_FileFullName))
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-SoftDeleteFile:" + str_FileFullName;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                             LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir1TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
@@ -391,7 +391,7 @@ namespace FileSynchronizer
                         else
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR1-CheckFile:" + str_FileFullName;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                         }
                     }
                 }
@@ -421,7 +421,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-" + str_OutLogMsg;
                         LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgA);
+                        OnSetOngoingItem(str_LogMsgA, GetTraceLevel(4));
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
@@ -440,7 +440,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-ExistsInDB-ExcludeDIR:" + str_FileFullName;
                         LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgB);
+                        OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(50);
                         continue;
@@ -448,7 +448,7 @@ namespace FileSynchronizer
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-AddDIR:" + str_FilePath;
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_DirCreDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "Step-4-AddFileInfor:" + str_OutLogMsg;
@@ -498,7 +498,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-" + str_OutLogMsg;
                         LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgA);
+                        OnSetOngoingItem(str_LogMsgA, GetTraceLevel(4));
 
                         if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                         {
@@ -517,7 +517,7 @@ namespace FileSynchronizer
                     {
                         string str_LogMsgB = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-ExistsInDB-ExcludeFile:" + str_FileFullName;
                         LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                        OnSetOngoingItem(str_LogMsgB);
+                        OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
                         OnAdd1Analysis(int_TotalFileFound);
                         //Thread.Sleep(50);
                         continue;
@@ -526,7 +526,7 @@ namespace FileSynchronizer
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-CalculatingFileMD5:" + str_FileFullName;
                     LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgCalcMD5);
+                    OnSetOngoingItem(str_LogMsgCalcMD5, GetTraceLevel(4));
                     str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, IsAnalysisOnly, out str_OutLogMsg);
                     LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, GetTraceLevel(4));
 
@@ -548,7 +548,7 @@ namespace FileSynchronizer
                     }
 
                     string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-AddFile:" + str_FileFullName;
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_Dir2TableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
@@ -602,7 +602,7 @@ namespace FileSynchronizer
                 {
                     string str_LogMsgA = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-" + str_OutLogMsg + "-SoftDeleteItem:" + str_FileFullName;
                     LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgA);
+                    OnSetOngoingItem(str_LogMsgA, GetTraceLevel(4));
                     if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                     {
                         LogPairMessage(g_sPairName, "[FAILED!!!] " + str_LogMsgA, true, true, GetTraceLevel(4));
@@ -626,7 +626,7 @@ namespace FileSynchronizer
                         if (!Directory.Exists(str_FilePath))
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-SoftDeleteDIR:" + str_FilePath;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                             LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
@@ -638,7 +638,7 @@ namespace FileSynchronizer
                         else
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-CheckDIR:" + str_FilePath;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                         }
                     }
                 }
@@ -655,7 +655,7 @@ namespace FileSynchronizer
                         if (!System.IO.File.Exists(str_FileFullName))
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-SoftDeleteFile:" + str_FileFullName;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                             LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                             if (!Files_InfoDB.DelFileInforSoft(str_Dir2TableName, str_FileID, g_sPairID, out str_OutLogMsg))
                             {
@@ -667,7 +667,7 @@ namespace FileSynchronizer
                         else
                         {
                             string str_LogMsgAddItem = "PAIR-ANALYSIS:" + g_sPairName + "-DIR2-CheckFile:" + str_FileFullName;
-                            OnSetOngoingItem(str_LogMsgAddItem);
+                            OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                         }
                     }
                 }
@@ -851,14 +851,14 @@ namespace FileSynchronizer
                         LogPairMessage(g_sPairName, str_AnalysisResult, true, true, GetTraceLevel(1));
 
                         OnPairStatusChange(PairStatus.FREE);
-                        OnSetOngoingItem(string.Empty);
+                        OnSetOngoingItem(string.Empty, GetTraceLevel(1));
                         return dt_fileDiffExType7;
                     }
                     else
                     {
                         LogPairMessage(g_sPairName, "分析操作被中止", true, true, GetTraceLevel(1));
                         OnPairStatusChange(PairStatus.FREE);
-                        OnSetOngoingItem(string.Empty);
+                        OnSetOngoingItem(string.Empty, GetTraceLevel(1));
                         return Create_FileDiff_Empty();
                     }
                 }
@@ -866,7 +866,7 @@ namespace FileSynchronizer
                 {
                     LogPairMessage(g_sPairName, "分析操作被中止", true, true, GetTraceLevel(1));
                     OnPairStatusChange(PairStatus.FREE);
-                    OnSetOngoingItem(string.Empty);
+                    OnSetOngoingItem(string.Empty, GetTraceLevel(1));
                     return Create_FileDiff_Empty();
                 }
             }
@@ -874,7 +874,7 @@ namespace FileSynchronizer
             {
                 LogPairMessage(g_sPairName, "分析过程发生异常被中止，可能是因为配对的目录断开连接，请确认后再试", true, true, GetTraceLevel(1));
                 OnPairStatusChange(PairStatus.FREE);
-                OnSetOngoingItem(string.Empty);
+                OnSetOngoingItem(string.Empty, GetTraceLevel(1));
                 return Create_FileDiff_Empty();
             }
             #endregion
@@ -972,14 +972,14 @@ namespace FileSynchronizer
                             if (bl_IsDirectory)
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileFromPath + " -A-> " + str_FileToPath;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
                                 bl_SyncRecordDone = true;
                             }
                             else
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (int_TrySyncCount <= 1)
@@ -1046,14 +1046,14 @@ namespace FileSynchronizer
                             if (bl_IsDirectory)
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileToPath + " <-A- " + str_FileFromPath;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
                                 bl_SyncRecordDone = true;
                             }
                             else
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-A- " + str_FromFile;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (int_TrySyncCount <= 1)
@@ -1116,7 +1116,7 @@ namespace FileSynchronizer
                             }
 
                             str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
-                            OnSetOngoingItem(str_OngoingRecMsg);
+                            OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                             LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                             if (int_TrySyncCount <= 1)
@@ -1183,7 +1183,7 @@ namespace FileSynchronizer
                             }
 
                             str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-U- " + str_FromFile;
-                            OnSetOngoingItem(str_OngoingRecMsg);
+                            OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                             LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
                             if (int_TrySyncCount <= 1)
                             {
@@ -1237,7 +1237,7 @@ namespace FileSynchronizer
                             if (bl_IsDirectory)
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileFromPath + " -X-> " + str_FileToPath;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (Directory.Exists(str_FileToPath))
@@ -1269,7 +1269,7 @@ namespace FileSynchronizer
                             else
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_FromFile + " -X-> " + str_ToFile;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (System.IO.File.Exists(str_ToFile))
@@ -1305,7 +1305,7 @@ namespace FileSynchronizer
                             if (bl_IsDirectory)
                             {
                                 str_OngoingRecMsg = "同步目录: " + str_FileToPath + " <-X- " + str_FileFromPath;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (Directory.Exists(str_FileToPath))
@@ -1337,7 +1337,7 @@ namespace FileSynchronizer
                             else
                             {
                                 str_OngoingRecMsg = "同步文件: " + str_ToFile + " <-X- " + str_FromFile;
-                                OnSetOngoingItem(str_OngoingRecMsg);
+                                OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                 LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(3));
 
                                 if (System.IO.File.Exists(str_ToFile))
@@ -1476,7 +1476,7 @@ namespace FileSynchronizer
             }
 
             OnPairStatusChange(PairStatus.FREE);
-            OnSetOngoingItem(string.Empty);
+            OnSetOngoingItem(string.Empty, GetTraceLevel(1));
             return !bExceptionFound;
             #endregion
         }
@@ -1955,7 +1955,7 @@ namespace FileSynchronizer
         #region 类的事件处理
         public delegate void LogPairMessageHandler(object sender, string LogMessage, bool IsChangeLine, bool IsAddTS);
         public event LogPairMessageHandler LogPairMsg;
-        public delegate void SetOngoingItemHandler(object sender, string OngoingItem);
+        public delegate void SetOngoingItemHandler(object sender, string OngoingItem, int MsgTraceLevel);
         public event SetOngoingItemHandler SetOngoingItem;
         public delegate void Add1AnalysisHandler(object sender, int TotalPending);
         public event Add1AnalysisHandler Add1Analysis;
@@ -1974,11 +1974,11 @@ namespace FileSynchronizer
             }
         }
 
-        protected virtual void OnSetOngoingItem(string OngoingItem)
+        protected virtual void OnSetOngoingItem(string OngoingItem, int MsgTraceLevel)
         {
             if (SetOngoingItem != null)
             {
-                SetOngoingItem(this, OngoingItem);
+                SetOngoingItem(this, OngoingItem, MsgTraceLevel);
             }
         }
 
@@ -2057,7 +2057,7 @@ namespace FileSynchronizer
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectCreationDetected:" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
-            OnSetOngoingItem(str_LogMsgA);
+            OnSetOngoingItem(str_LogMsgA, GetTraceLevel(3));
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中新增了" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
@@ -2066,7 +2066,7 @@ namespace FileSynchronizer
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
                 LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                OnSetOngoingItem(str_LogMsgB);
+                OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
@@ -2091,7 +2091,7 @@ namespace FileSynchronizer
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-AddDIRInfor:" + str_FilePath;
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_DirTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_DirCreDate, g_sPairID, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-AddDIRInforFailed:" + str_OutLogMsg;
@@ -2100,7 +2100,7 @@ namespace FileSynchronizer
                     }
 
                     string str_OngoingRecMsg = "同步目录: " + str_FilePath + " -A-> " + str_ToPath;
-                    OnSetOngoingItem(str_OngoingRecMsg);
+                    OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                     LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_DirCreDate, str_FileSize, bl_IsSyncFromDir1 ? "1" : "2", "");
                 }
@@ -2116,7 +2116,7 @@ namespace FileSynchronizer
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-CalculatingFileMD5:" + str_FileFullName;
                     LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgCalcMD5);
+                    OnSetOngoingItem(str_LogMsgCalcMD5, GetTraceLevel(4));
                     string str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, true, out str_OutLogMsg);
                     LogPairMessage(g_sPairName, " - " + str_FileMD5, true, false, GetTraceLevel(4));
 
@@ -2137,7 +2137,7 @@ namespace FileSynchronizer
                     }
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-AddFileInfor:" + str_FileFullName;
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_DirTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
@@ -2149,7 +2149,7 @@ namespace FileSynchronizer
                     string str_FromFile = Path.Combine(str_FilePath, str_FileName);
                     string str_ToFile = Path.Combine(str_ToPath, str_FileName);
                     string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -A-> " + str_ToFile;
-                    OnSetOngoingItem(str_OngoingRecMsg);
+                    OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                     LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_FileLastModDate, str_FileSize, bl_IsSyncFromDir1 ? "1" : "2", "");
                 }
@@ -2208,7 +2208,7 @@ namespace FileSynchronizer
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectChangeDetected:" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
-            OnSetOngoingItem(str_LogMsgA);
+            OnSetOngoingItem(str_LogMsgA, GetTraceLevel(3));
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中修改了" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
@@ -2217,7 +2217,7 @@ namespace FileSynchronizer
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
                 LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                OnSetOngoingItem(str_LogMsgB);
+                OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
@@ -2242,7 +2242,7 @@ namespace FileSynchronizer
                     //计算文件的MD5
                     string str_LogMsgCalcMD5 = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-CalculatingFileMD5:" + str_FileFullName;
                     LogPairMessage(g_sPairName, str_LogMsgCalcMD5, false, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgCalcMD5);
+                    OnSetOngoingItem(str_LogMsgCalcMD5, GetTraceLevel(4));
                     string str_FileMD5 = CalcFileMD5withLocal(str_FileFullName, true, out str_OutLogMsg);
                     LogPairMessage(g_sPairName, "-" + str_FileMD5, true, false, GetTraceLevel(4));
 
@@ -2263,7 +2263,7 @@ namespace FileSynchronizer
                     }
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-UpdateFileInfor:" + str_FileFullName;
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.AddFileInfor(str_DirTableName, str_FileName, str_FilePath, str_FileSize, str_FileMD5, str_FileLastModDate, g_sPairID, out str_OutLogMsg))
                     {
@@ -2275,7 +2275,7 @@ namespace FileSynchronizer
                     string str_FromFile = Path.Combine(str_FilePath, str_FileName);
                     string str_ToFile = Path.Combine(str_ToPath, str_FileName);
                     string str_OngoingRecMsg = "同步文件: " + str_FromFile + " -U-> " + str_ToFile;
-                    OnSetOngoingItem(str_OngoingRecMsg);
+                    OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                     LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                     dt_fileDiff.Rows.Add(str_FileName, str_FilePath, str_ToPath, str_FileMD5, str_FileLastModDate, str_FileSize, bl_IsSyncFromDir1 ? "3" : "4", "");
                 }
@@ -2324,7 +2324,7 @@ namespace FileSynchronizer
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectDeletionDetected:" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
-            OnSetOngoingItem(str_LogMsgA);
+            OnSetOngoingItem(str_LogMsgA, GetTraceLevel(3));
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中删除了" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
@@ -2333,7 +2333,7 @@ namespace FileSynchronizer
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
                 LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                OnSetOngoingItem(str_LogMsgB);
+                OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
@@ -2361,7 +2361,7 @@ namespace FileSynchronizer
                         string _FileName = item.Split('|')[2];
                         bool _IsFile = _FileName != c_DirNameChar_Str;
                         string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-SoftDeleteFileInfor:" + str_FileFullName;
-                        OnSetOngoingItem(str_LogMsgAddItem);
+                        OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                         LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                         if (!Files_InfoDB.DelFileInforSoft(str_FromDirTableName, _FileID, g_sPairID, out str_OutLogMsg))
                         {
@@ -2384,7 +2384,7 @@ namespace FileSynchronizer
                                     (!bl_IsSyncFromDir1 && (g_iSyncDirection.Equals(0) || g_iSyncDirection.Equals(4))))
                                 {
                                     string str_OngoingRecMsg = "同步" + (_IsFile ? "文件: " : "目录: ") + str_FileFullName + " -X-> " + str_ToFile;
-                                    OnSetOngoingItem(str_OngoingRecMsg);
+                                    OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                                     LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
                                     dt_fileDiff.Rows.Add(_FileName, _FilePath, str_ToPath, "", "", "", bl_IsSyncFromDir1 ? "5" : "6", _ToFileID);
                                 }
@@ -2454,7 +2454,7 @@ namespace FileSynchronizer
 
             string str_LogMsgA = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-ObjectRenameDetected:" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgA, true, true, GetTraceLevel(3));
-            OnSetOngoingItem(str_LogMsgA);
+            OnSetOngoingItem(str_LogMsgA, GetTraceLevel(3));
             string str_LogMsgACN = "检测到目录" + (bl_IsSyncFromDir1 ? "1" : "2") + "中重命名了" + str_OldFullPath + "至" + str_FileFullName;
             LogPairMessage(g_sPairName, str_LogMsgACN, true, true, GetTraceLevel(1));
 
@@ -2463,7 +2463,7 @@ namespace FileSynchronizer
             {
                 string str_LogMsgB = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-" + str_OutLogMsg;
                 LogPairMessage(g_sPairName, str_LogMsgB, true, true, GetTraceLevel(4));
-                OnSetOngoingItem(str_LogMsgB);
+                OnSetOngoingItem(str_LogMsgB, GetTraceLevel(4));
 
                 if (str_OutLogMsg.Contains("PathLengthExceedsLimit"))
                 {
@@ -2487,7 +2487,7 @@ namespace FileSynchronizer
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-RenameDIRInfor:" + str_OldDirPath1 + "-to-" + str_NewDirPath1;
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     if (!Files_InfoDB.RenameFileOrDir(str_FromDirTableName, String.Empty, str_OldDirPath1, str_NewDirPath1, false, out str_OutLogMsg))
                     {
                         str_OutLogMsg = "PAIR-FileWatcher-RenameDIRInforFailed-A:" + str_OutLogMsg;
@@ -2496,7 +2496,7 @@ namespace FileSynchronizer
                     }
 
                     string str_OngoingRecMsg = "同步目录: " + str_NewDirPath1 + " -R-> " + str_NewDirPath2;
-                    OnSetOngoingItem(str_OngoingRecMsg);
+                    OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                     LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
 
                     FileHelper.xCopyDirectory(str_OldDirPath2, str_NewDirPath2, true, true);
@@ -2507,7 +2507,7 @@ namespace FileSynchronizer
                         LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
-                    OnSetOngoingItem(string.Empty);
+                    OnSetOngoingItem(string.Empty, GetTraceLevel(1));
                     return Directory.Exists(str_NewDirPath2);
                 }
                 else if (int_ObjType.Equals(1))
@@ -2519,7 +2519,7 @@ namespace FileSynchronizer
                     string str_OldFileName = Path.GetFileName(str_OldFullPath);
 
                     string str_LogMsgAddItem = "PAIR-FileWatcher:" + g_sPairName + "-" + str_DirIdx + "-RenameFileInfor:" + str_OldFullPath + "-to-" + str_FileFullName;
-                    OnSetOngoingItem(str_LogMsgAddItem);
+                    OnSetOngoingItem(str_LogMsgAddItem, GetTraceLevel(4));
                     LogPairMessage(g_sPairName, str_LogMsgAddItem, true, true, GetTraceLevel(4));
                     if (!Files_InfoDB.RenameFileOrDir(str_FromDirTableName, str_ParentDir1, str_OldFileName, str_NewFileName, true, out str_OutLogMsg))
                     {
@@ -2531,7 +2531,7 @@ namespace FileSynchronizer
                     string str_FromFile2 = Path.Combine(str_ParentDir2, str_OldFileName);
                     string str_ToFile2 = Path.Combine(str_ParentDir2, str_NewFileName);
                     string str_OngoingRecMsg = "同步文件: " + str_FileFullName + " -R-> " + str_ToFile2;
-                    OnSetOngoingItem(str_OngoingRecMsg);
+                    OnSetOngoingItem(str_OngoingRecMsg, GetTraceLevel(1));
                     LogPairMessage(g_sPairName, str_OngoingRecMsg, true, true, GetTraceLevel(1));
 
                     FileHelper.xCopyFile(str_FromFile2, str_ToFile2, true, true);
@@ -2542,7 +2542,7 @@ namespace FileSynchronizer
                         LogPairMessage(g_sPairName, str_OutLogMsg, true, true, GetTraceLevel(5), true);
                     }
 
-                    OnSetOngoingItem(string.Empty);
+                    OnSetOngoingItem(string.Empty, GetTraceLevel(1));
                     return File.Exists(str_ToFile2);
                 }
                 else

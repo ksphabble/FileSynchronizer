@@ -41,7 +41,7 @@ namespace FileSynchronizer
             richTextBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             richTextBox1.Name = "richTextBox1";
             richTextBox1.ReadOnly = true;
-            richTextBox1.Size = new System.Drawing.Size(686, 470);
+            richTextBox1.Size = new System.Drawing.Size(704, 481);
             richTextBox1.TabIndex = 0;
             richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
@@ -49,7 +49,7 @@ namespace FileSynchronizer
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(686, 470);
+            ClientSize = new System.Drawing.Size(704, 481);
             Controls.Add(richTextBox1);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
